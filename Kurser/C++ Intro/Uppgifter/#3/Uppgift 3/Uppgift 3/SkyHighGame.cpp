@@ -24,7 +24,10 @@ SkyHighGame::SkyHighGame(Data::TableMoneyStruct aTableMoneyStruct) : myTableMone
 
 int SkyHighGame::Play(Player& aPlayer)
 {
-	int bet = GenericFunctions::BetHandler(aPlayer);
+	system("cls");
+	DisplayManager::SayMoneyStructData(myTableMoneyStruct);
+
+	int bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct);
 
 	for (int i = 0; i < myMultiplierArraySize; i++)
 	{
@@ -38,6 +41,7 @@ int SkyHighGame::Play(Player& aPlayer)
 				std::cout <<
 					"\nYou make it to your desination and get x " << myMultiplierArray[i] << " your bet!!!\n"
 					"You win " << theoreticalWinnings << "$! \n";
+				myTableMoneyStruct.currentProfits += theoreticalWinnings - bet;
 				return theoreticalWinnings - bet;
 			}
 
@@ -70,6 +74,7 @@ int SkyHighGame::Play(Player& aPlayer)
 
 					std::cout <<
 						"\nYou get out in time, keeping a total of " << theoreticalWinnings << "$\n";
+					myTableMoneyStruct.currentProfits += theoreticalWinnings - bet;
 					return theoreticalWinnings - bet;
 				}
 				default:
@@ -80,10 +85,15 @@ int SkyHighGame::Play(Player& aPlayer)
 		{
 			std::cout << static_cast<char>(7) <<
 				"\nOH NO! The plane crashes! You loose it all!\n";
+			myTableMoneyStruct.currentProfits -= bet;
 			return -bet;
 		}
 		system("pause");
 	}
 	assert(false && "SkyHighGame illegal for-loop pass through.");
 	return -1;
+}
+const Data::TableMoneyStruct& SkyHighGame::GetTableMoneyStruct() const
+{
+	return myTableMoneyStruct;
 }

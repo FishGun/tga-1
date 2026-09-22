@@ -7,7 +7,7 @@ namespace Data
 		return TableMoneyStruct
 		{
 			.currentProfits = 0,
-			.banValue = aMaxBet * 10,
+			.banValue = aMaxBet * 5,
 			.highValue = aMaxBet * 2,
 			.lowValue = -aMaxBet * 2,
 			.minBet = aMinBet,

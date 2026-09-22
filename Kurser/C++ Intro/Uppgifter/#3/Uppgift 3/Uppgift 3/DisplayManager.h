@@ -5,5 +5,7 @@
 namespace DisplayManager
 {
 	void DisplayMoney(const Player& aPlayer);
-	void DisplayHistory(const Data::CasinoData& aCasinoData, const bool aInitialEmptyLine = true);
+	void DisplayHistory(Player& aPlayer, const bool aInitialEmptyLine = true);
+	void SayMoneyStructData(const Data::TableMoneyStruct& aTableMoneyStruct);
+
 }

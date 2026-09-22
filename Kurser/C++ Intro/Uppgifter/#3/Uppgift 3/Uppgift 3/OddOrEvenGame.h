@@ -11,8 +11,6 @@ public:
 	int Play(Player& aPlayer);
 
 	const Data::TableMoneyStruct& GetTableMoneyStruct() const;
-
-	int Play(Player& aPlayer);
 private:
 	Data::TableMoneyStruct myTableMoneyStruct;
 	int myVictoryMultiplier;

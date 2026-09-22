@@ -16,14 +16,8 @@
 #include <assert.h>
 
 GameManager::GameManager(Player& aPlayer) : myPlayer(aPlayer),
-myGuessingGameLowStakes(GuessingGame()),
-myGuessingGameHighStakes(GuessingGame(Data::GenerateTableMoneyStruct(1, 1000)))
-/*,
-myOddOrEvenGame(),
-mySkyHighGame(),
-myCoinflipGame()
-myRouletteGame()
-*/
+myGuessingGameHighStakes(Data::GenerateTableMoneyStruct(500, 5000))
+//myGuessingGameLowStakes(Data::TableMoneyStruct{.currentProfits = 0, .banValue = 200, .highValue = 50, .lowValue = -50, .minBet = 0, .maxBet = 200}, 100)
 {
 
 }
@@ -31,8 +25,6 @@ myRouletteGame()
 void GameManager::StartPlaying()
 {
 	Enter();
-
-	//CasinoData casinoData = GenerateCasinoData(CasinoDataTypes::Default);
 
 	while (true)
 	{
@@ -56,18 +48,20 @@ void GameManager::StartPlaying()
 			case Data::GameOptions::Guess:
 			case Data::GameOptions::GuessHigh:
 			case Data::GameOptions::OddOrEven:
+			case Data::GameOptions::SkyHigh:
 			case Data::GameOptions::Coinflip:
 			case Data::GameOptions::Roulette:
 				StartAGame(chosenOption);
 				break;
 			case Data::GameOptions::History:
 				system("cls");
-				DisplayManager::DisplayHistory(myCasinoData, false);
+				DisplayManager::DisplayHistory(myPlayer, false);
 				break;
 			case Data::GameOptions::Exit:
 				Exit();
 				return;
 			default:
+				assert(false && "Unexpected main menu choice.");
 				break;
 		}
 		if (myPlayer.GetMoney() <= 0)
@@ -173,48 +167,41 @@ void GameManager::StartAGame(Data::GameOptions aType)
 		case Data::GameOptions::GuessHigh:
 			std::cout << "Welcome to the High Roller's Guessing Game table.\n\n";
 			tableMoneyStructPointer = &myGuessingGameHighStakes.GetTableMoneyStruct();
+			break;
 		case Data::GameOptions::OddOrEven:
 			std::cout << "Welcome to the Odd or Even table.\n\n";
-			assert(false && "not implimented yet");
+			tableMoneyStructPointer = &myOddOrEvenGame.GetTableMoneyStruct();
 			break;
 		case Data::GameOptions::SkyHigh:
 			std::cout << "Welcome to the Sky High table!\n\n";
-			assert(false && "not implimented yet");
+			tableMoneyStructPointer = &mySkyHighGame.GetTableMoneyStruct();
 			break;
 		case Data::GameOptions::Coinflip:
 			std::cout << "Welcome. To the Coinflip table.\n\n";
-			assert(false && "not implimented yet");
+			tableMoneyStructPointer = &myCoinflipGame.GetTableMoneyStruct();
 			break;
 		case Data::GameOptions::Roulette:
 			std::cout << "Welcome toooo- the Roulette table!\n\n";
-			assert(false && "not implimented yet");
+			tableMoneyStructPointer = &myRouletteGame.GetTableMoneyStruct();
 			break;
 		default:
 			assert(false && "Game outside the games index");
-			break;
+			return;
 	}
-	if (GenericFunctions::CheckIfProfitedTooMuch(*tableMoneyStructPointer, false))
+	const Data::TableMoneyStruct& tableMoneyStruct = *tableMoneyStructPointer;
+
+	if (GenericFunctions::CheckIfPoorOrBanned(myPlayer, tableMoneyStruct, false))
 	{
-		system("cls");
-		std::cout << "Hey! You're too good at this game! Go play somewhere else!\n";
 		return;
 	}
-
-	const Data::TableMoneyStruct& tableMoneyStruct = *tableMoneyStructPointer;
 
 	ShowRules(aType, false);
 
 	bool isFirstLoop = true;
 	while (true)
 	{
-		if (myPlayer.GetMoney() < tableMoneyStruct.minBet)
+		if (GenericFunctions::CheckIfPoorOrBanned(myPlayer, tableMoneyStruct, isFirstLoop))
 		{
-			std::cout << "You're too poor to play here!\n";
-			return;
-		}
-		else if (GenericFunctions::CheckIfProfitedTooMuch(tableMoneyStruct, isFirstLoop))
-		{
-			std::cout << "Hey! You're too good at this game! Go play somewhere else!\n";
 			return;
 		}
 
@@ -223,7 +210,8 @@ void GameManager::StartAGame(Data::GameOptions aType)
 
 		const char* uniqueIntroSection[] =
 		{
-			"You are at the Guessing Game table. Would you like to:\n",
+			"You are at the Low Stakes Guessing Game table. Would you like to:\n",
+			"You are at the High Rollers Guessing Game table. Would you like to:\n",
 			"You are at the Odd or Even table. Would you like to:\n",
 			"You are at the Sky High table. Would you like to:\n",
 			"You are at the Coinflip table. Would you like to:\n",
@@ -249,27 +237,24 @@ void GameManager::StartAGame(Data::GameOptions aType)
 						currentPlayMoneyDifference += myGuessingGameHighStakes.Play(myPlayer);
 						break;
 					case Data::GameOptions::OddOrEven:
-						//currentPlayMoneyDifference += myOddOrEvenGame.Play(stats, aCasinoData.oddOrEvenPD);
-						assert(false && "not implimented yet");
+						currentPlayMoneyDifference += myOddOrEvenGame.Play(myPlayer);
 						break;
 					case Data::GameOptions::SkyHigh:
-						//currentPlayMoneyDifference += mySkyHighGame.Play(stats, aCasinoData.skyHighPD);
-						assert(false && "not implimented yet");
+						currentPlayMoneyDifference += mySkyHighGame.Play(myPlayer);
 						break;
 					case Data::GameOptions::Coinflip:
-						//currentPlayMoneyDifference += myCoinflipGame.Play(stats, aCasinoData.coinflipPD);
-						assert(false && "not implimented yet");
+						currentPlayMoneyDifference += myCoinflipGame.Play(myPlayer);
 						break;
 					case Data::GameOptions::Roulette:
-						//currentPlayMoneyDifference += myRouletteGame.Play(stats, aCasinoData.roulettePD);
-						assert(false && "not implimented yet");
+						currentPlayMoneyDifference += myRouletteGame.Play(myPlayer);
+						break;
 					default:
 						assert(false && "Game outside the games index");
 						break;
 				}
 				AddGame(currentPlayMoneyDifference >= 0);
 				DisplayManager::DisplayMoney(myPlayer);
-				DisplayManager::DisplayHistory(myCasinoData);
+				DisplayManager::DisplayHistory(myPlayer);
 				system("pause");
 				system("cls");
 				break;
@@ -290,15 +275,16 @@ void GameManager::StartAGame(Data::GameOptions aType)
 
 void GameManager::AddGame(const bool aDidWin)
 {
-	for (int i = myCasinoData.gameHistoryArraySize - 1; i > 0; i--)
+	Player::Wins& winsStruct = myPlayer.GetWinsStruct();
+	for (int i = winsStruct.gameHistoryArraySize- 1; i > 0; i--)
 	{
-		myCasinoData.gameHistory[i] = myCasinoData.gameHistory[i - 1];
+		winsStruct.gameHistory[i] = winsStruct.gameHistory[i - 1];
 	}
-	myCasinoData.gameHistory[0] = (aDidWin ? 1 : -1);
+	winsStruct.gameHistory[0] = (aDidWin ? 1 : -1);
 
 	if (aDidWin)
 	{
-		myCasinoData.totalWins++;
+		winsStruct.total++;
 	}
 }
 
@@ -317,9 +303,10 @@ void GameManager::Exit()
 {
 	system("cls");
 	const int& money = myPlayer.GetMoney();
-	const int& wins = myCasinoData.totalWins;
+	const int& startingMoney = myPlayer.GetStartingMoney();
+	const int& wins = myPlayer.GetWinsStruct().total;
 
-	if (money == 100 && wins == 0)
+	if (money == startingMoney && wins == 0)
 	{
 		std::cout <<
 			"Did you take a wrong turn? That's alright, just head on out. The chicken bar is right around the corner.\n"
@@ -351,7 +338,7 @@ void GameManager::Exit()
 			"\n"
 			"Ending 0: Betting Bad.\n";
 	}
-	else if (money < 100)
+	else if (money < startingMoney)
 	{
 		std::cout <<
 			"Cutting your losses & counting your victories, you know when it's time to get out, and move past the grand silver doors, into the cool evening air & busy streets\n"
@@ -359,7 +346,7 @@ void GameManager::Exit()
 			"\n"
 			"Ending 2: Know when to fold 'em.\n";
 	}
-	else if (money == 100)
+	else if (money == startingMoney)
 	{
 		std::cout <<
 			"That place tried something, and you ain't givin it nothing. Sure, ya didn't profit. What do you want me to say?\n"
@@ -368,7 +355,7 @@ void GameManager::Exit()
 			"\n"
 			"Ending 3: Even Steven.\n";
 	}
-	else if (money > 100)
+	else if (money > startingMoney)
 	{
 		std::cout <<
 			"Damn, you did it. You went in expecting nothing, and left with more than you bargained for.\n"
@@ -379,366 +366,3 @@ void GameManager::Exit()
 	std::cout << std::endl;
 	system("pause");
 };
-
-const Data::CasinoData& GameManager::GetCasinoData()
-{
-	return myCasinoData;
-}
-
-/*
-Data::CasinoData GameManager::GenerateCasinoData(CasinoDataTypes aCasinoDataType)
-{
-
-	switch (casinoDataType)
-	{
-		//Standard CasinoData
-		default:
-		case CasinoDataTypes::Default:
-			return
-			{
-				.gameStats =
-				{
-					.profits =
-					{
-						.profitArray = {0},
-						.money = 100
-					},
-					.wins =
-					{
-						.gameHistory = {0},
-						.total = 0,
-					}
-				},
-				.guessingPD =
-				{
-					//.victoryMultiplier = 5
-				},
-				.oddOrEvenPD =
-				{
-					.victoryMultiplier = 3
-				},
-				.skyHighPD =
-				{
-					.multiplierArray = { 1.2f, 1.5f, 2.0f, 3.0f, 5.0f, 8.0f ,12.0f ,20.0f }
-				},
-				.coinflipPD =
-				{
-					.victoryMultiplier = 1.9f
-				},
-				.roulettePD =
-				{
-					.colorArray =
-					{
-						RouletteGame::RouletteColor::Green,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						//index #10 above.
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						//index #20 above.
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						//index #30 above.
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red
-					},
-					.victoryMultipliers =
-					{
-						.straight = 36.0f,
-						.redBlack = 2.0f,
-						.oddEven = 2.0f,
-						.column = 3.0f
-					}
-				}
-			};
-			//Big Winner CasinoData
-		case CasinoDataTypes::BigWinner:
-			return
-			{
-				.gameStats =
-				{
-					.profits =
-					{
-						.profitArray = {100,100,100,100,100},
-						.money = 1000
-					},
-					.wins =
-					{
-						.gameHistory = {1,1,1,1,1},
-						.total = 10,
-					}
-				},
-				.guessingPD =
-				{
-					.victoryMultiplier = 5
-				},
-				.oddOrEvenPD =
-				{
-					.victoryMultiplier = 3
-				},
-				.skyHighPD =
-				{
-					.multiplierArray = { 1.2f, 1.5f, 2.0f, 3.0f, 5.0f, 8.0f ,12.0f ,20.0f }
-				},
-				.coinflipPD =
-				{
-					.victoryMultiplier = 1.9f
-				},
-				.roulettePD =
-				{
-					.colorArray =
-					{
-						RouletteGame::RouletteColor::Green,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						//index #10 above.
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						//index #20 above.
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						//index #30 above.
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red
-					},
-					.victoryMultipliers =
-					{
-						.straight = 36.0f,
-						.redBlack = 2.0f,
-						.oddEven = 2.0f,
-						.column = 3.0f
-					}
-				}
-			};
-			//Favourable Casino CasinoData
-		case CasinoDataTypes::FavourableOdds:
-			return
-			{
-			.gameStats =
-			{
-				.profits =
-				{
-					.profitArray = {0},
-					.money = 100
-				},
-				.wins =
-				{
-					.gameHistory = {0},
-					.total = 0,
-				}
-			},
-			.guessingPD =
-			{
-				.victoryMultiplier = 10
-			},
-			.oddOrEvenPD =
-			{
-				.victoryMultiplier = 5
-			},
-			.skyHighPD =
-			{
-				.multiplierArray = { 2.0f, 4.0f, 8.0f, 16.0f, 32.0f, 64.0f ,128.0f ,256.0f }
-			},
-			.coinflipPD =
-			{
-				.victoryMultiplier = 2.1f
-			},
-			.roulettePD =
-			{
-				.colorArray =
-				{
-					RouletteGame::RouletteColor::Green,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					//index #10 above.
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					//index #20 above.
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					//index #30 above.
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red,
-					RouletteGame::RouletteColor::Black,
-					RouletteGame::RouletteColor::Red
-				},
-				.victoryMultipliers =
-				{
-					.straight = 40.0f,
-					.redBlack = 3.0f,
-					.oddEven = 3.0f,
-					.column = 4.0f
-				}
-			}
-			};
-		case CasinoDataTypes::RichBoyNoLimits:
-			return
-			{
-			.gameStats =
-			{
-				.profits =
-				{
-					.profitArray = {-10000000,-10000000,-10000000,-10000000, -10000000},
-					.money = 10000000
-				},
-				.wins =
-				{
-					.gameHistory = {0},
-					.total = 0,
-				}
-			},
-			.guessingPD =
-				{
-					.victoryMultiplier = 5
-				},
-				.oddOrEvenPD =
-				{
-					.victoryMultiplier = 3
-				},
-				.skyHighPD =
-				{
-					.multiplierArray = { 1.2f, 1.5f, 2.0f, 3.0f, 5.0f, 8.0f ,12.0f ,20.0f }
-				},
-				.coinflipPD =
-				{
-					.victoryMultiplier = 1.9f
-				},
-				.roulettePD =
-				{
-					.colorArray =
-					{
-						RouletteGame::RouletteColor::Green,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						//index #10 above.
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						//index #20 above.
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						//index #30 above.
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red,
-						RouletteGame::RouletteColor::Black,
-						RouletteGame::RouletteColor::Red
-					},
-					.victoryMultipliers =
-					{
-						.straight = 36.0f,
-						.redBlack = 2.0f,
-						.oddEven = 2.0f,
-						.column = 3.0f
-					}
-				}
-			};
-	}
-};
-*/

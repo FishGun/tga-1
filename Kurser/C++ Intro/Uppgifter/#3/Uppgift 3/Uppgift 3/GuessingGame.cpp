@@ -1,6 +1,7 @@
 #include "GuessingGame.h"
 #include "GenericFunctions.h"
 #include "InputController.h"
+#include "DisplayManager.h"
 #include "Data.h"
 #include "Player.h"
 #include <iostream>
@@ -9,7 +10,6 @@ GuessingGame::GuessingGame() : GuessingGame::GuessingGame(Data::GenerateTableMon
 {
 
 }
-
 GuessingGame::GuessingGame(Data::TableMoneyStruct aTableMoneyStruct, int aVictoryMultiplier) : myTableMoneyStruct(aTableMoneyStruct)
 {
 	myVictoryMultiplier = aVictoryMultiplier;
@@ -18,10 +18,9 @@ GuessingGame::GuessingGame(Data::TableMoneyStruct aTableMoneyStruct, int aVictor
 int GuessingGame::Play(Player& aPlayer)
 {
 	system("cls");
+	DisplayManager::SayMoneyStructData(myTableMoneyStruct);
 
-	std::cout << "The bet range is: " << myTableMoneyStruct.minBet << "$ to " << myTableMoneyStruct.maxBet << "$ You have profited " << myTableMoneyStruct.currentProfits << "/" << myTableMoneyStruct.banValue << "\n\n";
-
-	int bet = GenericFunctions::BetHandler(aPlayer);
+	int bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct);
 
 	std::cout << "Your guess:";
 	int guess = InputController::IntegerMinMaxRange(12, 2);
@@ -44,8 +43,8 @@ int GuessingGame::Play(Player& aPlayer)
 		std::cout << "\n******************************************************************************" << (total > 9 ? "*\n" : "\n");
 		std::cout << "*        Correct! You did it! Woohoo! The dice rolled " << total << "! You win " << winnings << "$!        *\n";
 		std::cout << "******************************************************************************" << (total > 9 ? "*\n\n" : "\n\n");
-		myTableMoneyStruct.currentProfits += winnings;
 		aPlayer += winnings;
+		myTableMoneyStruct.currentProfits += winnings - bet;
 		return winnings - bet;
 	}
 }

@@ -30,13 +30,8 @@ public:
 
 	void Enter();
 	void Exit();
-
-	Data::CasinoData GenerateCasinoData(CasinoDataTypes casinoDataType);
-	const Data::CasinoData& GetCasinoData();
-
 private:
 	Player& myPlayer;
-	Data::CasinoData myCasinoData;
 
 	GuessingGame myGuessingGameLowStakes;
 	GuessingGame myGuessingGameHighStakes;

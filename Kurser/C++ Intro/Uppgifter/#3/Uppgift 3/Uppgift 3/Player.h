@@ -17,15 +17,21 @@ public:
 
 	const int& GetMoney() const;
 	void SetMoney(int aValue);
+	const int& GetStartingMoney() const;
 
-	const Wins& GetWinsStruct() const;
+	Wins& GetWinsStruct();
 
 	Player operator+= (int rhs);
 
 	Player operator-= (int rhs);
-	
+
+	bool NameIsQrikko();
+	bool NameIsJoel();
+	bool NameIsClaudia();
+
 private:
 	char myName[17];
 	int myMoney;
+	int myStartingMoney;
 	Wins myWins;
 };

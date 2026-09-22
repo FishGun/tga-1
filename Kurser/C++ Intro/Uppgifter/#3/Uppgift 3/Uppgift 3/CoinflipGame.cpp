@@ -1,6 +1,7 @@
 #include "CoinflipGame.h"
 #include "InputController.h"
 #include "GenericFunctions.h"
+#include "DisplayManager.h"
 #include "Data.h"
 #include "Player.h"
 #include <iostream>
@@ -17,8 +18,9 @@ CoinflipGame::CoinflipGame(Data::TableMoneyStruct aTableMoneyStruct, float aVict
 int CoinflipGame::Play(Player& aPlayer)
 {
 	system("cls");
+	DisplayManager::SayMoneyStructData(myTableMoneyStruct);
 
-	int bet = GenericFunctions::BetHandler(aPlayer);
+	int bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct);
 
 	std::cout <<
 		"(1) Heads\n"
@@ -51,6 +53,7 @@ int CoinflipGame::Play(Player& aPlayer)
 		aPlayer += winnings;
 		system("pause");
 		system("cls");
+		myTableMoneyStruct.currentProfits += winnings - bet;
 		return winnings - bet;
 	}
 	else
@@ -60,6 +63,11 @@ int CoinflipGame::Play(Player& aPlayer)
 			"You lose.\n";
 		system("pause");
 		system("cls");
+		myTableMoneyStruct.currentProfits -= bet;
 		return -bet;
 	}
+}
+const Data::TableMoneyStruct& CoinflipGame::GetTableMoneyStruct() const
+{
+	return myTableMoneyStruct;
 }

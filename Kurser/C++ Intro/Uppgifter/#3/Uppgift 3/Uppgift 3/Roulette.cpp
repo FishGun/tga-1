@@ -1,25 +1,26 @@
 #include "Roulette.h"
 #include "InputController.h"
 #include "GenericFunctions.h"
-#include "StatTracker.h"
+#include "DisplayManager.h"
+#include "Data.h"
+#include "Player.h"
 #include <iostream>
 #include <array>
 
-RouletteGame::RouletteGame() : RouletteGame::RouletteGame(1, 100)
+RouletteGame::RouletteGame() : RouletteGame::RouletteGame(Data::GenerateTableMoneyStruct(), RouletteGame::GenerateBoardStruct())
 {
 
 }
-RouletteGame::RouletteGame(int aMinBet, int aMaxBet, RouletteGame::VictoryMultipliers aVictoryMultipliersStruct)
+RouletteGame::RouletteGame(Data::TableMoneyStruct aTableMoneyStruct, const RouletteGame::BoardStruct aBoardStruct, RouletteGame::VictoryMultipliers aVictoryMultipliersStruct) : myTableMoneyStruct(aTableMoneyStruct), myBoardStruct(aBoardStruct)
 {
-	myProfits = 0;
-	myMaxWinnings = aMaxBet * 10;
-	myMinBet = aMinBet;
-	myMaxBet = aMaxBet;
 	myVictoryMultipliersStruct = aVictoryMultipliersStruct;
 }
 
-int RouletteGame::Play(StatTracker::Stats& aStats, const PlayData& aPlayData)
+int RouletteGame::Play(Player& aPlayer)
 {
+	system("cls");
+	DisplayManager::SayMoneyStructData(myTableMoneyStruct);
+
 	myBets =
 	{
 		.straight = {0},
@@ -33,13 +34,17 @@ int RouletteGame::Play(StatTracker::Stats& aStats, const PlayData& aPlayData)
 		.total = 0
 	};
 
-	system("cls");
-
 	do
 	{
-		BetLogicHandler(aStats.profits, aPlayData.boardSize);
+		BetLogicHandler(aPlayer);
 
-		if (aStats.profits.money < 1)
+		if (myBets.total >= myTableMoneyStruct.maxBet)
+		{
+			std::cout << "As you have reached the bet limit, you will have to let it roll!!!\n";
+			system("pause");
+			break;
+		}
+		if (aPlayer.GetMoney() < 1)
 		{
 			std::cout << "As you have no more money to bet, you will have to let it roll!!!\n";
 			system("pause");
@@ -58,12 +63,12 @@ int RouletteGame::Play(StatTracker::Stats& aStats, const PlayData& aPlayData)
 	system("pause");
 	std::cout << std::endl;
 
-	int result = GenericFunctions::RollDice(aPlayData.boardSize) - 1;
+	int result = GenericFunctions::RollDice(myBoardStruct.boardSize) - 1;
 
-	return WinningsLogicHandler(aStats, aPlayData, result);
+	return WinningsLogicHandler(aPlayer, result);
 }
 
-void RouletteGame::BetLogicHandler(StatTracker::Profits& aProfitStruct, const int& aBoardSize)
+void RouletteGame::BetLogicHandler(Player& aPlayer)
 {
 	std::cout <<
 		"What sort of bet would you like to make?\n"
@@ -82,10 +87,10 @@ void RouletteGame::BetLogicHandler(StatTracker::Profits& aProfitStruct, const in
 		case RouletteGame::BetTypes::Straight:
 		{
 			std::cout <<
-				"\nAlright! Which number are you betting on? (0-" << static_cast<int>(aBoardSize - 1) << ")\n"
+				"\nAlright! Which number are you betting on? (0-" << static_cast<int>(myBoardStruct.boardSize - 1) << ")\n"
 				"Awnser:";
-			betIndex = InputController::IntegerRange(aBoardSize, 0);
-			bet = GenericFunctions::BetHandler(aProfitStruct);
+			betIndex = InputController::IntegerRange(myBoardStruct.boardSize, 0);
+			bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct, myBets.total);
 			myBets.straight[betIndex] += bet;
 			myBets.straightTotal += bet;
 			break;
@@ -98,7 +103,7 @@ void RouletteGame::BetLogicHandler(StatTracker::Profits& aProfitStruct, const in
 				"(2) Black\n"
 				"Awnser:";
 			betIndex = InputController::IntegerRange(2) - 1;
-			bet = GenericFunctions::BetHandler(aProfitStruct);
+			bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct, myBets.total);
 			myBets.redBlack[betIndex] += bet;
 			myBets.redBlackTotal += bet;
 			break;
@@ -111,7 +116,7 @@ void RouletteGame::BetLogicHandler(StatTracker::Profits& aProfitStruct, const in
 				"(2) Even\n"
 				"Awnser:";
 			betIndex = InputController::IntegerRange(2) - 1;
-			bet = GenericFunctions::BetHandler(aProfitStruct);
+			bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct, myBets.total);
 			myBets.oddEven[betIndex] += bet;
 			myBets.oddEvenTotal += bet;
 			break;
@@ -122,7 +127,7 @@ void RouletteGame::BetLogicHandler(StatTracker::Profits& aProfitStruct, const in
 				"\nAlright! Which column are you betting on? (1-3)\n"
 				"Awnser:";
 			betIndex = InputController::IntegerRange(3) - 1;
-			bet = GenericFunctions::BetHandler(aProfitStruct);
+			bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct, myBets.total);
 			myBets.column[betIndex] += bet;
 			myBets.columnTotal += bet;
 			break;
@@ -133,9 +138,9 @@ void RouletteGame::BetLogicHandler(StatTracker::Profits& aProfitStruct, const in
 	myBets.total += bet;
 }
 
-int RouletteGame::WinningsLogicHandler(StatTracker::Stats& aStats, const RouletteGame::PlayData& aPlayData, const int& aRolledNumber)
+int RouletteGame::WinningsLogicHandler(Player& aPlayer, const int& aRolledNumber)
 {
-	RouletteGame::RouletteColor color = aPlayData.colorArray[aRolledNumber];
+	RouletteGame::RouletteColor color = myBoardStruct.board[aRolledNumber];
 	int column = 0;
 	if (color != RouletteGame::RouletteColor::Green)
 	{
@@ -149,12 +154,10 @@ int RouletteGame::WinningsLogicHandler(StatTracker::Stats& aStats, const Roulett
 		}
 	}
 
-	const RouletteGame::VictoryMultipliers victoryMultipliers = aPlayData.victoryMultipliers;
-
-	const int straightProfit = static_cast<int>(myBets.straight[aRolledNumber] * victoryMultipliers.straight);
-	const int redBlackProfit = color == RouletteGame::RouletteColor::Green ? 0 : static_cast<int>(myBets.redBlack[static_cast<int>(color) - 1] * victoryMultipliers.redBlack);
-	const int oddEvenProfit = color == RouletteGame::RouletteColor::Green ? 0 : static_cast<int>(myBets.oddEven[(aRolledNumber + 1) % 2] * victoryMultipliers.oddEven);
-	const int columnProfit = color == RouletteGame::RouletteColor::Green ? 0 : static_cast<int>(myBets.column[column - 1] * victoryMultipliers.column);
+	const int straightProfit = static_cast<int>(myBets.straight[aRolledNumber] * myVictoryMultipliersStruct.straight);
+	const int redBlackProfit = color == RouletteGame::RouletteColor::Green ? 0 : static_cast<int>(myBets.redBlack[static_cast<int>(color) - 1] * myVictoryMultipliersStruct.redBlack);
+	const int oddEvenProfit = color == RouletteGame::RouletteColor::Green ? 0 : static_cast<int>(myBets.oddEven[(aRolledNumber + 1) % 2] * myVictoryMultipliersStruct.oddEven);
+	const int columnProfit = color == RouletteGame::RouletteColor::Green ? 0 : static_cast<int>(myBets.column[column - 1] * myVictoryMultipliersStruct.column);
 
 	std::cout << "The ball landed on #" << aRolledNumber << (color == RouletteGame::RouletteColor::Green ? " (green" : (color == RouletteGame::RouletteColor::Black ? " (black" : " (red")) << ", column #" << column << (column == 0 ? "-it was green" : "") << ")\n";
 	if (myBets.straightTotal > 0)
@@ -221,8 +224,62 @@ int RouletteGame::WinningsLogicHandler(StatTracker::Stats& aStats, const Roulett
 	{
 		std::cout << ". You ended up breaking even. Could be worse. We'll count that as a win.\n";
 	}
-	StatTracker::AddGame(aStats.wins, totalProfits >= 0);
 
-	aStats.profits.money += totalWinnings;
+	aPlayer += totalWinnings;
+	myTableMoneyStruct.currentProfits += totalWinnings;
 	return totalWinnings;
+}
+
+RouletteGame::BoardStruct RouletteGame::GenerateBoardStruct() const
+{
+	return BoardStruct
+	{
+		.board =
+		{
+			RouletteGame::RouletteColor::Green,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			//index #10 above.
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			//index #20 above.
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			//index #30 above.
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red,
+			RouletteGame::RouletteColor::Black,
+			RouletteGame::RouletteColor::Red
+		}
+	};
+}
+const Data::TableMoneyStruct& RouletteGame::GetTableMoneyStruct() const
+{
+	return myTableMoneyStruct;
 }

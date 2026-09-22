@@ -25,21 +25,6 @@ namespace Data
 		Count
 	};
 
-	struct CasinoData
-	{
-		static const int gameHistoryArraySize = 5;
-		int gameHistory[gameHistoryArraySize];
-		int totalWins;
-
-		/*
-		const GuessingGame::PlayData guessingPD;
-		const OddOrEvenGame::PlayData oddOrEvenPD;
-		const SkyHighGame::PlayData skyHighPD;
-		const CoinflipGame::PlayData coinflipPD;
-		const RouletteGame::PlayData roulettePD;
-		*/
-	};
-
 	struct TableMoneyStruct
 	{
 		int currentProfits;

@@ -10,22 +10,23 @@ namespace DisplayManager
 		std::cout << "You currently have " << aPlayer.GetMoney() << "$ left.\n";
 	}
 
-	void DisplayHistory(const Data::CasinoData& aCasinoData, const bool aInitialEmptyLine)
+	void DisplayHistory(Player& aPlayer, const bool aInitialEmptyLine)
 	{
+		Player::Wins& winsStruct = aPlayer.GetWinsStruct();
 		if (aInitialEmptyLine)
 		{
 			std::cout << "\n";
 		}
 		std::cout <<
-			"Your last " << aCasinoData.gameHistoryArraySize << " games went like this:\n";
+			"Your last " << winsStruct.gameHistoryArraySize << " games went like this:\n";
 
-		for (int i = 0; i < aCasinoData.gameHistoryArraySize; i++)
+		for (int i = 0; i < winsStruct.gameHistoryArraySize; i++)
 		{
-			if (aCasinoData.gameHistory[i] == 1)
+			if (winsStruct.gameHistory[i] == 1)
 			{
 				std::cout << "Win!\n";
 			}
-			else if (aCasinoData.gameHistory[i] == -1)
+			else if (winsStruct.gameHistory[i] == -1)
 			{
 				std::cout << "Loss!\n";
 			}
@@ -35,5 +36,10 @@ namespace DisplayManager
 			}
 		}
 		std::cout << "\n";
+	}
+
+	void SayMoneyStructData(const Data::TableMoneyStruct& aTableMoneyStruct)
+	{
+		std::cout << "The bet range is: " << aTableMoneyStruct.minBet << "$ to " << aTableMoneyStruct.maxBet << "$ You have profited " << aTableMoneyStruct.currentProfits << "/" << aTableMoneyStruct.banValue << "\n\n";
 	}
 }

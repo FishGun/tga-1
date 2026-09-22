@@ -25,13 +25,15 @@ namespace GenericFunctions
 		return toReturn;
 	}
 
-	int BetHandler(Player& aPlayer)
+	int BetHandler(Player& aPlayer, Data::TableMoneyStruct& aTableMoneyStruct, int aAlreadyMadeBetTotal)
 	{
 		std::cout << "How much would you like to bet?\n";
 		DisplayManager::DisplayMoney(aPlayer);
 		std::cout << "$";
 		const int& money = aPlayer.GetMoney();
-		int bet = InputController::IntegerMinMaxRange(money);
+		const int unboundedRealMaxBet = aTableMoneyStruct.maxBet - aAlreadyMadeBetTotal;
+		const int boundedMaxBet = (aPlayer.NameIsJoel() ? money : money < unboundedRealMaxBet ? money : unboundedRealMaxBet);
+		int bet = InputController::IntegerMinMaxRange(boundedMaxBet, aTableMoneyStruct.minBet);
 		aPlayer -= bet;
 
 		if (money == 0)
@@ -40,6 +42,22 @@ namespace GenericFunctions
 		}
 
 		return bet;
+	}
+
+	bool CheckIfPoorOrBanned(const Player& aPlayer, const Data::TableMoneyStruct& aTableMoneyStruct, const bool aSayQuipOtherwhise)
+	{
+		return CheckIfTooPoor(aPlayer, aTableMoneyStruct) || CheckIfProfitedTooMuch(aTableMoneyStruct, aSayQuipOtherwhise);
+	}
+
+	bool CheckIfTooPoor(const Player& aPlayer, const Data::TableMoneyStruct& aTableMoneyStruct)
+	{
+		if (aPlayer.GetMoney() < aTableMoneyStruct.minBet || aPlayer.GetMoney() <= 0)
+		{
+			system("cls");
+			std::cout << "You're too poor to play here!\n";
+			return true;
+		}
+		return false;
 	}
 
 	// Should use StatTracker::Profits.profitArray (instead of "aProfit"), and have ProfitThresholds be in the StatTracker::Profits struct.

@@ -1,6 +1,7 @@
 #include "OddOrEvenGame.h"
 #include "GenericFunctions.h"
 #include "InputController.h"
+#include "DisplayManager.h"
 #include "Data.h"
 #include "Player.h"
 #include <iostream>
@@ -9,14 +10,17 @@ OddOrEvenGame::OddOrEvenGame() : OddOrEvenGame::OddOrEvenGame(Data::GenerateTabl
 {
 
 }
-OddOrEvenGame::OddOrEvenGame(Data::TableMoneyStruct aTableMoneyStruct, int aVictoryMultiplier) : myTableMoneyStruct(aTableMoneyStruct);
+OddOrEvenGame::OddOrEvenGame(Data::TableMoneyStruct aTableMoneyStruct, int aVictoryMultiplier) : myTableMoneyStruct(aTableMoneyStruct)
 {
 	myVictoryMultiplier = aVictoryMultiplier;
 }
 
 int OddOrEvenGame::Play(Player& aPlayer)
 {
-	int bet = GenericFunctions::BetHandler(aStats.profits);
+	system("cls");
+	DisplayManager::SayMoneyStructData(myTableMoneyStruct);
+
+	int bet = GenericFunctions::BetHandler(aPlayer, myTableMoneyStruct);
 
 	std::cout <<
 		"\n"
@@ -47,17 +51,22 @@ int OddOrEvenGame::Play(Player& aPlayer)
 
 	if ((die1Enumerated == die2Enumerated) && (die1Enumerated == guess))
 	{
-		StatTracker::AddGame(aStats.wins, true);
-		aStats.profits.money += bet * aPlayData.victoryMultiplier;
+		const int winnings = bet * myVictoryMultiplier;
+		aPlayer += winnings;
 		std::cout <<
-			"\nYou got it right! You win " << bet * aPlayData.victoryMultiplier << "$!\n";
-		return bet * aPlayData.victoryMultiplier - bet;
+			"\nYou got it right! You win " << winnings << "$!\n";
+		myTableMoneyStruct.currentProfits += winnings - bet;
+		return winnings - bet;
 	}
 	else
 	{
-		StatTracker::AddGame(aStats.wins, false);
 		std::cout <<
 			"\nAlas, you lost.\n";
+		myTableMoneyStruct.currentProfits -= bet;
 		return -bet;
 	}
+}
+const Data::TableMoneyStruct& OddOrEvenGame::GetTableMoneyStruct() const
+{
+	return myTableMoneyStruct;
 }

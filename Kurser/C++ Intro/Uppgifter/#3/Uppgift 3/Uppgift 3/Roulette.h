@@ -1,4 +1,6 @@
 #pragma once
+#include "Data.h"
+#include "Player.h"
 #include <array>
 
 
@@ -6,6 +8,20 @@
 class RouletteGame
 {
 public:
+	enum class RouletteColor
+	{
+		Green,
+		Red,
+		Black,
+		Count
+	};
+	const struct BoardStruct
+	{
+		const static int boardSize = 37;
+		const RouletteColor board[boardSize];
+
+	};
+
 	const struct VictoryMultipliers
 	{
 		float straight;
@@ -15,7 +31,11 @@ public:
 	};
 
 	RouletteGame();
-	RouletteGame(int aMinBet, int aMaxBet, VictoryMultipliers aVictoryMultipliersStruct = { .straight = 36.0f, .redBlack = 2.0f,.oddEven = 2.0f,.column = 3.0f });
+	RouletteGame(Data::TableMoneyStruct aTableMoneyStruct, const BoardStruct aBoardStruct, VictoryMultipliers aVictoryMultipliersStruct = { .straight = 36.0f, .redBlack = 2.0f,.oddEven = 2.0f,.column = 3.0f });
+
+	int Play(Player& aPlayer);
+
+	const Data::TableMoneyStruct& GetTableMoneyStruct() const;
 
 	enum class BetTypes
 	{
@@ -25,15 +45,6 @@ public:
 		Column,
 		Count
 	};
-
-	enum class RouletteColor
-	{
-		Green,
-		Red,
-		Black,
-		Count
-	};
-
 
 	const struct PlayData
 	{
@@ -55,16 +66,12 @@ public:
 		int total;
 	};
 
-	PlayerBets myBets;
-
-	int Play(StatTracker::Stats& aStats, const PlayData& aPlayData);
-
-	void BetLogicHandler(StatTracker::Profits& aProfitStruct, const int& aBoardSize);
-	int WinningsLogicHandler(StatTracker::Stats& aStats, const PlayData& aPlayData, const int& aRolledNumber);
+	void BetLogicHandler(Player& aPlayer);
+	int WinningsLogicHandler(Player& aPlayer, const int& aRolledNumber);
+	BoardStruct GenerateBoardStruct() const;
 private:
-	int myProfits;
-	int myMaxWinnings;
-	int myMinBet;
-	int myMaxBet;
+	PlayerBets myBets;
+	Data::TableMoneyStruct myTableMoneyStruct;
+	const BoardStruct myBoardStruct;
 	VictoryMultipliers myVictoryMultipliersStruct;
 };
