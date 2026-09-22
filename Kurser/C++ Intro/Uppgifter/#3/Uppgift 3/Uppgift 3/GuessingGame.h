@@ -1,12 +1,18 @@
 #pragma once
-#include "StatTracker.h"
+#include "Data.h"
+#include "Player.h"
 
-namespace GuessingGame
+class GuessingGame
 {
-	const struct PlayData
-	{
-		const int victoryMultiplier;
-	};
+public:
+	GuessingGame();
+	GuessingGame(Data::TableMoneyStruct aTableMoneyStruct, int aVictoryMultiplier = 5);
 
-	int Play(StatTracker::Stats& aStats, const PlayData& aPlayData);
-}
+	int Play(Player& aPlayer);
+
+	const Data::TableMoneyStruct& GetTableMoneyStruct() const;
+
+private:
+	Data::TableMoneyStruct myTableMoneyStruct;
+	int myVictoryMultiplier;
+};

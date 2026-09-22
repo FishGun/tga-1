@@ -1,7 +1,8 @@
 #include "GenericFunctions.h"
 #include "DisplayManager.h"
 #include "InputController.h"
-#include "StatTracker.h"
+#include "Player.h"
+#include "Data.h"
 #include <random>
 #include <iostream>
 
@@ -24,15 +25,16 @@ namespace GenericFunctions
 		return toReturn;
 	}
 
-	int GetBet(StatTracker::Profits& aProfitStruct)
+	int BetHandler(Player& aPlayer)
 	{
 		std::cout << "How much would you like to bet?\n";
-		DisplayManager::DisplayMoney(aProfitStruct);
+		DisplayManager::DisplayMoney(aPlayer);
 		std::cout << "$";
-		int bet = InputController::IntegerMinMaxRange(aProfitStruct.money);
-		aProfitStruct.money -= bet;
+		const int& money = aPlayer.GetMoney();
+		int bet = InputController::IntegerMinMaxRange(money);
+		aPlayer -= bet;
 
-		if (aProfitStruct.money == 0)
+		if (money == 0)
 		{
 			std::cout << "Woah! Going all-in, huh? Good luck...\n\n";
 		}
@@ -42,28 +44,25 @@ namespace GenericFunctions
 
 	// Should use StatTracker::Profits.profitArray (instead of "aProfit"), and have ProfitThresholds be in the StatTracker::Profits struct.
 	// Could even have a custom profitThreashold for each game, by implementing another array in the StatTracker::Profits struct.
-	// gameData.gameStats.profits could then be passed in, along with a GameOptions enum for which game is being played.
+	// casinoData.gameStats.profits could then be passed in, along with a GameOptions enum for which game is being played.
 	// Or maybe better, each PlayData could hold both local game profits, and profitThresholds, and then be passed.
-	bool CheckIfProfitedTooMuch(const int aProfit, const bool aSayQuipOtherwhise)
+	bool CheckIfProfitedTooMuch(const Data::TableMoneyStruct& aTableMoneyStruct, const bool aSayQuipOtherwhise)
 	{
-		ProfitThresholds profitThresholds =
-		{
-			.banValue = 100,
-			.highValue = 20,
-			.lowValue = -20
-		};
+		const int profits = aTableMoneyStruct.currentProfits;
 
-		if (aProfit >= profitThresholds.banValue)
+		if (profits >= aTableMoneyStruct.banValue)
 		{
+			system("cls");
+			std::cout << "Hey! You're too good at this game! Go play somewhere else!\n";
 			return true;
 		}
 		if (aSayQuipOtherwhise)
 		{
-			if (aProfit >= profitThresholds.highValue)
+			if (profits >= aTableMoneyStruct.highValue)
 			{
 				std::cout << "Hey, it's big winner! Carefull now, wouldn't wanna make too much, eh?\n\n";
 			}
-			else if (aProfit <= profitThresholds.lowValue)
+			else if (profits <= aTableMoneyStruct.lowValue)
 			{
 				std::cout << "Coming back here huh? Let's see if you have better luck this time...\n\n";
 			}

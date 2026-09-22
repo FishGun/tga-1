@@ -141,15 +141,16 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="CoinflipGame.cpp" />
+    <ClCompile Include="Data.cpp" />
     <ClCompile Include="DisplayManager.cpp" />
     <ClCompile Include="GameManager.cpp" />
     <ClCompile Include="GenericFunctions.cpp" />
     <ClCompile Include="GuessingGame.cpp" />
     <ClCompile Include="OddOrEvenGame.cpp" />
     <ClCompile Include="InputController.cpp" />
+    <ClCompile Include="Player.cpp" />
     <ClCompile Include="Roulette.cpp" />
     <ClCompile Include="SkyHighGame.cpp" />
-    <ClCompile Include="StatTracker.cpp" />
     <ClCompile Include="Uppgift 3.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,11 +160,11 @@
     <ClInclude Include="GenericFunctions.h" />
     <ClInclude Include="GuessingGame.h" />
     <ClInclude Include="InputController.h" />
-    <ClInclude Include="MenuEnums.h" />
+    <ClInclude Include="Data.h" />
     <ClInclude Include="OddOrEvenGame.h" />
+    <ClInclude Include="Player.h" />
     <ClInclude Include="Roulette.h" />
     <ClInclude Include="SkyHighGame.h" />
-    <ClInclude Include="StatTracker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,13 +1,20 @@
 #pragma once
-#include "StatTracker.h"
+#include "Data.h"
+#include "Player.h"
 
-namespace SkyHighGame
+class SkyHighGame
 {
-	const struct PlayData
-	{
-		static const int multiplierArraySize = 8;
-		const float multiplierArray[multiplierArraySize];
-	};
+public:
+	SkyHighGame();
+	SkyHighGame(Data::TableMoneyStruct aTableMoneyStruct);
 
-	int Play(StatTracker::Stats& aStats, const PlayData& aPlayData);
-}
+	int Play(Player& aPlayer);
+
+	const Data::TableMoneyStruct& GetTableMoneyStruct() const;
+private:
+	Data::TableMoneyStruct myTableMoneyStruct;
+	static const int myMultiplierArraySize = 8;
+	float myMultiplierArray[myMultiplierArraySize];
+public:
+	//SkyHighGame(Data::TableMoneyStruct aTableMoneyStruct, float aVictoryMultiplierArray[SkyHighGame::myMultiplierArraySize]);
+};

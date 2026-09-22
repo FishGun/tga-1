@@ -1,26 +1,21 @@
 #pragma once
-#include "StatTracker.h"
-#include "MenuEnums.h"
+#include "Data.h"
 #include "GuessingGame.h"
 #include "OddOrEvenGame.h"
 #include "SkyHighGame.h"
 #include "CoinflipGame.h"
 #include "Roulette.h"
+#include "Player.h"
 
-namespace GameManager
+class GameManager
 {
-	struct GameData
-	{
-		StatTracker::Stats gameStats;
+public:
+	GameManager() = delete;
+	GameManager(Player& aPlayer);
 
-		const GuessingGame::PlayData guessingPD;
-		const OddOrEvenGame::PlayData oddOrEvenPD;
-		const SkyHighGame::PlayData skyHighPD;
-		const CoinflipGame::PlayData coinflipPD;
-		const RouletteGame::PlayData roulettePD;
-	};
 
-	enum class GameDataTypes
+
+	enum class CasinoDataTypes
 	{
 		Default,
 		BigWinner,
@@ -29,10 +24,24 @@ namespace GameManager
 	};
 
 	void StartPlaying();
-	void ShowRules(MenuEnums::GameOptions aType, GameData& aGameData, bool aClear = true);
-	void StartAGame(MenuEnums::GameOptions aType, GameData& aGameStats);
+	void ShowRules(Data::GameOptions aType, bool aClear = true);
+	void StartAGame(Data::GameOptions aType);
+	void AddGame(const bool aDidWin);
 
 	void Enter();
-	void Exit(StatTracker::Stats& aStats);
-	GameData GenerateGameData(GameDataTypes gameDataType);
-}
+	void Exit();
+
+	Data::CasinoData GenerateCasinoData(CasinoDataTypes casinoDataType);
+	const Data::CasinoData& GetCasinoData();
+
+private:
+	Player& myPlayer;
+	Data::CasinoData myCasinoData;
+
+	GuessingGame myGuessingGameLowStakes;
+	GuessingGame myGuessingGameHighStakes;
+	OddOrEvenGame myOddOrEvenGame;
+	SkyHighGame mySkyHighGame;
+	CoinflipGame myCoinflipGame;
+	RouletteGame myRouletteGame;
+};

@@ -1,6 +1,6 @@
 #pragma once
-#include "StatTracker.h"
-#include <random>
+#include "Player.h"
+#include "Data.h"
 
 namespace GenericFunctions
 {
@@ -11,6 +11,6 @@ namespace GenericFunctions
 		int lowValue;
 	};
 	int RollDice(const int aSides = 6, const int aAmount = 1);
-	int GetBet(StatTracker::Profits& aProfitStruct);
-	bool CheckIfProfitedTooMuch(const int aProfit, const bool aSayQuipOtherwhise = true);
+	int BetHandler(Player& aPlayer);
+	bool CheckIfProfitedTooMuch(const Data::TableMoneyStruct& aTableMoneyStruct, const bool aSayQuipOtherwhise);
 }

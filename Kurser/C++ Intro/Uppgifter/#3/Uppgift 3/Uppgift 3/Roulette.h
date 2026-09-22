@@ -1,11 +1,22 @@
 #pragma once
-#include "StatTracker.h"
 #include <array>
 
 
 
-namespace RouletteGame
+class RouletteGame
 {
+public:
+	const struct VictoryMultipliers
+	{
+		float straight;
+		float redBlack;
+		float oddEven;
+		float column;
+	};
+
+	RouletteGame();
+	RouletteGame(int aMinBet, int aMaxBet, VictoryMultipliers aVictoryMultipliersStruct = { .straight = 36.0f, .redBlack = 2.0f,.oddEven = 2.0f,.column = 3.0f });
+
 	enum class BetTypes
 	{
 		Straight,
@@ -23,13 +34,6 @@ namespace RouletteGame
 		Count
 	};
 
-	const struct VictoryMultipliers
-	{
-		const float straight;
-		const float redBlack;
-		const float oddEven;
-		const float column;
-	};
 
 	const struct PlayData
 	{
@@ -51,8 +55,16 @@ namespace RouletteGame
 		int total;
 	};
 
-	int Play(StatTracker::Stats& aStats, const  PlayData& aPlayData);
+	PlayerBets myBets;
 
-	void BetLogicHandler(StatTracker::Profits& aProfitStruct, const int& aBoardSize, PlayerBets& aBets);
-	int WinningsLogicHandler(StatTracker::Stats& aStats, const PlayData& aPlayData, const PlayerBets& aBets, const int& aRolledNumber);
-}
+	int Play(StatTracker::Stats& aStats, const PlayData& aPlayData);
+
+	void BetLogicHandler(StatTracker::Profits& aProfitStruct, const int& aBoardSize);
+	int WinningsLogicHandler(StatTracker::Stats& aStats, const PlayData& aPlayData, const int& aRolledNumber);
+private:
+	int myProfits;
+	int myMaxWinnings;
+	int myMinBet;
+	int myMaxBet;
+	VictoryMultipliers myVictoryMultipliersStruct;
+};

@@ -57,7 +57,10 @@
     <ClCompile Include="InputController.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
-    <ClCompile Include="StatTracker.cpp">
+    <ClCompile Include="Player.cpp">
+      <Filter>Source Files\Other</Filter>
+    </ClCompile>
+    <ClCompile Include="Data.cpp">
       <Filter>Source Files\Other</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,9 +80,6 @@
     <ClInclude Include="OddOrEvenGame.h">
       <Filter>Header Files\Games</Filter>
     </ClInclude>
-    <ClInclude Include="StatTracker.h">
-      <Filter>Header Files\Other</Filter>
-    </ClInclude>
     <ClInclude Include="DisplayManager.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
@@ -92,7 +92,10 @@
     <ClInclude Include="InputController.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
-    <ClInclude Include="MenuEnums.h">
+    <ClInclude Include="Data.h">
+      <Filter>Header Files\Other</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Header Files\Other</Filter>
     </ClInclude>
   </ItemGroup>

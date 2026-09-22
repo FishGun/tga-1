@@ -1,12 +1,19 @@
 #pragma once
-#include "StatTracker.h"
+#include "Data.h"
+#include "Player.h"
 
-namespace OddOrEvenGame
+class OddOrEvenGame
 {
-	const struct PlayData
-	{
-		const int victoryMultiplier;
-	};
+public:
+	OddOrEvenGame();
+	OddOrEvenGame(Data::TableMoneyStruct aTableMoneyStruct, int aVictoryMultiplier = 3);
 
-	int Play(StatTracker::Stats& aStats, const PlayData& aPlayData);
-}
+	int Play(Player& aPlayer);
+
+	const Data::TableMoneyStruct& GetTableMoneyStruct() const;
+
+	int Play(Player& aPlayer);
+private:
+	Data::TableMoneyStruct myTableMoneyStruct;
+	int myVictoryMultiplier;
+};

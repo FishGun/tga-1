@@ -1,12 +1,17 @@
 #pragma once
-#include "StatTracker.h"
+#include "Data.h"
+#include "Player.h"
 
-namespace CoinflipGame
+class CoinflipGame
 {
-	const struct PlayData
-	{
-		const float victoryMultiplier;
-	};
+public:
+	CoinflipGame();
+	CoinflipGame(Data::TableMoneyStruct aTableMoneyStruct, float aVictoryMultiplier = 1.9f);
 
-	int Play(StatTracker::Stats& aStats, const PlayData& aPlayData);
-}
+	int Play(Player& aPlayer);
+
+	const Data::TableMoneyStruct& GetTableMoneyStruct() const;
+private:
+	Data::TableMoneyStruct myTableMoneyStruct;
+	float myVictoryMultiplier;
+};

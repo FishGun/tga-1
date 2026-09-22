@@ -1,8 +1,9 @@
 #pragma once
-#include "StatTracker.h"
+#include "Player.h"
+#include "Data.h"
 
 namespace DisplayManager
 {
-	void DisplayMoney(StatTracker::Profits& aProfitStruct);
-	void DisplayHistory(StatTracker::Wins& aWinStruct, bool aInitialEmptyLine = true);
+	void DisplayMoney(const Player& aPlayer);
+	void DisplayHistory(const Data::CasinoData& aCasinoData, const bool aInitialEmptyLine = true);
 }
