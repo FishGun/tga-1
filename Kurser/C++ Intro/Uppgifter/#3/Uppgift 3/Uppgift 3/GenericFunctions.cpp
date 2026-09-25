@@ -27,7 +27,7 @@ namespace GenericFunctions
 
 	int BetHandler(Player& aPlayer, Data::TableMoneyStruct& aTableMoneyStruct, int aAlreadyMadeBetTotal)
 	{
-		std::cout << "How much would you like to bet?\n";
+		std::cout << "How much would you like to bet, " << aPlayer.GetName() << "?\n";
 		DisplayManager::DisplayMoney(aPlayer);
 		std::cout << "$";
 		const int& money = aPlayer.GetMoney();
