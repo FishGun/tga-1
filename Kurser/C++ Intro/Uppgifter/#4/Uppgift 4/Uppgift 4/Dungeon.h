@@ -9,8 +9,8 @@ public:
 	Dungeon(DungeonData::GenerationTypes aDungeonType = DungeonData::GenerationTypes::Random);
 	Dungeon(DungeonData::GenerationData aGenerationData);
 
-	const char* GetName();
-	const int GetRoomTotal();
+	const char* GetName() const;
+	const int GetRoomTotal() const;
 	const Room* GetRoom(int aIndex);
 
 	const static DungeonData::GenerationData GenerateData(DungeonData::GenerationTypes aDungeonType);

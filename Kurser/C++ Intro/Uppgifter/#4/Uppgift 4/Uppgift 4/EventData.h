@@ -9,12 +9,12 @@ namespace EventData
 		EasyCombat,
 		MediumCombat,
 		HardCombat,
-		Count
+		CountOrUntyped
 	};
-	const int typesSize = static_cast<int>(GenerationTypes::Count);
-	const int easyMagnitude = 1;
-	const int mediumMagnitude = 3;
-	const int hardMagnitude = 5;
+	const int globalTypesSize = static_cast<int>(GenerationTypes::CountOrUntyped);
+	const int globalEasyMagnitude = 1;
+	const int globalMediumMagnitude = 3;
+	const int globalHardMagnitude = 5;
 
 	struct GenerationData
 	{

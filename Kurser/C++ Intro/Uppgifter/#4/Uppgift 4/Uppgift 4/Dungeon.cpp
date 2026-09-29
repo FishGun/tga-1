@@ -6,14 +6,14 @@
 Dungeon::Dungeon(DungeonData::GenerationTypes aDungeonType) : myGenerationData(GenerateData(aDungeonType)), myGenerationType(aDungeonType) {}
 Dungeon::Dungeon(DungeonData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myGenerationType(DungeonData::GenerationTypes::Untyped) {}
 
-const char* Dungeon::GetName()
+const char* Dungeon::GetName() const
 {
 	return myGenerationData.name.c_str();
 }
 
-const int Dungeon::GetRoomTotal()
+const int Dungeon::GetRoomTotal() const
 {
-	return sizeof(myGenerationData.rooms) / sizeof(Room);
+	return static_cast<int>(myGenerationData.rooms.size());
 }
 
 const Room* Dungeon::GetRoom(int aIndex)
@@ -30,8 +30,9 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 		case DungeonData::GenerationTypes::Untyped:
 		default:
 		{
-			int roomTotal = RandomController::GenerateNumber(DungeonData::minDungeonRooms, DungeonData::maxDungeonRooms);
+			int roomTotal = RandomController::GenerateNumber(DungeonData::globalMinDungeonRooms, DungeonData::globalMaxDungeonRooms);
 			std::vector<Room*> rooms;
+			rooms.reserve(roomTotal);
 			Room* attachRoom = NULL;
 			int roomAttachIndex = -1;
 			int highestRoomIndex = -1;
@@ -50,7 +51,7 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 				{
 					roomAttachIndex = 0;
 				}
-				else if (attachRoom->GetForwardDoorTotal() >= RoomData::maxForwardDoors || (highestRoomIndex > roomAttachIndex && RandomController::GenerateNumber(1,DungeonData::oneInValueChanceOfBranch) == 1))
+				else if (attachRoom->GetForwardDoorTotal() >= RoomData::globalMaxForwardDoors || (highestRoomIndex > roomAttachIndex && RandomController::GenerateNumber(1,DungeonData::globalOneInValueChanceOfBranch) == 1))
 				{
 					roomAttachIndex++;
 				}
@@ -65,9 +66,32 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 		case DungeonData::GenerationTypes::TheHold:
 		{
 			std::vector<Room*> rooms;
-			rooms.push_back(new Room(RoomData::GenerationTypes::Empty));
-			rooms.push_back(new Room(RoomData::GenerationTypes::RandomCombat, rooms.at(0)));
-			rooms.push_back(new Room(RoomData::GenerationTypes::RandomCombat, rooms.at(0)));
+			rooms.reserve(3);
+			rooms.push_back(new Room(RoomData::GenerationTypes::RandomCombat));
+			RoomData::GenerationData room2Generation =
+			{
+				.roomType = RoomData::GenerationTypes::CountOrUntyped,
+				.name = "The Moat House",
+				.event = new Event(EventData::GenerationData
+					{
+						.eventType = EventData::GenerationTypes::CountOrUntyped,
+						.magnitude = 2
+					}
+				)
+			};
+			RoomData::GenerationData room3Generation =
+			{
+				.roomType = RoomData::GenerationTypes::CountOrUntyped,
+				.name = "The Pillory",
+				.event = new Event(EventData::GenerationData
+					{
+						.eventType = EventData::GenerationTypes::CountOrUntyped,
+						.magnitude = 6
+					}
+				)
+			};
+			rooms.push_back(new Room(room2Generation, rooms.at(0), DoorData::GenerationTypes::Pickable));
+			rooms.push_back(new Room(room3Generation, rooms.at(0), DoorData::GenerationTypes::Breakable));
 			return DungeonData::GenerationData
 			{
 				.name = "The Hold (Dungeon)",
@@ -79,9 +103,9 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 
 const std::string Dungeon::GenerateRandomName()
 {
-	const std::string pickedPrefix = DungeonData::prefixes[RandomController::GenerateNumber(0, DungeonData::prefixAmount - 1)].c_str();
+	const std::string pickedPrefix = DungeonData::globalPrefixes[RandomController::GenerateNumber(0, DungeonData::globalPrefixAmount - 1)].c_str();
 
-	const std::string pickedSuffix = DungeonData::suffixes[RandomController::GenerateNumber(0, DungeonData::suffixAmount - 1)].c_str();
+	const std::string pickedSuffix = DungeonData::globalSuffixes[RandomController::GenerateNumber(0, DungeonData::globalSuffixAmount - 1)].c_str();
 
 	std::string name = "";
 	name.append(pickedPrefix);

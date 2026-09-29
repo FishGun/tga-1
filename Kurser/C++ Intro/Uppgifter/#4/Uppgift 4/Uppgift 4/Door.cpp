@@ -2,15 +2,15 @@
 #include "Room.h"
 
 Door::Door(Room* aPreviousRoom, const RoomData::GenerationData aNextRoomData, DoorData::GenerationTypes aDoorType) : Door(GenerateData(aPreviousRoom, new Room(aNextRoomData), aDoorType)){}
-Door::Door(Room* aPreviousRoom, const Room* aNextRoom, DoorData::GenerationTypes aDoorType) : Door(GenerateData(aPreviousRoom, aNextRoom, aDoorType)) {}
+Door::Door(Room* aPreviousRoom, Room* const aNextRoom, DoorData::GenerationTypes aDoorType) : Door(GenerateData(aPreviousRoom, aNextRoom, aDoorType)) {}
 Door::Door(DoorData::GenerationData aGenerationData) : myGenerationData(aGenerationData),
 myIsOpen(myGenerationData.doorType == DoorData::GenerationTypes::Open) { }
 
-const Room* Door::GetPreviousRoom() const
+const Room* const Door::GetPreviousRoom() const
 {
 	return myGenerationData.previousRoom;
 }
-const Room* Door::GetNextRoom() const
+const Room* const Door::GetNextRoom() const
 {
 	return myGenerationData.nextRoom;
 }
@@ -43,26 +43,26 @@ const DoorData::GenerationData Door::GenerateData(Room* aPreviousRoom, const Roo
 	{
 		case DoorData::GenerationTypes::Easy:
 		{
-			pickDC = 3;
-			breakDC = 3;
+			pickDC = 7;
+			breakDC = 7;
 			break;
 		}
 		case DoorData::GenerationTypes::Hard:
 		{
-			pickDC = 7;
-			breakDC = 7;
+			pickDC = 14;
+			breakDC = 14;
 			break;
 		}
 		case DoorData::GenerationTypes::Pickable:
 		{
-			pickDC = 3;
-			breakDC = 7;
+			pickDC = 7;
+			breakDC = 30;
 			break;
 		}
 		case DoorData::GenerationTypes::Breakable:
 		{
-			pickDC = 7;
-			breakDC = 3;
+			pickDC = 30;
+			breakDC = 7;
 			break;
 		}
 		case DoorData::GenerationTypes::Open:

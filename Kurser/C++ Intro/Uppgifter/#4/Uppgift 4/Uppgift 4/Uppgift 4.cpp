@@ -70,25 +70,12 @@
 // Tasks: Make Events make sense. How can a room possibly both have an event, and not?
 // Room should not have a type currently (or maybe just a dummy enum), currently it only specifies event data.
 // Random dungeon gen.
+// Enemies should be able to die (and get removed from the myEnemies vector in the Event class).
 
-#include "Dungeon.h"
-#include "Door.h"
-#include "Room.h"
-
-#include <iostream>
+#include "GameLoop.h"
 
 int main()
 {
-	Dungeon random(DungeonData::GenerationTypes::Random);
-	std::cout << random.GetName() << "\n";
-	std::cout << random.GetRoom(0)->GetName() << "\n";
-	std::cout << random.GetRoom(1)->GetName() << "\n";
-	std::cout << random.GetRoom(2)->GetName() << "\n\n";
-
-	Dungeon theHold(DungeonData::GenerationTypes::TheHold);
-	std::cout << theHold.GetName() << "\n";
-	std::cout << theHold.GetRoom(0)->GetName() << "\n";
-	std::cout << theHold.GetRoom(1)->GetName() << "\n";
-	std::cout << theHold.GetRoom(2)->GetName() << "\n";
+	GameLoop();
 	system("pause");
 }

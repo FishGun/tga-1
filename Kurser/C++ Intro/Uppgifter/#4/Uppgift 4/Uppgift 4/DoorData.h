@@ -20,8 +20,8 @@ namespace DoorData
 	struct GenerationData
 	{
 		const GenerationTypes doorType;
-		Room* previousRoom;
-		const Room* nextRoom;
+		Room* const previousRoom;
+		const Room* const nextRoom;
 		const int pickDC;
 		const int breakDC;
 	};

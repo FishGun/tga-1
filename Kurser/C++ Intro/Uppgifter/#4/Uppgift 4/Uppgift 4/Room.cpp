@@ -2,38 +2,27 @@
 #include "RandomController.h"
 #include <assert.h>
 
-Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom)) {}
-Room::Room(const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, const Door* aInitialForwardDoors[RoomData::maxForwardDoors]) : Room(GenerateData(aRoomType, CreateDoorway(aPreviousRoom), aInitialForwardDoors)) {}
-Room::Room(const RoomData::GenerationTypes aRoomType, Door* aPreviousDoor, const Door* aInitialForwardDoors[RoomData::maxForwardDoors]) : Room(GenerateData(aRoomType, aPreviousDoor, aInitialForwardDoors)) {}
-Room::Room(const RoomData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myPreviousDoor(myGenerationData.initialPreviousDoor), myForwardDoors(*myGenerationData.initialForwardDoors)
-{
-	//GenerateDoorLinks();
-}
+Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom, aDoorType)) {}
+Room::Room(const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors, DoorData::GenerationTypes aDoorType) : Room(GenerateData(aRoomType, aInitialForwardDoors, CreateDoorway(aPreviousRoom, aDoorType))) {}
+Room::Room(const RoomData::GenerationTypes aRoomType, Door* aPreviousDoor, std::vector<Door*> aInitialForwardDoors) : Room(GenerateData(aRoomType, aInitialForwardDoors, aPreviousDoor)) {}
+Room::Room(const RoomData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myPreviousDoor(myGenerationData.initialPreviousDoor), myForwardDoors(myGenerationData.initialForwardDoors) {}
 
-const Door* Room::GetReturnDoor() const
+Door* Room::GetReturnDoor() const
 {
 	return myPreviousDoor;
 }
-const Door* Room::GetForwardDoor(const int aIndex) const
+Door* const Room::GetForwardDoor(const int aIndex) const
 {
 	const int totalForwardDoors = GetForwardDoorTotal();
 	if (totalForwardDoors > aIndex)
 	{
-		return myForwardDoors[aIndex];
+		return myForwardDoors.at(aIndex);
 	}
 	return NULL;
 }
 const int Room::GetForwardDoorTotal() const
 {
-	int toReturn = 0;
-	for (; toReturn < RoomData::maxForwardDoors; toReturn++)
-	{
-		if (myForwardDoors[toReturn] == NULL)
-		{
-			return toReturn;
-		}
-	}
-	return toReturn;
+	return static_cast<int>(myForwardDoors.size());
 }
 const int Room::GetDoorTotal() const
 {
@@ -45,31 +34,50 @@ const char* Room::GetName() const
 	return myGenerationData.name.c_str();
 }
 
-const Door* Room::SetForwardDoor(const int aIndex, const Door* aDoor)
+Door* const Room::AddForwardDoor(Door* const aDoor)
 {
-	return myForwardDoors[aIndex] = aDoor;
+	for (int i = 0; i < GetForwardDoorTotal(); i++)
+	{
+		if (myForwardDoors.at(i) == NULL)
+		{
+			myForwardDoors.at(i) = aDoor;
+			return aDoor;
+		}
+	}
+	myForwardDoors.push_back(aDoor);
+	return aDoor;
 }
 
-const Door* Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType) const
+Event* const Room::GetEvent() const
+{
+	return myGenerationData.event;
+}
+
+const bool Room::HasActiveEvent() const
+{
+	return myGenerationData.event != NULL && myGenerationData.event->IsActive();
+}
+
+Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType) const
 {
 	return CreateDoorway(Door::GenerateData(aOtherRoom, this, aDoorType));
 }
-const Door* Room::CreateDoorway(DoorData::GenerationData aDoorData) const
+Door* const Room::CreateDoorway(DoorData::GenerationData aDoorData) const
 {
-	Room* previousRoom = aDoorData.previousRoom;
+	Room* const previousRoom = aDoorData.previousRoom;
 
 	assert(previousRoom != NULL && "Fatal Error: A doorway was attempted to be made between a room and NULL");
-	assert(previousRoom->GetForwardDoorTotal() < RoomData::maxForwardDoors && "Fatal Error: Doorway attempted to be created at an overpopulated parent");
+	assert(previousRoom->GetForwardDoorTotal() < RoomData::globalMaxForwardDoors && "Fatal Error: Doorway attempted to be created at an overpopulated parent");
 
-	const Door* newDoor = new Door(aDoorData);
-	return previousRoom->SetForwardDoor(previousRoom->GetForwardDoorTotal(), newDoor);
+	Door* const newDoor = new Door(aDoorData);
+	return previousRoom->AddForwardDoor(newDoor);
 }
 
-const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoomType, const Door* aPreviousDoor, const Door* aInitialForwardDoors[RoomData::maxForwardDoors])
+const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoomType, std::vector<Door*> aInitialForwardDoors, Door* const aPreviousDoor)
 {
 	while (aRoomType == RoomData::GenerationTypes::Random)
 	{
-		aRoomType = static_cast<RoomData::GenerationTypes>(RandomController::GenerateNumber(RoomData::randomTypeIndex + 1, RoomData::typesSize - 1));
+		aRoomType = static_cast<RoomData::GenerationTypes>(RandomController::GenerateNumber(RoomData::globalRandomTypeIndex + 1, RoomData::globalTypesSize - 1));
 	}
 	switch (aRoomType)
 	{
@@ -80,8 +88,8 @@ const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoo
 			{
 				.roomType = aRoomType,
 				.name = GenerateRandomName(),
+				.initialForwardDoors = aInitialForwardDoors,
 				.initialPreviousDoor = aPreviousDoor,
-				.initialForwardDoors = aInitialForwardDoors == NULL ? NULL : *aInitialForwardDoors,
 				.event = NULL
 			};
 		}
@@ -91,8 +99,8 @@ const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoo
 			{
 				.roomType = aRoomType,
 				.name = GenerateRandomName(),
+				.initialForwardDoors = aInitialForwardDoors,
 				.initialPreviousDoor = aPreviousDoor,
-				.initialForwardDoors = aInitialForwardDoors == NULL ? NULL : *aInitialForwardDoors,
 				.event = new Event(EventData::GenerationTypes::Random)
 			};
 		}
@@ -101,9 +109,9 @@ const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoo
 
 const std::string Room::GenerateRandomName()
 {
-	const std::string pickedPrefix = RoomData::prefixes[RandomController::GenerateNumber(0, RoomData::prefixAmount - 1)].c_str();
+	const std::string pickedPrefix = RoomData::globalPrefixes[RandomController::GenerateNumber(0, RoomData::globalPrefixAmount - 1)].c_str();
 
-	const std::string pickedSuffix = RoomData::suffixes[RandomController::GenerateNumber(0, RoomData::suffixAmount - 1)].c_str();
+	const std::string pickedSuffix = RoomData::globalSuffixes[RandomController::GenerateNumber(0, RoomData::globalSuffixAmount - 1)].c_str();
 
 	std::string toReturn = "";
 	toReturn.append(pickedPrefix);

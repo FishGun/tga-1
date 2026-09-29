@@ -9,19 +9,19 @@ class Door;
 
 namespace RoomData
 {
-	const int maxForwardDoors = 3;
+	const int globalMaxForwardDoors = 3;
 
 	enum class GenerationTypes
 	{
 		Random,
 		Empty,
 		RandomCombat,
-		Count
+		CountOrUntyped
 	};
-	const int randomTypeIndex = static_cast<int>(GenerationTypes::Random);
-	const int typesSize = static_cast<int>(GenerationTypes::Count);
+	const int globalRandomTypeIndex = static_cast<int>(GenerationTypes::Random);
+	const int globalTypesSize = static_cast<int>(GenerationTypes::CountOrUntyped);
 
-	const std::vector<std::string> prefixes =
+	const std::vector<std::string> globalPrefixes =
 	{
 		"The",
 		"The Masters",
@@ -32,9 +32,9 @@ namespace RoomData
 		"The Fragrant",
 		"The Hound"
 	};
-	const int prefixAmount = static_cast<int>(RoomData::prefixes.size());
+	const int globalPrefixAmount = static_cast<int>(RoomData::globalPrefixes.size());
 
-	const std::vector<std::string> suffixes =
+	const std::vector<std::string> globalSuffixes =
 	{
 		"Pantry",
 		"Quaters",
@@ -44,14 +44,14 @@ namespace RoomData
 		"Treasury",
 		"Cells"
 	};
-	const int suffixAmount = static_cast<int>(RoomData::suffixes.size());
+	const int globalSuffixAmount = static_cast<int>(RoomData::globalSuffixes.size());
 
 	struct GenerationData
 	{
 		const GenerationTypes roomType;
 		const std::string name;
-		const Door* initialPreviousDoor = NULL;
-		const Door* initialForwardDoors[maxForwardDoors] = { NULL };
-		const Event* event = NULL;
+		std::vector<Door*> initialForwardDoors;
+		Door* const initialPreviousDoor = NULL;
+		Event* event = NULL;
 	};
 }

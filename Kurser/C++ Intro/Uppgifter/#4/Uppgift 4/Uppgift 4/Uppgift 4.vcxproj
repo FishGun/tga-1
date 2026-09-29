@@ -140,27 +140,33 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DisplayManager.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="Event.cpp" />
-    <ClCompile Include="GameManager.cpp" />
+    <ClCompile Include="GameLoop.cpp" />
+    <ClCompile Include="InputController.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RandomController.cpp" />
     <ClCompile Include="Room.cpp" />
     <ClCompile Include="Uppgift 4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DisplayManager.h" />
     <ClInclude Include="Door.h" />
     <ClInclude Include="DoorData.h" />
     <ClInclude Include="Dungeon.h" />
     <ClInclude Include="DungeonData.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityData.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventData.h" />
-    <ClInclude Include="GameManager.h" />
+    <ClInclude Include="GameLoop.h" />
+    <ClInclude Include="InputController.h" />
+    <ClInclude Include="MenuData.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RandomController.h" />
     <ClInclude Include="Room.h" />

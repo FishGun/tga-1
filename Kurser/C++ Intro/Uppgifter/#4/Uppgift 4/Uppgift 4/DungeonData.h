@@ -6,9 +6,9 @@
 
 namespace DungeonData
 {
-	const int maxDungeonRooms = 5;
-	const int minDungeonRooms = 3;
-	const int oneInValueChanceOfBranch = 3;
+	const int globalMaxDungeonRooms = 5;
+	const int globalMinDungeonRooms = 3;
+	const int globalOneInValueChanceOfBranch = 3;
 
 	enum class GenerationTypes
 	{
@@ -17,7 +17,7 @@ namespace DungeonData
 		Untyped
 	};
 
-	const std::vector<std::string> prefixes =
+	const std::vector<std::string> globalPrefixes =
 	{
 		"The",
 		"Vlad's",
@@ -32,9 +32,9 @@ namespace DungeonData
 		"The Endless",
 		"The Dead"
 	};
-	const int prefixAmount = static_cast<int>(DungeonData::prefixes.size());
+	const int globalPrefixAmount = static_cast<int>(DungeonData::globalPrefixes.size());
 
-	const std::vector<std::string> suffixes =
+	const std::vector<std::string> globalSuffixes =
 	{
 		"Dungeon",
 		"Lair",
@@ -48,7 +48,7 @@ namespace DungeonData
 		"Halls",
 		"Ravine"
 	};
-	const int suffixAmount = static_cast<int>(DungeonData::suffixes.size());
+	const int globalSuffixAmount = static_cast<int>(DungeonData::globalSuffixes.size());
 
 	struct GenerationData
 	{

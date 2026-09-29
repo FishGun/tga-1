@@ -11,11 +11,20 @@ public:
 	Event(EventData::GenerationTypes aEventType = EventData::GenerationTypes::Random);
 	Event(EventData::GenerationData aEventData);
 
-	const bool IsActive();
+	static void PlayRound();
+	
+	const bool IsActive() const;
+	const int GetMagnitude() const;
+	const int GetCurrentEnemies() const;
+	const Enemy& GetEnemy(int aValue) const;
+	const bool InjureEnemy(int aDamage, int aIndex = 0);
+	const bool EnemyIsDead(int aIndex);
+	void RemoveEnemy(int aIndex);
+	void TakeTurn(Entity& aTargetEntity);
+
 private:
 	const EventData::GenerationData myGenerationData;
 	std::vector<Enemy> myEnemies;
-	bool myIsActive = true;
 
 	const EventData::GenerationData GenerateData(EventData::GenerationTypes aEventType);
 	void GenerateEvent();
