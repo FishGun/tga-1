@@ -48,9 +48,39 @@ void Player::CheckForDeaths()
 		}
 	}
 }
+bool Player::PlayerHasWon()
+{
+	for (int i = 0; i < GetPlayerCount(); i++)
+	{
+		Player& player = myPlayers.at(i);
+		if (player.myKills >= DungeonData::KILLS_TO_WIN)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+void Player::ClearPlayers()
+{
+	myPlayers.clear();
+}
+
 
 void Player::TakeTurn()
 {
+	if (!IsInCombat())
+	{
+		DisplayManager::RoomOptions(*this);
+		const int roomAction = InputController::IntegerRange(MenuData::ROOM_OPTIONS_SIZE) - 1;
+		if (roomAction == 0)
+		{
+			TryChangeRoom();
+		}
+		else if (roomAction == 1)
+		{
+			DisplayManager::ShowStats(*this);
+		}
+	}
 	if (IsInCombat())
 	{
 		Event* const event = myCurrentRoom->GetEvent();
@@ -58,7 +88,7 @@ void Player::TakeTurn()
 
 		DisplayManager::CombatOptions(*this, *event);
 
-		const int attackTarget = InputController::IntegerRange(enemiesCount)-1;
+		const int attackTarget = InputController::IntegerRange(enemiesCount) - 1;
 
 
 		if (myInstakillCheatOn)
@@ -71,27 +101,15 @@ void Player::TakeTurn()
 			DisplayManager::EntityAttackShout(myEntityClass, event->GetEnemy(attackTarget).myEntityClass);
 			event->InjureEnemy(myEntityClass.GetAttack(), attackTarget);
 		}
+		myKills += enemiesCount - event->GetCurrentEnemies();
 		enemiesCount = event->GetCurrentEnemies();
-	}
-	else
-	{
-		DisplayManager::RoomOptions(*this);
-		const int roomAction = InputController::IntegerRange(MenuData::globalRoomOptionsSize) - 1;
-		if (roomAction == 0)
-		{
-			TryChangeRoom();
-		}
-		else
-		{
-
-		}
 	}
 }
 
 const int Player::RoomMenu() const
 {
 	DisplayManager::PlayerContext(*this);
-	return InputController::IntegerRange(MenuData::globalMainOptionsSize);
+	return InputController::IntegerRange(MenuData::MAIN_OPTIONS_SIZE);
 }
 
 const Room* Player::GetRoom() const
@@ -119,7 +137,7 @@ const bool Player::IsInCombat() const
 bool Player::TryToUnlockDoor(Door& door)
 {
 	DisplayManager::LockedDoorOptions(door);
-	const int unlockInput = InputController::IntegerRange(2)-1;
+	const int unlockInput = InputController::IntegerRange(2) - 1;
 	if (unlockInput == 0)
 	{
 		door.TryPick(myEntityClass.GetBaseStats().dexterity);
@@ -133,7 +151,7 @@ bool Player::TryToUnlockDoor(Door& door)
 void Player::TryChangeRoom()
 {
 	DisplayManager::AskForDoorChoice(*this);
-	const int localDoorIndex = InputController::IntegerRange(myCurrentRoom->GetDoorTotal())-1;
+	const int localDoorIndex = InputController::IntegerRange(myCurrentRoom->GetDoorTotal()) - 1;
 	Door* door;
 	bool isMovingToPreviousRoom;
 	if (localDoorIndex == 0 && myCurrentRoom->GetReturnDoor() != NULL)

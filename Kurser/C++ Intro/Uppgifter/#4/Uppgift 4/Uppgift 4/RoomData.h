@@ -1,7 +1,5 @@
 #pragma once
 #include "Event.h"
-//#include "Door.h"
-// door include may cause recursion issues. "extern class Door;"
 
 #include <vector>
 #include <string>
@@ -9,7 +7,7 @@ class Door;
 
 namespace RoomData
 {
-	const int globalMaxForwardDoors = 3;
+	const int MAX_FORWARD_DOORS = 3;
 
 	enum class GenerationTypes
 	{
@@ -18,10 +16,10 @@ namespace RoomData
 		RandomCombat,
 		CountOrUntyped
 	};
-	const int globalRandomTypeIndex = static_cast<int>(GenerationTypes::Random);
-	const int globalTypesSize = static_cast<int>(GenerationTypes::CountOrUntyped);
+	const int RANDOM_TYPE_INDEX = static_cast<int>(GenerationTypes::Random);
+	const int TYPES_SIZE = static_cast<int>(GenerationTypes::CountOrUntyped);
 
-	const std::vector<std::string> globalPrefixes =
+	const std::vector<std::string> PREFIXES =
 	{
 		"The",
 		"The Masters",
@@ -32,9 +30,9 @@ namespace RoomData
 		"The Fragrant",
 		"The Hound"
 	};
-	const int globalPrefixAmount = static_cast<int>(RoomData::globalPrefixes.size());
+	const int PREFIXES_AMOUNT = static_cast<int>(RoomData::PREFIXES.size());
 
-	const std::vector<std::string> globalSuffixes =
+	const std::vector<std::string> SUFFIXES =
 	{
 		"Pantry",
 		"Quaters",
@@ -44,7 +42,7 @@ namespace RoomData
 		"Treasury",
 		"Cells"
 	};
-	const int globalSuffixAmount = static_cast<int>(RoomData::globalSuffixes.size());
+	const int SUFFIXES_AMOUNT = static_cast<int>(RoomData::SUFFIXES.size());
 
 	struct GenerationData
 	{

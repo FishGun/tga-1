@@ -67,7 +67,7 @@ Door* const Room::CreateDoorway(DoorData::GenerationData aDoorData) const
 	Room* const previousRoom = aDoorData.previousRoom;
 
 	assert(previousRoom != NULL && "Fatal Error: A doorway was attempted to be made between a room and NULL");
-	assert(previousRoom->GetForwardDoorTotal() < RoomData::globalMaxForwardDoors && "Fatal Error: Doorway attempted to be created at an overpopulated parent");
+	assert(previousRoom->GetForwardDoorTotal() < RoomData::MAX_FORWARD_DOORS && "Fatal Error: Doorway attempted to be created at an overpopulated parent");
 
 	Door* const newDoor = new Door(aDoorData);
 	return previousRoom->AddForwardDoor(newDoor);
@@ -77,7 +77,7 @@ const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoo
 {
 	while (aRoomType == RoomData::GenerationTypes::Random)
 	{
-		aRoomType = static_cast<RoomData::GenerationTypes>(RandomController::GenerateNumber(RoomData::globalRandomTypeIndex + 1, RoomData::globalTypesSize - 1));
+		aRoomType = static_cast<RoomData::GenerationTypes>(RandomController::GenerateNumber(RoomData::RANDOM_TYPE_INDEX + 1, RoomData::TYPES_SIZE - 1));
 	}
 	switch (aRoomType)
 	{
@@ -109,9 +109,9 @@ const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoo
 
 const std::string Room::GenerateRandomName()
 {
-	const std::string pickedPrefix = RoomData::globalPrefixes[RandomController::GenerateNumber(0, RoomData::globalPrefixAmount - 1)].c_str();
+	const std::string pickedPrefix = RoomData::PREFIXES[RandomController::GenerateNumber(0, RoomData::PREFIXES_AMOUNT - 1)].c_str();
 
-	const std::string pickedSuffix = RoomData::globalSuffixes[RandomController::GenerateNumber(0, RoomData::globalSuffixAmount - 1)].c_str();
+	const std::string pickedSuffix = RoomData::SUFFIXES[RandomController::GenerateNumber(0, RoomData::SUFFIXES_AMOUNT - 1)].c_str();
 
 	std::string toReturn = "";
 	toReturn.append(pickedPrefix);
@@ -120,15 +120,3 @@ const std::string Room::GenerateRandomName()
 	toReturn.append(" (Room)");
 	return toReturn.c_str();
 }
-
-/*
-const Room* Room::GenerateDoorLinks()
-{
-	for (int i = 0; i < sizeof(myGenerationData.forwardDoors); i++)
-	{
-		myForwardDoors.push_back(new Door(this, new Room()));
-	}
-}
-const Room* Room::GenerateRandomRoom();
-const Room* Room::GenerateTemplateRoom();
-*/

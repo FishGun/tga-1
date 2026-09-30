@@ -5,7 +5,7 @@ Entity::Entity(EntityData::BaseData aBaseData) : myBaseData(aBaseData), myHitPoi
 
 int Entity::DamageCalculator(int aAttackValue, int aDefenseValue)
 {
-	int toReturn = aAttackValue - (aDefenseValue / EntityData::globalDefenseDivider);
+	int toReturn = aAttackValue - (aDefenseValue / EntityData::DEFENSE_DIVIDER);
 	if (toReturn < 0)
 	{
 		toReturn = 0;
@@ -47,7 +47,7 @@ const char* Entity::GetName() const
 }
 const char* Entity::SetName()
 {
-	InputController::AskForName(myBaseData.name, EntityData::globalMinNameLength, EntityData::globalMaxNameLength - 1);
+	InputController::AskForName(myBaseData.name, EntityData::MIN_NAME_LENGTH, EntityData::MAX_NAME_LENGTH - 1);
 	return myBaseData.name;
 }
 

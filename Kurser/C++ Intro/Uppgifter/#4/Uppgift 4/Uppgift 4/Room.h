@@ -1,7 +1,6 @@
 #pragma once
 #include "RoomData.h"
 #include "Door.h"
-//class Door;
 
 class Room
 {
@@ -23,7 +22,6 @@ private:
 	const RoomData::GenerationData myGenerationData;
 	Door* const myPreviousDoor;
 	std::vector<Door*> myForwardDoors;
-	//Door* myForwardDoors[RoomData::globalMaxForwardDoors];
 
 	Door* const CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open) const;
 	Door* const CreateDoorway(DoorData::GenerationData aDoorData) const;
@@ -31,10 +29,4 @@ private:
 	const RoomData::GenerationData GenerateData(RoomData::GenerationTypes aRoomType, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);
 
 	const std::string GenerateRandomName();
-
-	/*
-	const Room* GenerateDoorLinks();
-	const Room* GenerateRandomRoom();
-	const Room* GenerateTemplateRoom();
-	*/
 };

@@ -8,24 +8,24 @@ namespace DisplayManager
 	{
 		//std::format("{:^{}}", "Diablo\n\n", 7);
 		std::cout << "Diablo\n";
-		BasicStringArrayDisplay(MenuData::globalMainOptions);
+		BasicStringArrayDisplay(MenuData::MAIN_OPTIONS);
 	}
 	void CheatMenu()
 	{
 		std::cout << "Which cheat would you like to toggle?\n";
-		BasicStringArrayDisplay(MenuData::globalCheatOptions);
+		BasicStringArrayDisplay(MenuData::CHEAT_OPTIONS);
 	}
 	void CheatStatus(bool aInvincibilityOn, bool aInstakillOn)
 	{
 		std::cout <<
-			MenuData::globalCheatOptions.at(0) << ": " << (aInvincibilityOn ? "On" : "Off") << "\n"
-			<< MenuData::globalCheatOptions.at(0) << ": " << (aInstakillOn ? "On" : "Off") << "\n";
+			MenuData::CHEAT_OPTIONS.at(0) << ": " << (aInvincibilityOn ? "On" : "Off") << "\n"
+			<< MenuData::CHEAT_OPTIONS.at(1) << ": " << (aInstakillOn ? "On" : "Off") << "\n";
 	}
 	void RoomOptions(const Player& aPlayer)
 	{
 		PlayerContext(aPlayer);
 		std::cout << "What would you like to do in the room?\n";
-		BasicStringArrayDisplay(MenuData::globalRoomOptions);
+		BasicStringArrayDisplay(MenuData::ROOM_OPTIONS);
 	}
 	void CombatOptions(const Player& aPlayer, const Event& aEvent)
 	{
@@ -54,8 +54,8 @@ namespace DisplayManager
 		std::cout << "The door is locked. How would you like to try opening it?\n";
 		std::vector<std::string> generatedStringVector;
 		//generatedStringVector.reserve();
-		generatedStringVector.push_back(MenuData::globalLockedDoorOptions.at(0) + " (DC" + std::to_string(aDoor.myGenerationData.pickDC) + ")");
-		generatedStringVector.push_back(MenuData::globalLockedDoorOptions.at(1) + " (DC" + std::to_string(aDoor.myGenerationData.breakDC) + ")");
+		generatedStringVector.push_back(MenuData::LOCKED_DOOR_OPTIONS.at(0) + " (DC " + std::to_string(aDoor.myGenerationData.pickDC) + ")");
+		generatedStringVector.push_back(MenuData::LOCKED_DOOR_OPTIONS.at(1) + " (DC " + std::to_string(aDoor.myGenerationData.breakDC) + ")");
 		BasicStringArrayDisplay(generatedStringVector);
 	}
 	void DoorOpenCallout()
@@ -113,7 +113,7 @@ namespace DisplayManager
 	}
 	void EntityAttackShout(const Entity& aAttacker, const Entity& aTarget)
 	{
-		std::cout << aAttacker.GetName() << " attacks " << aTarget.GetName() << " for " << Entity::DamageCalculator(aAttacker.GetAttack(), aTarget.GetDefense()) << " damage! (" << aAttacker.GetAttack() << "-" << (aTarget.GetDefense() / EntityData::globalDefenseDivider) << ")\n";
+		std::cout << aAttacker.GetName() << " attacks " << aTarget.GetName() << " for " << Entity::DamageCalculator(aAttacker.GetAttack(), aTarget.GetDefense()) << " damage! (" << aAttacker.GetAttack() << "-" << (aTarget.GetDefense() / EntityData::DEFENSE_DIVIDER) << ")\n";
 	}
 	void EntityDeathCry(const Entity& aEntity)
 	{
@@ -127,6 +127,21 @@ namespace DisplayManager
 			"Slowly, they loose their poise, and fall to the ground defeated.\n"
 			<< aPlayer.GetDungeon()->GetName() << " is their tomb, and " << aPlayer.GetRoom()->GetName() << " is their shrine.\n";
 	}
+	void ShowStats(const Player& aPlayer)
+	{
+		Entity entity = aPlayer.myEntityClass;
+		std::cout <<
+			entity.GetName() << "\n"
+			"HP:" << entity.GetHP() << "/" << entity.GetMaxHP() << "\n"
+			"Strength:" << entity.GetBaseStats().strength << "\n"
+			"Dexterity:" << entity.GetBaseStats().dexterity << "\n"
+			"Physique:" << entity.GetBaseStats().physique << "\n"
+			"Attack:" << entity.GetAttack() << "\n"
+			"Defense:" << entity.GetDefense() << "\n"
+			"Carrying Capacity:" << entity.GetCarryingCapacity() << "\n\n";
+
+	}
+
 	void InvincibilityCallout(const Player& aPlayer)
 	{
 		std::cout << aPlayer.myEntityClass.GetName() << " would have died, if they didn't have their suit on.\n";
@@ -167,5 +182,25 @@ namespace DisplayManager
 		const char* previousName = door.GetPreviousRoom()->GetName();
 		const char* nextName = door.GetNextRoom()->GetName();
 		std::cout << "You leave " << (aIsMovingToPreviousRoom ? nextName : previousName) << ", and go through the door to " << (aIsMovingToPreviousRoom ? previousName : nextName) << "\n";
+	}
+
+	void GameStart(Dungeon& aDungeon, int aKillsToWin)
+	{
+		std::cout << "Thunder and lighting gather around you, scrounging forward in the wet mud, when a great sight falls before your eyes.\n"
+			<< aDungeon.GetName() << " stands before you, inviting you with dread. With no other choice, you must enter.\n"
+			"Once you have slayed " << aKillsToWin << " enemies, your quest will be done, and you may pay the ferryman for a ride home.\n"
+			"Unless he comes to take you before your time.\n";
+	}
+	void GameOver()
+	{
+		system("cls");
+		std::cout << "A tragic fate befell you, and you stumble into the ferryman without enough souls to save your own.\n"
+			"Game Over\n\n";
+	}
+	void Win()
+	{
+		system("cls");
+		std::cout << "Quickly you make your way out of that terrible place, paying for your ride down the river, back home to the warmth of your hearth.\n"
+			"You Win!\n\n";
 	}
 }

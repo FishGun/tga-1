@@ -10,11 +10,13 @@ class Player
 public:
 	Player() = delete;
 
-	static Player& AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity = EntityData::playerBaseStats, const int aRoomIndex = 0);
+	static Player& AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity = EntityData::BASE_STATS, const int aRoomIndex = 0);
 	static const int GetPlayerCount();
 	static Player& GetPlayer(int aIndex);
 	static void PlayRound();
 	static void CheckForDeaths();
+	static bool PlayerHasWon();
+	static void ClearPlayers();
 
 
 	void TakeTurn();
@@ -33,6 +35,7 @@ private:
 	static std::vector<Player> myPlayers;
 	const Room* myCurrentRoom;
 	const Dungeon* myCurrentDungeon;
+	int myKills = { 0 };
 
 	bool myInvincibilityCheatOn;
 	bool myInstakillCheatOn;

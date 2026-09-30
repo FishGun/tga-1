@@ -18,7 +18,7 @@ GameLoop::GameLoop()
 		{
 			DisplayManager::CheatStatus(InvincibilityCheat, instakillCheat);
 			DisplayManager::CheatMenu();
-			const int cheatInput = InputController::IntegerRange(MenuData::globalCheatOptionsSize);
+			const int cheatInput = InputController::IntegerRange(MenuData::CHEAT_OPTIONS_SIZE);
 			if (cheatInput == 1)
 			{
 				InvincibilityCheat = !InvincibilityCheat;
@@ -29,24 +29,33 @@ GameLoop::GameLoop()
 			}
 			DisplayManager::CheatStatus(InvincibilityCheat, instakillCheat);
 		}
-		system("pause");
-		system("cls");
+		if (mainMenuChoice != 3)
+		{
+			system("pause");
+			system("cls");
+		}
 	} while (mainMenuChoice != 3);
 }
 
 const int GameLoop::MainMenu() const
 {
 	DisplayManager::MainMenu();
-	return InputController::IntegerRange(MenuData::globalMainOptionsSize);
+	return InputController::IntegerRange(MenuData::MAIN_OPTIONS_SIZE);
 }
 
 void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 {
 	Dungeon myDungeon(DungeonData::GenerationTypes::TheHold);
 
-	Player::AddPlayer(&myDungeon, aInvincibilityOn, aInstakillOn);
+	EntityData::BaseData playerData = EntityData::BASE_STATS;
+	InputController::AskForName(playerData.name, EntityData::MIN_NAME_LENGTH, EntityData::MAX_NAME_LENGTH);
+	Player::AddPlayer(&myDungeon, aInvincibilityOn, aInstakillOn, playerData);
+
+	DisplayManager::GameStart(myDungeon, DungeonData::KILLS_TO_WIN);
+	system("pause");
+	system("cls");
 	int roundTracker = 1;
-	while (Player::GetPlayerCount() > 0)
+	while (Player::GetPlayerCount() > 0 && !Player::PlayerHasWon())
 	{
 		system("cls");
 		DisplayManager::Round(roundTracker);
@@ -55,5 +64,14 @@ void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 		Player::CheckForDeaths();
 		roundTracker++;
 		system("pause");
+	}
+	if (Player::GetPlayerCount() <= 0)
+	{
+		DisplayManager::GameOver();
+	}
+	else if (Player::PlayerHasWon())
+	{
+		DisplayManager::Win();
+		Player::ClearPlayers();
 	}
 }

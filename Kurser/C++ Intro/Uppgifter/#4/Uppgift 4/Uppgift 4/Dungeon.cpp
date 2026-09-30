@@ -30,7 +30,7 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 		case DungeonData::GenerationTypes::Untyped:
 		default:
 		{
-			int roomTotal = RandomController::GenerateNumber(DungeonData::globalMinDungeonRooms, DungeonData::globalMaxDungeonRooms);
+			int roomTotal = RandomController::GenerateNumber(DungeonData::MIN_DUNGEON_ROOMS, DungeonData::MAX_DUNGEON_ROOMS);
 			std::vector<Room*> rooms;
 			rooms.reserve(roomTotal);
 			Room* attachRoom = NULL;
@@ -51,7 +51,7 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 				{
 					roomAttachIndex = 0;
 				}
-				else if (attachRoom->GetForwardDoorTotal() >= RoomData::globalMaxForwardDoors || (highestRoomIndex > roomAttachIndex && RandomController::GenerateNumber(1,DungeonData::globalOneInValueChanceOfBranch) == 1))
+				else if (attachRoom->GetForwardDoorTotal() >= RoomData::MAX_FORWARD_DOORS || (highestRoomIndex > roomAttachIndex && RandomController::GenerateNumber(1,DungeonData::ONE_IN_VALUE_CHANCE_OF_BRANCH) == 1))
 				{
 					roomAttachIndex++;
 				}
@@ -103,9 +103,9 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 
 const std::string Dungeon::GenerateRandomName()
 {
-	const std::string pickedPrefix = DungeonData::globalPrefixes[RandomController::GenerateNumber(0, DungeonData::globalPrefixAmount - 1)].c_str();
+	const std::string pickedPrefix = DungeonData::PREFIXES[RandomController::GenerateNumber(0, DungeonData::PREFIX_AMOUNT - 1)].c_str();
 
-	const std::string pickedSuffix = DungeonData::globalSuffixes[RandomController::GenerateNumber(0, DungeonData::globalSuffixAmount - 1)].c_str();
+	const std::string pickedSuffix = DungeonData::SUFFIXES[RandomController::GenerateNumber(0, DungeonData::SUFFIX_AMOUNT - 1)].c_str();
 
 	std::string name = "";
 	name.append(pickedPrefix);

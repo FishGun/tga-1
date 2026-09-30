@@ -5,16 +5,18 @@ namespace InputController
 	void AskForName(char* aNameVar, int aMinLetterLength, int aMaxLetterLength)
 	{
 		bool nameValid = false;
+		std::cin.clear();
+		std::cin.ignore(10000, '\n');
 		do
 		{
-			std::cout << "Please, enter your name (" << aMinLetterLength << "-" << aMaxLetterLength << " characters): ";
+			std::cout << "What is your name, traveler? (" << aMinLetterLength << "-" << aMaxLetterLength << " characters): ";
 			std::cin.get(aNameVar, aMaxLetterLength + 1);
 			std::cin.clear();
 			std::cin.ignore(10000, '\n');
 
 			for (int i = 0; i < 17; i++)
 			{
-				if (i >= 2 && aNameVar[i] == '\0')
+				if (i >= aMinLetterLength && aNameVar[i] == '\0')
 				{
 					nameValid = true;
 					break;

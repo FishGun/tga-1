@@ -1,7 +1,4 @@
 #pragma once
-//#include "Room.h"
-// room include may cause recursion issues. "extern class Room;"
-
 #include <string>
 class Room;
 

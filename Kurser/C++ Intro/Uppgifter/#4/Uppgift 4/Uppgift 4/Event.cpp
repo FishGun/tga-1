@@ -87,7 +87,7 @@ const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes a
 {
 	while (aEventType == EventData::GenerationTypes::Random)
 	{
-		aEventType = static_cast<EventData::GenerationTypes>(RandomController::GenerateNumber(0, EventData::globalTypesSize - 1));
+		aEventType = static_cast<EventData::GenerationTypes>(RandomController::GenerateNumber(0, EventData::TYPES_SIZE - 1));
 	}
 	switch (aEventType)
 	{
@@ -97,7 +97,7 @@ const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes a
 			return EventData::GenerationData
 			{
 				.eventType = aEventType,
-				.magnitude = EventData::globalEasyMagnitude
+				.magnitude = EventData::EASY_MAGNITUDE
 			};
 		}
 		case EventData::GenerationTypes::MediumCombat:
@@ -105,7 +105,7 @@ const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes a
 			return EventData::GenerationData
 			{
 				.eventType = aEventType,
-				.magnitude = EventData::globalMediumMagnitude
+				.magnitude = EventData::MEDIUM_MAGNITUDE
 			};
 		}
 		case EventData::GenerationTypes::HardCombat:
@@ -113,7 +113,7 @@ const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes a
 			return EventData::GenerationData
 			{
 				.eventType = aEventType,
-				.magnitude = EventData::globalHardMagnitude
+				.magnitude = EventData::HARD_MAGNITUDE
 			};
 		}
 	}
@@ -127,9 +127,9 @@ void Event::GenerateEvent()
 		EntityData::BaseData enemyStats =
 		{
 			.name = "Mob",
-			.strength = myGenerationData.magnitude,
-			.dexterity = myGenerationData.magnitude,
-			.physique = myGenerationData.magnitude
+			.strength = 4,
+			.dexterity = myGenerationData.magnitude/4 + 7,
+			.physique = (i + 1) * 5
 		};
 		myEnemies.push_back(Enemy(enemyStats));
 	}

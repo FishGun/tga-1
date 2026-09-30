@@ -24,10 +24,15 @@ namespace DisplayManager
 	void EntityAttackShout(const Entity& aAttacker, const Entity& aTarget);
 	void EntityDeathCry(const Entity& aEntity);
 	void PlayerDeathCry(const Player& aPlayer);
+	void ShowStats(const Player& aPlayer);
 
 	void InvincibilityCallout(const Player& aPlayer);
 	void InstakillCallout(const Player& aPlayer);
 
 	void AskForDoorChoice(const Player& aPlayer);
 	void MoveThroughDoor(const Door& door, const bool aIsMovingToPreviousRoom);
+
+	void GameStart(Dungeon& aDungeon, int aKillsToWin);
+	void GameOver();
+	void Win();
 }

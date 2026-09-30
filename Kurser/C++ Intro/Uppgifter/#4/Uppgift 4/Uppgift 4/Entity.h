@@ -19,7 +19,6 @@ public:
 	const char* GetName() const;
 	const char* SetName();
 
-	//void ChangeHP(int aValue);
 	void TakeDamage(int aValue);
 	void Heal(int aValue);
 	const int ChangeStat(EntityData::BaseStatsEnum aBaseStat, int aValue);
