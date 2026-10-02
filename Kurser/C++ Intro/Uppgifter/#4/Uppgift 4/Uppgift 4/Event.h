@@ -11,7 +11,7 @@ public:
 	Event(EventData::GenerationTypes aEventType = EventData::GenerationTypes::Random);
 	Event(EventData::GenerationData aEventData);
 
-	static void PlayRound();
+	static void PlayRound(int aRound);
 	
 	const bool IsActive() const;
 	const int GetMagnitude() const;
@@ -20,7 +20,7 @@ public:
 	const bool InjureEnemy(int aDamage, int aIndex = 0);
 	const bool EnemyIsDead(int aIndex);
 	void RemoveEnemy(int aIndex);
-	void TakeTurn(Entity& aTargetEntity);
+	void TakeTurn(Entity& aTargetEntity, int aRound);
 
 private:
 	const EventData::GenerationData myGenerationData;

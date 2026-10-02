@@ -10,15 +10,21 @@ const char* Dungeon::GetName() const
 {
 	return myGenerationData.name.c_str();
 }
-
 const int Dungeon::GetRoomTotal() const
 {
 	return static_cast<int>(myGenerationData.rooms.size());
 }
-
 const Room* Dungeon::GetRoom(int aIndex)
 {
 	return myGenerationData.rooms[aIndex];
+}
+const int Dungeon::GetCurrentRound() const
+{
+	return myRoundTracker;
+}
+void Dungeon::IncrementRound()
+{
+	myRoundTracker++;
 }
 
 const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationTypes aDungeonType)

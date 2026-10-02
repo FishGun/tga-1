@@ -1,6 +1,9 @@
 #pragma once
 #include "RoomData.h"
 #include "Door.h"
+#include "ItemData.h"
+#include "ChestData.h"
+#include "SpellData.h"
 
 class Room
 {
@@ -18,6 +21,15 @@ public:
 	const char* GetName() const;
 	Event* const GetEvent() const;
 	const bool HasActiveEvent() const;
+
+	const bool HasItem() const;
+	const bool HasChest() const;
+	const bool HasSpell() const;
+
+	// Ideally should be copying these values from myGenerationData, but not a priority right now.
+	std::vector<const ItemData::ItemInstanceData*> myDroppedItems = ItemData::GenerateWeightedItemVector(1.0f, 2); //0.34
+	std::vector<ChestData::ChestInstance*> myChests = ChestData::GenerateWeightedChestVector(1.0f, 1); //0.5
+	std::vector<const SpellData::SpellInstanceData*> mySpells = SpellData::GenerateWeightedSpellVector(1.0f, 1); // 0.2
 private:
 	const RoomData::GenerationData myGenerationData;
 	Door* const myPreviousDoor;

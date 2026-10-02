@@ -13,13 +13,13 @@ public:
 	static Player& AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity = EntityData::BASE_STATS, const int aRoomIndex = 0);
 	static const int GetPlayerCount();
 	static Player& GetPlayer(int aIndex);
-	static void PlayRound();
+	static void PlayRound(int aRound);
 	static void CheckForDeaths();
 	static bool PlayerHasWon();
 	static void ClearPlayers();
 
 
-	void TakeTurn();
+	void TakeTurn(int aRound);
 	const int RoomMenu() const;
 	const Room* GetRoom() const;
 	const Room* SetRoom(const Room* aRoom);
@@ -28,6 +28,10 @@ public:
 	const bool IsInCombat() const;
 	bool TryToUnlockDoor(Door& door);
 	void TryChangeRoom();
+
+	void AddItem(const ItemData::ItemInstanceData* aItemDataPointer);
+	void ActivateSpell(const SpellData::SpellInstanceData* aSpellDataPointer, int aRound);
+	void CleanSpells(int aRound);
 
 	Entity myEntityClass;
 private:
@@ -39,4 +43,7 @@ private:
 
 	bool myInvincibilityCheatOn;
 	bool myInstakillCheatOn;
+
+	std::vector<const ItemData::ItemInstanceData*> myItemData;
+	std::vector<SpellData::ActivatedSpell> myActiveSpells;
 };

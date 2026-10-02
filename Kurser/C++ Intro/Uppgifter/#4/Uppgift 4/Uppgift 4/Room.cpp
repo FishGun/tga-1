@@ -1,5 +1,6 @@
 #include "Room.h"
 #include "RandomController.h"
+
 #include <assert.h>
 
 Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom, aDoorType)) {}
@@ -56,6 +57,19 @@ Event* const Room::GetEvent() const
 const bool Room::HasActiveEvent() const
 {
 	return myGenerationData.event != NULL && myGenerationData.event->IsActive();
+}
+
+const bool Room::HasItem() const
+{
+	return myDroppedItems.size() > 0;
+}
+const bool Room::HasChest() const
+{
+	return myChests.size() > 0;
+}
+const bool Room::HasSpell() const
+{
+	return mySpells.size() > 0;
 }
 
 Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType) const

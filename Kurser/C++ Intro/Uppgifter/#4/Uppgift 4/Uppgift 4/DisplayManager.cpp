@@ -23,9 +23,46 @@ namespace DisplayManager
 	}
 	void RoomOptions(const Player& aPlayer)
 	{
+		const Room& room = *aPlayer.GetRoom();
 		PlayerContext(aPlayer);
+
+		bool showedAny = false;
+		if (room.myDroppedItems.size() > 0)
+		{
+			std::cout << "You can see a metal object sparkling in the corner.\n";
+			showedAny = true;
+		}
+		if (room.myChests.size() > 0)
+		{
+			std::cout << "A grand treasure chest sits in the room.\n";
+			showedAny = true;
+		}
+		if (room.mySpells.size() > 0)
+		{
+			std::cout << "A magic spell glyph ominously hovers over a pentagram.\n";
+			showedAny = true;
+		}
+		if (showedAny)
+		{
+			std::cout << "\n";
+		}
+
 		std::cout << "What would you like to do in the room?\n";
-		BasicStringArrayDisplay(MenuData::ROOM_OPTIONS);
+		std::vector<std::string> generatedStringVector = MenuData::GENERIC_ROOM_OPTIONS;
+		//generatedStringVector.reserve();
+		if (room.myDroppedItems.size() > 0)
+		{
+			generatedStringVector.push_back(MenuData::CONTEXTUAL_ROOM_OPTIONS.at(0));
+		}
+		if (room.myChests.size() > 0)
+		{
+			generatedStringVector.push_back(MenuData::CONTEXTUAL_ROOM_OPTIONS.at(1));
+		}
+		if (room.mySpells.size() > 0)
+		{
+			generatedStringVector.push_back(MenuData::CONTEXTUAL_ROOM_OPTIONS.at(2));
+		}
+		BasicStringArrayDisplay(generatedStringVector);
 	}
 	void CombatOptions(const Player& aPlayer, const Event& aEvent)
 	{
@@ -66,7 +103,8 @@ namespace DisplayManager
 	{
 		std::cout << "Despite your best effort, the door is still locked!\n";
 	}
-	void BasicStringArrayDisplay(const std::vector<std::string> aStringVector)
+
+	void BasicStringArrayDisplay(const std::vector<std::string>& aStringVector)
 	{
 		const int length = static_cast<int>(aStringVector.size());
 		for (int i = 0; i < length; i++)

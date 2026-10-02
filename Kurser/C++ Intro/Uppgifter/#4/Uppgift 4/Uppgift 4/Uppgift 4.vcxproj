@@ -140,6 +140,7 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ChestData.cpp" />
     <ClCompile Include="DisplayManager.cpp" />
     <ClCompile Include="Door.cpp" />
     <ClCompile Include="Dungeon.cpp" />
@@ -148,12 +149,15 @@
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="GameLoop.cpp" />
     <ClCompile Include="InputController.cpp" />
+    <ClCompile Include="ItemData.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RandomController.cpp" />
     <ClCompile Include="Room.cpp" />
+    <ClCompile Include="SpellData.cpp" />
     <ClCompile Include="Uppgift 4.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ChestData.h" />
     <ClInclude Include="DisplayManager.h" />
     <ClInclude Include="Door.h" />
     <ClInclude Include="DoorData.h" />
@@ -166,11 +170,13 @@
     <ClInclude Include="EventData.h" />
     <ClInclude Include="GameLoop.h" />
     <ClInclude Include="InputController.h" />
+    <ClInclude Include="ItemData.h" />
     <ClInclude Include="MenuData.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RandomController.h" />
     <ClInclude Include="Room.h" />
     <ClInclude Include="RoomData.h" />
+    <ClInclude Include="SpellData.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

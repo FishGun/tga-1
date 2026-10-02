@@ -54,15 +54,17 @@ void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 	DisplayManager::GameStart(myDungeon, DungeonData::KILLS_TO_WIN);
 	system("pause");
 	system("cls");
-	int roundTracker = 1;
 	while (Player::GetPlayerCount() > 0 && !Player::PlayerHasWon())
 	{
 		system("cls");
-		DisplayManager::Round(roundTracker);
-		Player::PlayRound();
-		Event::PlayRound();
+
+		IncrementRound();
+		DisplayManager::Round(myRoundTracker);
+
+		Player::PlayRound(myRoundTracker);
+		Event::PlayRound(myRoundTracker);
 		Player::CheckForDeaths();
-		roundTracker++;
+
 		system("pause");
 	}
 	if (Player::GetPlayerCount() <= 0)

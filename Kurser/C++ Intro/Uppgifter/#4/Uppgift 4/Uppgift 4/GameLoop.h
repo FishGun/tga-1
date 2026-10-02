@@ -14,8 +14,12 @@ class GameLoop
 {
 public:
 	GameLoop();
+	const int GetCurrentRound() const;
 private:
 	const int MainMenu() const;
 	void Play(bool aInvincibilityOn, bool aInstakillOn);
+	int myRoundTracker;
+
+	void IncrementRound();
 };
 

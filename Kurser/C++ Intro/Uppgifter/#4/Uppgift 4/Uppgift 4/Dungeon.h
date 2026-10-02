@@ -18,10 +18,4 @@ public:
 private:
 	const DungeonData::GenerationData myGenerationData;
 	const DungeonData::GenerationTypes myGenerationType;
-
-	/*
-	const Room* GenerateDungeon();
-	const Room* GenerateRandomDungeon();
-	const Room* GenerateTemplateDungeon();
-	*/
 };

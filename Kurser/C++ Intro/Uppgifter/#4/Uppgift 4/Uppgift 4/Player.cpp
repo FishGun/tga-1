@@ -21,11 +21,11 @@ Player& Player::GetPlayer(int aIndex)
 	return myPlayers.at(aIndex);
 }
 
-void Player::PlayRound()
+void Player::PlayRound(int aRound)
 {
 	for (int i = 0; i < GetPlayerCount(); i++)
 	{
-		myPlayers[i].TakeTurn();
+		myPlayers[i].TakeTurn(aRound);
 	}
 }
 
@@ -66,19 +66,68 @@ void Player::ClearPlayers()
 }
 
 
-void Player::TakeTurn()
+void Player::TakeTurn(int aRound)
 {
 	if (!IsInCombat())
 	{
 		DisplayManager::RoomOptions(*this);
-		const int roomAction = InputController::IntegerRange(MenuData::ROOM_OPTIONS_SIZE) - 1;
-		if (roomAction == 0)
+
+		const bool hasItem = myCurrentRoom->HasItem();
+		const bool hasChest = myCurrentRoom->HasChest();
+		const bool hasSpell = myCurrentRoom->HasSpell();
+
+		const int contextualRoomOptionsAvailable =
+			static_cast<int>(hasItem)
+			+ static_cast<int>(hasChest)
+			+ static_cast<int>(hasSpell);
+
+		const int roomAction = InputController::IntegerRange(MenuData::GENERIC_ROOM_OPTIONS_SIZE + contextualRoomOptionsAvailable);
+		if (roomAction == 1)
 		{
 			TryChangeRoom();
 		}
-		else if (roomAction == 1)
+		else if (roomAction == 2)
 		{
 			DisplayManager::ShowStats(*this);
+		}
+		else
+		{
+			int roomActionMathed = roomAction;
+			bool alreadyChosen = false;
+			if (!alreadyChosen && hasItem)
+			{
+				if (roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
+				{
+					std::cout << "Item";
+					//const ItemData::ItemInstanceData& itemData = *myCurrentRoom->myDroppedItems.at(0);
+					//LootItemLogic(itemData);
+					alreadyChosen = true;
+				}
+				else roomActionMathed--;
+			}
+			if (!alreadyChosen && hasChest)
+			{
+				if (roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
+				{
+					std::cout << "Chest";
+					//const ChestData::ChestInstance& chest = *myCurrentRoom->myChests.at(0);
+					//LootChestLogic(chest);
+					alreadyChosen = true;
+				}
+				else roomActionMathed--;
+			}
+			if (!alreadyChosen && hasSpell)
+			{
+				if (hasSpell && roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
+				{
+					std::cout << "Spell";
+					ActivateSpell(myCurrentRoom->mySpells.at(0), aRound);
+					//const SpellData::SpellInstanceData& spellData = *myCurrentRoom->mySpells.at(0);
+					//ActivateSpellLogic(spellData);
+					alreadyChosen = true;
+				}
+				else roomActionMathed--;
+			}
 		}
 	}
 	if (IsInCombat())
@@ -104,6 +153,7 @@ void Player::TakeTurn()
 		myKills += enemiesCount - event->GetCurrentEnemies();
 		enemiesCount = event->GetCurrentEnemies();
 	}
+	CleanSpells();
 }
 
 const int Player::RoomMenu() const
@@ -188,6 +238,33 @@ void Player::TryChangeRoom()
 		{
 			SetRoom(door->GetNextRoom());
 
+		}
+	}
+}
+
+void Player::AddItem(const ItemData::ItemInstanceData* aItemDataPointer)
+{
+	if (myEntityClass.GetCarryingCapacity() < myItemData.size())
+	{
+		myItemData.push_back(aItemDataPointer);
+	}
+}
+void Player::ActivateSpell(const SpellData::SpellInstanceData* aSpellDataPointer, int aRound)
+{
+	myActiveSpells.push_back(SpellData::ActivatedSpell(*aSpellDataPointer, aRound));
+}
+void Player::CleanSpells(int aRound)
+{
+	int spellCount = myActiveSpells.size();
+	for (int i = 0; i < spellCount; i++)
+	{
+		SpellData::ActivatedSpell& spell = myActiveSpells.at(i);
+		const int endRound = spell.roundAquisition + spell.data.roundDuration;
+		if (endRound <= aRound)
+		{
+			myActiveSpells.erase(myActiveSpells.begin() + i);
+			i--;
+			spellCount--;
 		}
 	}
 }

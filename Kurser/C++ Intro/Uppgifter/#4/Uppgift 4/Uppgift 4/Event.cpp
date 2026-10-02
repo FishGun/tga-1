@@ -9,7 +9,7 @@ Event::Event(EventData::GenerationData aEventData) : myGenerationData(aEventData
 	GenerateEvent();
 }
 
-void Event::PlayRound()
+void Event::PlayRound(int aRound)
 {
 	for (int i = 0; i < Player::GetPlayerCount(); i++)
 	{
@@ -17,7 +17,7 @@ void Event::PlayRound()
 		Event* event = player.GetRoom()->GetEvent();
 		if (event != NULL)
 		{
-			event->TakeTurn(player.myEntityClass);
+			event->TakeTurn(player.myEntityClass, aRound);
 		}
 	}
 }
@@ -70,7 +70,7 @@ void Event::RemoveEnemy(int aIndex)
 	myEnemies.erase(std::next(myEnemies.begin(), aIndex));
 }
 
-void Event::TakeTurn(Entity& aTargetEntity)
+void Event::TakeTurn(Entity& aTargetEntity, int aRound)
 {
 	for (int i = 0; i < GetCurrentEnemies(); i++)
 	{

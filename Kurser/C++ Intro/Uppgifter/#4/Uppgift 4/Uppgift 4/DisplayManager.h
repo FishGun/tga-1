@@ -14,7 +14,8 @@ namespace DisplayManager
 	void LockedDoorOptions(const Door& aDoor);
 	void DoorOpenCallout();
 	void DoorStillLockedCallout();
-	void BasicStringArrayDisplay(const std::vector<std::string> aStringVector);
+
+	void BasicStringArrayDisplay(const std::vector<std::string>& aStringVector);
 
 	void Round(int aRoundIndex);
 
