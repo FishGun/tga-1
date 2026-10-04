@@ -2,7 +2,7 @@
 #include "DisplayManager.h"
 #include "InputController.h"
 
-Player::Player(const Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity) : myCurrentRoom(aRoom), myEntityClass(aEntity), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn) {}
+Player::Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity) : myCurrentRoom(aRoom), myEntityClass(aEntity), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn) {}
 
 Player& Player::AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity, const int aRoomIndex)
 {
@@ -88,7 +88,7 @@ void Player::TakeTurn(int aRound)
 		}
 		else if (roomAction == 2)
 		{
-			DisplayManager::ShowStats(*this);
+			DisplayManager::ShowStats(*this, aRound);
 		}
 		else
 		{
@@ -98,9 +98,11 @@ void Player::TakeTurn(int aRound)
 			{
 				if (roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
 				{
-					std::cout << "Item";
-					//const ItemData::ItemInstanceData& itemData = *myCurrentRoom->myDroppedItems.at(0);
-					//LootItemLogic(itemData);
+					const ItemData::ItemInstanceData* item = myCurrentRoom->myDroppedItems.back();
+					if (myEntityClass.TryAddItem(item))
+					{
+						myCurrentRoom->myDroppedItems.pop_back();
+					}
 					alreadyChosen = true;
 				}
 				else roomActionMathed--;
@@ -109,9 +111,23 @@ void Player::TakeTurn(int aRound)
 			{
 				if (roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
 				{
-					std::cout << "Chest";
-					//const ChestData::ChestInstance& chest = *myCurrentRoom->myChests.at(0);
-					//LootChestLogic(chest);
+					ChestData::ChestInstance* chest = myCurrentRoom->myChests.back();
+					while (static_cast<int>(chest->items.size()) > 0)
+					{
+						const ItemData::ItemInstanceData* item = chest->items.back();
+						if (myEntityClass.TryAddItem(item, false))
+						{
+							DisplayManager::ChestGrabCallout();
+							DisplayManager::ItemPickupCallout(myEntityClass, *item);
+						}
+						else
+						{
+							DisplayManager::ChestSpillCallout();
+							myCurrentRoom->myDroppedItems.push_back(item);
+						}
+						chest->items.pop_back();
+					}
+					myCurrentRoom->myChests.pop_back();
 					alreadyChosen = true;
 				}
 				else roomActionMathed--;
@@ -120,10 +136,10 @@ void Player::TakeTurn(int aRound)
 			{
 				if (hasSpell && roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
 				{
-					std::cout << "Spell";
-					ActivateSpell(myCurrentRoom->mySpells.at(0), aRound);
-					//const SpellData::SpellInstanceData& spellData = *myCurrentRoom->mySpells.at(0);
-					//ActivateSpellLogic(spellData);
+					DisplayManager::SpellActivateCallout(*myCurrentRoom->mySpells.back());
+
+					myEntityClass.ActivateSpell(myCurrentRoom->mySpells.back(), aRound);
+					myCurrentRoom->mySpells.pop_back();
 					alreadyChosen = true;
 				}
 				else roomActionMathed--;
@@ -143,17 +159,17 @@ void Player::TakeTurn(int aRound)
 		if (myInstakillCheatOn)
 		{
 			DisplayManager::InstakillCallout(*this);
-			event->InjureEnemy(9001, attackTarget);
+			event->InjureEnemy(myCurrentRoom->myDroppedItems, 9001, attackTarget);
 		}
 		else
 		{
 			DisplayManager::EntityAttackShout(myEntityClass, event->GetEnemy(attackTarget).myEntityClass);
-			event->InjureEnemy(myEntityClass.GetAttack(), attackTarget);
+			event->InjureEnemy(myCurrentRoom->myDroppedItems, myEntityClass.GetAttack(), attackTarget);
 		}
 		myKills += enemiesCount - event->GetCurrentEnemies();
 		enemiesCount = event->GetCurrentEnemies();
 	}
-	CleanSpells();
+	myEntityClass.CleanSpells(aRound);
 }
 
 const int Player::RoomMenu() const
@@ -166,7 +182,7 @@ const Room* Player::GetRoom() const
 {
 	return myCurrentRoom;
 }
-const Room* Player::SetRoom(const Room* aRoom)
+Room* Player::SetRoom(Room* aRoom)
 {
 	myCurrentRoom = aRoom;
 	return myCurrentRoom;
@@ -190,11 +206,11 @@ bool Player::TryToUnlockDoor(Door& door)
 	const int unlockInput = InputController::IntegerRange(2) - 1;
 	if (unlockInput == 0)
 	{
-		door.TryPick(myEntityClass.GetBaseStats().dexterity);
+		door.TryPick(myEntityClass.GetDexterity());
 	}
 	else if (unlockInput == 1)
 	{
-		door.TryBreak(myEntityClass.GetBaseStats().strength);
+		door.TryBreak(myEntityClass.GetStrength());
 	}
 	return door.IsOpen();
 }
@@ -238,33 +254,6 @@ void Player::TryChangeRoom()
 		{
 			SetRoom(door->GetNextRoom());
 
-		}
-	}
-}
-
-void Player::AddItem(const ItemData::ItemInstanceData* aItemDataPointer)
-{
-	if (myEntityClass.GetCarryingCapacity() < myItemData.size())
-	{
-		myItemData.push_back(aItemDataPointer);
-	}
-}
-void Player::ActivateSpell(const SpellData::SpellInstanceData* aSpellDataPointer, int aRound)
-{
-	myActiveSpells.push_back(SpellData::ActivatedSpell(*aSpellDataPointer, aRound));
-}
-void Player::CleanSpells(int aRound)
-{
-	int spellCount = myActiveSpells.size();
-	for (int i = 0; i < spellCount; i++)
-	{
-		SpellData::ActivatedSpell& spell = myActiveSpells.at(i);
-		const int endRound = spell.roundAquisition + spell.data.roundDuration;
-		if (endRound <= aRound)
-		{
-			myActiveSpells.erase(myActiveSpells.begin() + i);
-			i--;
-			spellCount--;
 		}
 	}
 }

@@ -18,7 +18,7 @@ namespace DoorData
 	{
 		const GenerationTypes doorType;
 		Room* const previousRoom;
-		const Room* const nextRoom;
+		Room* const nextRoom;
 		const int pickDC;
 		const int breakDC;
 	};

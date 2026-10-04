@@ -36,7 +36,7 @@ namespace ItemData
 				},
 				EntityData::DerivedData
 				{
-					.attack = 2,
+					.attack = 5,
 					.defense = 1
 				}
 			};
@@ -49,8 +49,8 @@ namespace ItemData
 				},
 				EntityData::DerivedData
 				{
-					.attack = 5,
-					.defense = 2,
+					.attack = 10,
+					.defense = 5,
 				}
 			};
 			case ItemTypes::Greatsword: return new ItemInstanceData
@@ -128,7 +128,7 @@ namespace ItemData
 		const int itemLikelyhoodWeight = static_cast<int>(1.0f / aItemLikelyhood);
 		for (int i = 0; i < aItemMax; i++)
 		{
-			if (RandomController::GenerateNumber(1, itemLikelyhoodWeight) == 1)
+			if (RandomController::GenerateNumber(1, itemLikelyhoodWeight) <= 1)
 			{
 				toReturn.push_back(&GetItemData(ItemTypes::CountOrRandom));
 			}

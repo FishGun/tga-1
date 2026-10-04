@@ -25,13 +25,23 @@ namespace DisplayManager
 	void EntityAttackShout(const Entity& aAttacker, const Entity& aTarget);
 	void EntityDeathCry(const Entity& aEntity);
 	void PlayerDeathCry(const Player& aPlayer);
-	void ShowStats(const Player& aPlayer);
+	void ShowStats(const Player& aPlayer, const int aRound);
+
+	void ItemDropCallout();
+	void ItemPickupCallout(const Entity& aEntity, const ItemData::ItemInstanceData& aItem);
+	void ItemPickupFailedCallout(const Entity& aEntity);
+
+	void ChestSpillCallout();
+	void ChestGrabCallout();
+
+	void SpellActivateCallout(const SpellData::SpellInstanceData& aSpell);
+	void SpellEndCallout(const SpellData::SpellInstanceData& aSpell);
 
 	void InvincibilityCallout(const Player& aPlayer);
 	void InstakillCallout(const Player& aPlayer);
 
 	void AskForDoorChoice(const Player& aPlayer);
-	void MoveThroughDoor(const Door& door, const bool aIsMovingToPreviousRoom);
+	void MoveThroughDoor(Door& door, const bool aIsMovingToPreviousRoom);
 
 	void GameStart(Dungeon& aDungeon, int aKillsToWin);
 	void GameOver();

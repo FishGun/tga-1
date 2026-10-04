@@ -14,7 +14,7 @@ const int Dungeon::GetRoomTotal() const
 {
 	return static_cast<int>(myGenerationData.rooms.size());
 }
-const Room* Dungeon::GetRoom(int aIndex)
+Room* Dungeon::GetRoom(int aIndex)
 {
 	return myGenerationData.rooms[aIndex];
 }
@@ -120,61 +120,3 @@ const std::string Dungeon::GenerateRandomName()
 	name.append(" (Dungeon)");
 	return name;
 }
-
-/*
-const Room* Dungeon::GenerateDungeon()
-{
-	switch (myDungeonType)
-	{
-		case DungeonData::GenerationTypes::Random: return GenerateRandomDungeon();
-			break;
-		case DungeonData::GenerationTypes::TheHold: return GenerateTemplateDungeon();
-			break;
-		default:
-			break;
-	}
-}
-
-const Room* Dungeon::GenerateRandomDungeon()
-{
-	myRooms.push_back(Room());
-	for (int i = 1; i < myGenerationData.roomTotal; i++)
-	{
-
-	}
-
-
-
-	Room* previousRoom;
-	for (int i = 0; i < myGenerationData.roomTotal; i++)
-	{
-		if (i == 0)
-		{
-			myRooms.push_back(Room(RoomData::GenerationTypes::Random));
-		}
-		else
-		{
-			myRooms.push_back(Room(previousRoom));
-		}
-		previousRoom = &myRooms.at(i);
-	}
-}
-
-const Room* Dungeon::GenerateTemplateDungeon()
-{
-	switch (myDungeonType)
-	{
-		case DungeonData::GenerationTypes::Random: return GenerateRandomDungeon();
-		case DungeonData::GenerationTypes::TheHold:
-		{
-			myRooms[0] = Room();
-			myRooms[1] = Room();
-			myRooms[2] = Room();
-			myRooms[3] = Room();
-			myRooms[4] = Room();
-		}
-		default:
-			break;
-	}
-}
-*/

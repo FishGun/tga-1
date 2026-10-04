@@ -3,6 +3,7 @@
 
 GameLoop::GameLoop()
 {
+	myRoundTracker = 1;
 	int mainMenuChoice = 0;
 	bool InvincibilityCheat = false;
 	bool instakillCheat = false;
@@ -47,7 +48,7 @@ void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 {
 	Dungeon myDungeon(DungeonData::GenerationTypes::TheHold);
 
-	EntityData::BaseData playerData = EntityData::BASE_STATS;
+	EntityData::BaseData playerData = EntityData::BASE_PLAYER_STATS;
 	InputController::AskForName(playerData.name, EntityData::MIN_NAME_LENGTH, EntityData::MAX_NAME_LENGTH);
 	Player::AddPlayer(&myDungeon, aInvincibilityOn, aInstakillOn, playerData);
 
@@ -58,13 +59,14 @@ void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 	{
 		system("cls");
 
-		IncrementRound();
+		myDungeon.IncrementRound();
 		DisplayManager::Round(myRoundTracker);
 
 		Player::PlayRound(myRoundTracker);
 		Event::PlayRound(myRoundTracker);
 		Player::CheckForDeaths();
 
+		myRoundTracker++;
 		system("pause");
 	}
 	if (Player::GetPlayerCount() <= 0)

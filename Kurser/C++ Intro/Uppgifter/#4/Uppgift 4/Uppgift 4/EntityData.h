@@ -15,13 +15,13 @@ namespace EntityData
 
 	struct BaseData
 	{
-		char name[MAX_NAME_LENGTH];
-		int strength;
-		int dexterity;
-		int physique;
+		char name[MAX_NAME_LENGTH] = "N/A";
+		int strength = 0;
+		int dexterity = 0;
+		int physique = 0;
 	};
 
-	const BaseData BASE_STATS
+	const BaseData BASE_PLAYER_STATS
 	{
 		.name = "Player",
 		.strength = 10,

@@ -123,7 +123,7 @@ namespace SpellData
 		}
 	}
 
-	const ActivatedSpell& CreateNewActivatedSpell(SpellInstanceData& aSpellData, int currentRound)
+	const ActivatedSpell& CreateNewActivatedSpell(SpellInstanceData* aSpellData, int currentRound)
 	{
 		return *new ActivatedSpell(aSpellData, currentRound);
 	}
@@ -134,7 +134,7 @@ namespace SpellData
 		const int spellLikelyhoodWeight = static_cast<int>(1.0f / aSpellLikelyhood);
 		for (int i = 0; i < aSpellMax; i++)
 		{
-			if (RandomController::GenerateNumber(1, spellLikelyhoodWeight) == 1)
+			if (RandomController::GenerateNumber(1, spellLikelyhoodWeight) <= 1)
 			{
 				toReturn.push_back(&GetSpellData(SpellTypes::CountOrRandom));
 			}

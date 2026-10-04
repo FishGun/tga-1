@@ -3,10 +3,16 @@
 
 #include <assert.h>
 
-Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom, aDoorType)) {}
+Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom, aDoorType))
+{
+	PopulateLoot();
+}
 Room::Room(const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors, DoorData::GenerationTypes aDoorType) : Room(GenerateData(aRoomType, aInitialForwardDoors, CreateDoorway(aPreviousRoom, aDoorType))) {}
 Room::Room(const RoomData::GenerationTypes aRoomType, Door* aPreviousDoor, std::vector<Door*> aInitialForwardDoors) : Room(GenerateData(aRoomType, aInitialForwardDoors, aPreviousDoor)) {}
-Room::Room(const RoomData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myPreviousDoor(myGenerationData.initialPreviousDoor), myForwardDoors(myGenerationData.initialForwardDoors) {}
+Room::Room(const RoomData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myPreviousDoor(myGenerationData.initialPreviousDoor), myForwardDoors(myGenerationData.initialForwardDoors)
+{
+	PopulateLoot();
+}
 
 Door* Room::GetReturnDoor() const
 {
@@ -72,11 +78,19 @@ const bool Room::HasSpell() const
 	return mySpells.size() > 0;
 }
 
-Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType) const
+void Room::PopulateLoot()
+{
+	myDroppedItems = myGenerationData.droppedItems;
+	// Ideally should be copying these values from myGenerationData, but not a priority right now.
+	myChests = ChestData::GenerateWeightedChestVector(ItemData::ROOM_CHEST_SPAWN_CHANCE, 1);
+	mySpells = SpellData::GenerateWeightedSpellVector(ItemData::ROOM_SPELL_SPAWN_CHANCE, 1);
+}
+
+Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType)
 {
 	return CreateDoorway(Door::GenerateData(aOtherRoom, this, aDoorType));
 }
-Door* const Room::CreateDoorway(DoorData::GenerationData aDoorData) const
+Door* const Room::CreateDoorway(DoorData::GenerationData aDoorData)
 {
 	Room* const previousRoom = aDoorData.previousRoom;
 
@@ -95,29 +109,29 @@ const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoo
 	}
 	switch (aRoomType)
 	{
-		default:
-		case RoomData::GenerationTypes::Empty:
+	default:
+	case RoomData::GenerationTypes::Empty:
+	{
+		return RoomData::GenerationData
 		{
-			return RoomData::GenerationData
-			{
-				.roomType = aRoomType,
-				.name = GenerateRandomName(),
-				.initialForwardDoors = aInitialForwardDoors,
-				.initialPreviousDoor = aPreviousDoor,
-				.event = NULL
-			};
-		}
-		case RoomData::GenerationTypes::RandomCombat:
+			.roomType = aRoomType,
+			.name = GenerateRandomName(),
+			.initialForwardDoors = aInitialForwardDoors,
+			.initialPreviousDoor = aPreviousDoor,
+			.event = NULL
+		};
+	}
+	case RoomData::GenerationTypes::RandomCombat:
+	{
+		return RoomData::GenerationData
 		{
-			return RoomData::GenerationData
-			{
-				.roomType = aRoomType,
-				.name = GenerateRandomName(),
-				.initialForwardDoors = aInitialForwardDoors,
-				.initialPreviousDoor = aPreviousDoor,
-				.event = new Event(EventData::GenerationTypes::Random)
-			};
-		}
+			.roomType = aRoomType,
+			.name = GenerateRandomName(),
+			.initialForwardDoors = aInitialForwardDoors,
+			.initialPreviousDoor = aPreviousDoor,
+			.event = new Event(EventData::GenerationTypes::Random)
+		};
+	}
 	}
 }
 

@@ -39,7 +39,7 @@ const Enemy& Event::GetEnemy(int aValue) const
 	return myEnemies.at(aValue);
 }
 
-const bool Event::InjureEnemy(int aDamage, int aIndex)
+const bool Event::InjureEnemy(std::vector<const ItemData::ItemInstanceData*>& aLootVector, int aDamage, int aIndex)
 {
 	if (aIndex > GetCurrentEnemies())
 	{
@@ -52,6 +52,12 @@ const bool Event::InjureEnemy(int aDamage, int aIndex)
 	{
 		DisplayManager::EntityDeathCry(enemyEntity);
 		RemoveEnemy(aIndex);
+		std::vector<const ItemData::ItemInstanceData*> droppedItems = ItemData::GenerateWeightedItemVector(ItemData::ENEMY_KILLED_DROP_CHANCE, 1);
+		if (static_cast<int>(droppedItems.size()) > 0)
+		{
+			aLootVector.insert(aLootVector.end(), droppedItems.begin(), droppedItems.end());
+			DisplayManager::ItemDropCallout();
+		}
 	}
 	return enemyDied;
 }
@@ -79,6 +85,7 @@ void Event::TakeTurn(Entity& aTargetEntity, int aRound)
 		{
 			aTargetEntity.TakeDamage(enemyEntity.GetAttack());
 			DisplayManager::EntityAttackShout(enemyEntity, aTargetEntity);
+			enemyEntity.CleanSpells(aRound);
 		}
 	}
 }

@@ -5,6 +5,12 @@
 
 namespace ItemData
 {
+	const float ENEMY_KILLED_DROP_CHANCE = 0.5f;
+	const float ROOM_DROP_SPAWN_CHANCE = 0.5f;
+	const int ROOM_DROP_SPAWN_TRIES = 2;
+	const float ROOM_CHEST_SPAWN_CHANCE = 0.34f;
+	const float ROOM_SPELL_SPAWN_CHANCE = 0.5f;
+
 	enum class ItemTypes
 	{
 		Knife,
@@ -20,8 +26,8 @@ namespace ItemData
 
 	struct ItemInstanceData
 	{
-		const EntityData::BaseData baseModifiers = {0};
-		const EntityData::DerivedData derivedModifiers;
+		const EntityData::BaseData baseModifiers {0};
+		const EntityData::DerivedData derivedModifiers {0};
 	};
 
 	extern ItemInstanceData* globalItemDataCollection[];

@@ -19,14 +19,14 @@ namespace SpellData
 
 	struct SpellInstanceData
 	{
-		EntityData::BaseData baseModifiers = { 0 };
-		EntityData::DerivedData derivedModifiers;
+		EntityData::BaseData baseModifiers { 0 };
+		EntityData::DerivedData derivedModifiers {0};
 		int roundDuration;
 	};
 
 	struct ActivatedSpell
 	{
-		const SpellInstanceData& data;
+		const SpellInstanceData* data;
 		int roundAquisition;
 	};
 
@@ -36,6 +36,6 @@ namespace SpellData
 	const SpellInstanceData& GetSpellData(SpellTypes aType);
 	SpellInstanceData& CreateNewSpellData(SpellTypes aType);
 
-	const ActivatedSpell& CreateNewSpellInstance(ActivatedSpell& aSpellData);
+	const ActivatedSpell& CreateNewSpellInstance(SpellInstanceData* aSpellData);
 	std::vector<const SpellData::SpellInstanceData*> GenerateWeightedSpellVector(float aSpellLikelyhood, int aChestMax);
 }

@@ -26,17 +26,18 @@ public:
 	const bool HasChest() const;
 	const bool HasSpell() const;
 
-	// Ideally should be copying these values from myGenerationData, but not a priority right now.
-	std::vector<const ItemData::ItemInstanceData*> myDroppedItems = ItemData::GenerateWeightedItemVector(1.0f, 2); //0.34
-	std::vector<ChestData::ChestInstance*> myChests = ChestData::GenerateWeightedChestVector(1.0f, 1); //0.5
-	std::vector<const SpellData::SpellInstanceData*> mySpells = SpellData::GenerateWeightedSpellVector(1.0f, 1); // 0.2
+	std::vector<const ItemData::ItemInstanceData*> myDroppedItems;
+	std::vector<ChestData::ChestInstance*> myChests;
+	std::vector<const SpellData::SpellInstanceData*> mySpells;
 private:
+	void PopulateLoot();
+
 	const RoomData::GenerationData myGenerationData;
 	Door* const myPreviousDoor;
 	std::vector<Door*> myForwardDoors;
 
-	Door* const CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open) const;
-	Door* const CreateDoorway(DoorData::GenerationData aDoorData) const;
+	Door* const CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
+	Door* const CreateDoorway(DoorData::GenerationData aDoorData);
 
 	const RoomData::GenerationData GenerateData(RoomData::GenerationTypes aRoomType, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);
 

@@ -19,7 +19,5 @@ private:
 	const int MainMenu() const;
 	void Play(bool aInvincibilityOn, bool aInstakillOn);
 	int myRoundTracker;
-
-	void IncrementRound();
 };
 

@@ -10,13 +10,13 @@ public:
 	Door(Room* aPreviousRoom, Room* const aNextRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
 	Door(DoorData::GenerationData aGenerationData);
 
-	const Room* const GetPreviousRoom() const;
-	const Room* const GetNextRoom() const;
+	Room* GetPreviousRoom();
+	Room* GetNextRoom();
 	const bool IsOpen() const;
 	bool TryPick(int aValue);
 	bool TryBreak(int aValue);
 
-	static const DoorData::GenerationData GenerateData(Room* aPreviousRoom, const Room* aNextRoom, DoorData::GenerationTypes aDoorType);
+	static const DoorData::GenerationData GenerateData(Room* aPreviousRoom, Room* aNextRoom, DoorData::GenerationTypes aDoorType);
 	const DoorData::GenerationData myGenerationData;
 private:
 	bool myIsOpen;

@@ -17,7 +17,7 @@ public:
 	const int GetMagnitude() const;
 	const int GetCurrentEnemies() const;
 	const Enemy& GetEnemy(int aValue) const;
-	const bool InjureEnemy(int aDamage, int aIndex = 0);
+	const bool InjureEnemy(std::vector<const ItemData::ItemInstanceData*>& aLootVector, int aDamage, int aIndex = 0);
 	const bool EnemyIsDead(int aIndex);
 	void RemoveEnemy(int aIndex);
 	void TakeTurn(Entity& aTargetEntity, int aRound);

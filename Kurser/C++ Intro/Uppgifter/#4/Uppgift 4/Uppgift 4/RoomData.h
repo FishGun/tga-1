@@ -1,5 +1,6 @@
 #pragma once
 #include "Event.h"
+#include "ItemData.h"
 
 #include <vector>
 #include <string>
@@ -51,5 +52,6 @@ namespace RoomData
 		std::vector<Door*> initialForwardDoors;
 		Door* const initialPreviousDoor = NULL;
 		Event* event = NULL;
+		std::vector<const ItemData::ItemInstanceData*> droppedItems = ItemData::GenerateWeightedItemVector(ItemData::ROOM_DROP_SPAWN_CHANCE, ItemData::ROOM_DROP_SPAWN_TRIES);
 	};
 }

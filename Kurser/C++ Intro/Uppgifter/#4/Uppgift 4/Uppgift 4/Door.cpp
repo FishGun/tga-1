@@ -6,11 +6,11 @@ Door::Door(Room* aPreviousRoom, Room* const aNextRoom, DoorData::GenerationTypes
 Door::Door(DoorData::GenerationData aGenerationData) : myGenerationData(aGenerationData),
 myIsOpen(myGenerationData.doorType == DoorData::GenerationTypes::Open) { }
 
-const Room* const Door::GetPreviousRoom() const
+Room* Door::GetPreviousRoom()
 {
 	return myGenerationData.previousRoom;
 }
-const Room* const Door::GetNextRoom() const
+Room* Door::GetNextRoom()
 {
 	return myGenerationData.nextRoom;
 }
@@ -35,7 +35,7 @@ bool Door::TryBreak(int aValue)
 	return myIsOpen;
 }
 
-const DoorData::GenerationData Door::GenerateData(Room* aPreviousRoom, const Room* aNextRoom, DoorData::GenerationTypes aDoorType)
+const DoorData::GenerationData Door::GenerateData(Room* aPreviousRoom, Room* aNextRoom, DoorData::GenerationTypes aDoorType)
 {
 	int pickDC;
 	int breakDC;

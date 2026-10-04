@@ -29,17 +29,17 @@ namespace DisplayManager
 		bool showedAny = false;
 		if (room.myDroppedItems.size() > 0)
 		{
-			std::cout << "You can see a metal object sparkling in the corner.\n";
+			std::cout << "You can see a metal object sparkling in the corner. (x" << room.myDroppedItems.size() << ")\n";
 			showedAny = true;
 		}
 		if (room.myChests.size() > 0)
 		{
-			std::cout << "A grand treasure chest sits in the room.\n";
+			std::cout << "A grand treasure chest sits in the room. (x" << room.myChests.size() << ")\n";
 			showedAny = true;
 		}
 		if (room.mySpells.size() > 0)
 		{
-			std::cout << "A magic spell glyph ominously hovers over a pentagram.\n";
+			std::cout << "A magic spell glyph ominously hovers over a pentagram. (x" << room.mySpells.size() << ")\n";
 			showedAny = true;
 		}
 		if (showedAny)
@@ -125,12 +125,11 @@ namespace DisplayManager
 	}
 	void EntityStats(const Entity& aEntity)
 	{
-		EntityData::BaseData baseStats = aEntity.GetBaseStats();
 		EntityHP(aEntity);
 		std::cout <<
-			"Strength: " << baseStats.strength << "\n"
-			"Dexterity: " << baseStats.dexterity << "\n"
-			"Physique: " << baseStats.physique << "\n"
+			"Strength: " << aEntity.GetStrength() << "\n"
+			"Dexterity: " << aEntity.GetDexterity() << "\n"
+			"Physique: " << aEntity.GetPhysique() << "\n"
 			"\n"
 			"Attack: " << aEntity.GetAttack() << "\n"
 			"Defense: " << aEntity.GetDefense() << "\n"
@@ -165,20 +164,69 @@ namespace DisplayManager
 			"Slowly, they loose their poise, and fall to the ground defeated.\n"
 			<< aPlayer.GetDungeon()->GetName() << " is their tomb, and " << aPlayer.GetRoom()->GetName() << " is their shrine.\n";
 	}
-	void ShowStats(const Player& aPlayer)
+	void ShowStats(const Player& aPlayer, const int aRound)
 	{
 		Entity entity = aPlayer.myEntityClass;
 		std::cout <<
 			entity.GetName() << "\n"
 			"HP:" << entity.GetHP() << "/" << entity.GetMaxHP() << "\n"
-			"Strength:" << entity.GetBaseStats().strength << "\n"
-			"Dexterity:" << entity.GetBaseStats().dexterity << "\n"
-			"Physique:" << entity.GetBaseStats().physique << "\n"
+			"Strength:" << entity.GetStrength() << "\n"
+			"Dexterity:" << entity.GetDexterity() << "\n"
+			"Physique:" << entity.GetPhysique() << "\n"
 			"Attack:" << entity.GetAttack() << "\n"
-			"Defense:" << entity.GetDefense() << "\n"
-			"Carrying Capacity:" << entity.GetCarryingCapacity() << "\n\n";
-
+			"Defense:" << entity.GetDefense() << " (damage reduction:" << entity.GetDefense() / EntityData::DEFENSE_DIVIDER << ")\n"
+			"Carrying Capacity:" << entity.GetCarryingCapacity() << "\n";
+		const int itemCount = static_cast<int>(entity.myItemData.size());
+		for (int i = 0; i < itemCount; i++)
+		{
+			std::cout << "Item #" << i + 1 << ": " << entity.myItemData.at(i)->baseModifiers.name << "\n";
+		}
+		const int spellCount = static_cast<int>(entity.myActiveSpells.size());
+		for (int i = 0; i < spellCount; i++)
+		{
+			std::cout << "Spell #" << i + 1 << ": " << entity.myActiveSpells.at(i).data->baseModifiers.name << " (" << entity.myActiveSpells.at(i).roundAquisition + entity.myActiveSpells.at(i).data->roundDuration - aRound << " rounds left)\n";
+		}
+		std::cout << "\n";
 	}
+
+	void ItemDropCallout()
+	{
+		std::cout <<
+			"As the body falls to the ground, something shiny falls and clangs on the floor...\n";
+	}
+	void ItemPickupCallout(const Entity& aEntity, const ItemData::ItemInstanceData& aItem)
+	{
+		std::cout <<
+			aEntity.GetName() << " picked up a " << aItem.baseModifiers.name << "!\n";
+	}
+	void ItemPickupFailedCallout(const Entity& aEntity)
+	{
+		std::cout <<
+			aEntity.GetName() << "'s inventory is already full! (" << aEntity.GetCarryingCapacity() << ")\n";
+	}
+
+	void ChestSpillCallout()
+	{
+		std::cout <<
+			"The chest ejects an item with force, and you are too encumbered to grab it!\n";
+	}
+	void ChestGrabCallout()
+	{
+		std::cout <<
+			"An item is flung out of the chest, and you grab it!\n";
+	}
+
+	void SpellActivateCallout(const SpellData::SpellInstanceData& aSpell)
+	{
+		std::cout <<
+			"Swirls of arcane energy swell into you as you become the conduit for a " << aSpell.baseModifiers.name << " spell. (" << aSpell.roundDuration << " rounds)\n";
+	}
+	void SpellEndCallout(const SpellData::SpellInstanceData& aSpell)
+	{
+		std::cout <<
+			"The magic from a " << aSpell.baseModifiers.name << " spell fades from the world.\n";
+	}
+
 
 	void InvincibilityCallout(const Player& aPlayer)
 	{
@@ -215,7 +263,7 @@ namespace DisplayManager
 		}
 		BasicStringArrayDisplay(generatedStringVector);
 	}
-	void MoveThroughDoor(const Door& door, const bool aIsMovingToPreviousRoom)
+	void MoveThroughDoor(Door& door, const bool aIsMovingToPreviousRoom)
 	{
 		const char* previousName = door.GetPreviousRoom()->GetName();
 		const char* nextName = door.GetNextRoom()->GetName();

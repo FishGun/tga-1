@@ -6,7 +6,7 @@
 
 namespace DungeonData
 {
-	const int KILLS_TO_WIN = 5;
+	const int KILLS_TO_WIN = 7;
 
 	const int MAX_DUNGEON_ROOMS = 5;
 	const int MIN_DUNGEON_ROOMS = 3;

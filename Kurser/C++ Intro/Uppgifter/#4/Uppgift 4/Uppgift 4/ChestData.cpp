@@ -50,7 +50,7 @@ namespace ChestData
 		const int chestLikelyhoodWeight = static_cast<int>(1.0f / aChestLikelyhood);
 		for (int i = 0; i < aChestMax; i++)
 		{
-			if (RandomController::GenerateNumber(1, chestLikelyhoodWeight) == 1)
+			if (RandomController::GenerateNumber(1, chestLikelyhoodWeight) <= 1)
 			{
 				toReturn.push_back(&CreateNewChest(GetChestData(ChestTypes::CountOrRandom)));
 			}
