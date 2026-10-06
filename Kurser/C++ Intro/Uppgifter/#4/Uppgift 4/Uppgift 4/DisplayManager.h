@@ -10,7 +10,7 @@ namespace DisplayManager
 	void CheatMenu();
 	void CheatStatus(bool aInvincibilityOn, bool aInstakillOn);
 	void RoomOptions(const Player& aPlayer);
-	void CombatOptions(const Player& aPlayer, const Event& aEvent);
+	void CombatOptions(const Player& aPlayer, Event& aEvent);
 	void LockedDoorOptions(const Door& aDoor);
 	void DoorOpenCallout();
 	void DoorStillLockedCallout();
@@ -28,7 +28,7 @@ namespace DisplayManager
 	void ShowStats(const Player& aPlayer, const int aRound);
 
 	void ItemDropCallout();
-	void ItemPickupCallout(const Entity& aEntity, const ItemData::ItemInstanceData& aItem);
+	void ItemPickupCallout(const Entity& aEntity, const Item& aItem);
 	void ItemPickupFailedCallout(const Entity& aEntity);
 
 	void ChestSpillCallout();
@@ -41,7 +41,7 @@ namespace DisplayManager
 	void InstakillCallout(const Player& aPlayer);
 
 	void AskForDoorChoice(const Player& aPlayer);
-	void MoveThroughDoor(Door& door, const bool aIsMovingToPreviousRoom);
+	void MoveThroughDoor(Door& aDoor, const bool aIsMovingToPreviousRoom);
 
 	void GameStart(Dungeon& aDungeon, int aKillsToWin);
 	void GameOver();

@@ -39,11 +39,11 @@ namespace ChestData
 		}
 	}
 
-	ChestInstance& CreateNewChest(const ChestCreationData& aChestData)
+	ChestInstance& CreateNewChest(ItemFactory& aItemFactory, const ChestCreationData& aChestData)
 	{
-		return *new ChestInstance(aChestData);
+		return *new ChestInstance(aChestData, aItemFactory.CreateWeightedVector(1, aChestData.itemCount));
 	}
-	std::vector<ChestInstance*> GenerateWeightedChestVector(float aChestLikelyhood, int aChestMax)
+	std::vector<ChestInstance*> GenerateWeightedChestVector(ItemFactory& aItemFactory, float aChestLikelyhood, int aChestMax)
 	{
 		std::vector<ChestInstance*> toReturn;
 		toReturn.reserve(aChestMax);
@@ -52,7 +52,7 @@ namespace ChestData
 		{
 			if (RandomController::GenerateNumber(1, chestLikelyhoodWeight) <= 1)
 			{
-				toReturn.push_back(&CreateNewChest(GetChestData(ChestTypes::CountOrRandom)));
+				toReturn.push_back(&CreateNewChest(aItemFactory, GetChestData(ChestTypes::CountOrRandom)));
 			}
 		}
 		return toReturn;

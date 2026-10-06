@@ -5,6 +5,9 @@ class Enemy
 {
 public:
 	Enemy(Entity aEntity);
-	Entity myEntityClass;
+
+	Entity& GetEntity();
+
 private:
+	Entity myEntityClass;
 };

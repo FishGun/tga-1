@@ -74,7 +74,7 @@ const int Entity::GetStrMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->baseModifiers.strength;
+		total += myItemData.at(i)->GetBaseData().strength;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -89,7 +89,7 @@ const int Entity::GetDexMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->baseModifiers.dexterity;
+		total += myItemData.at(i)->GetBaseData().dexterity;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -104,7 +104,7 @@ const int Entity::GetPhyMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->baseModifiers.physique;
+		total += myItemData.at(i)->GetBaseData().physique;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -119,7 +119,7 @@ const int Entity::GetAttMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->derivedModifiers.attack;
+		total += myItemData.at(i)->GetDerivedData().attack;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -134,7 +134,7 @@ const int Entity::GetMaxHPMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->derivedModifiers.hitPointMax;
+		total += myItemData.at(i)->GetDerivedData().hitPointMax;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -149,7 +149,7 @@ const int Entity::GetCarMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->derivedModifiers.carryingCapacity;
+		total += myItemData.at(i)->GetDerivedData().carryingCapacity;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -164,7 +164,7 @@ const int Entity::GetDefMod() const
 	const int itemTotal = static_cast<int>(myItemData.size());
 	for (int i = 0; i < itemTotal; i++)
 	{
-		total += myItemData.at(i)->derivedModifiers.defense;
+		total += myItemData.at(i)->GetDerivedData().defense;
 	}
 	const int spellTotal = static_cast<int>(myActiveSpells.size());
 	for (int i = 0; i < spellTotal; i++)
@@ -174,12 +174,21 @@ const int Entity::GetDefMod() const
 	return total;
 }
 
-bool Entity::TryAddItem(const ItemData::ItemInstanceData* aItemDataPointer, const bool aShouldCallout)
+const std::vector<const Item*>& Entity::GetItemVector() const
+{
+	return myItemData;
+}
+const std::vector<SpellData::ActivatedSpell>& Entity::GetSpellVector() const
+{
+	return myActiveSpells;
+}
+
+bool Entity::TryAddItem(const Item* aItemDataPointer, const bool aShouldCallout)
 {
 	if (GetCarryingCapacity() > static_cast<int>(myItemData.size()))
 	{
 		myItemData.push_back(aItemDataPointer);
-		myHitPoints += aItemDataPointer->derivedModifiers.hitPointMax;
+		myHitPoints += aItemDataPointer->GetDerivedData().hitPointMax;
 		if (aShouldCallout)
 		{
 			DisplayManager::ItemPickupCallout(*this, *aItemDataPointer);

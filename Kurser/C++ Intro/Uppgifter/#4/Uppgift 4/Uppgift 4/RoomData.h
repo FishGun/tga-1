@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-#include "ItemData.h"
+#include "ItemFactory.h"
 
 #include <vector>
 #include <string>
@@ -31,7 +31,7 @@ namespace RoomData
 		"The Fragrant",
 		"The Hound"
 	};
-	const int PREFIXES_AMOUNT = static_cast<int>(RoomData::PREFIXES.size());
+	const int PREFIXES_AMOUNT = static_cast<int>(PREFIXES.size());
 
 	const std::vector<std::string> SUFFIXES =
 	{
@@ -43,15 +43,20 @@ namespace RoomData
 		"Treasury",
 		"Cells"
 	};
-	const int SUFFIXES_AMOUNT = static_cast<int>(RoomData::SUFFIXES.size());
+	const int SUFFIXES_AMOUNT = static_cast<int>(SUFFIXES.size());
 
 	struct GenerationData
 	{
 		const GenerationTypes roomType;
 		const std::string name;
+		ItemFactory& itemFactory;
 		std::vector<Door*> initialForwardDoors;
 		Door* const initialPreviousDoor = NULL;
 		Event* event = NULL;
-		std::vector<const ItemData::ItemInstanceData*> droppedItems = ItemData::GenerateWeightedItemVector(ItemData::ROOM_DROP_SPAWN_CHANCE, ItemData::ROOM_DROP_SPAWN_TRIES);
+		std::vector<const Item*> droppedItems;
 	};
+
+	const GenerationData GenerateData(GenerationTypes aRoomType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);
+	const std::string GenerateRandomName();
+
 }

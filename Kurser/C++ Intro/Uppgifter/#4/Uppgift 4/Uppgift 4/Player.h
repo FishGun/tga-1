@@ -2,6 +2,7 @@
 #include "Entity.h"
 #include "Room.h"
 #include "Dungeon.h"
+#include "ItemFactory.h"
 
 #include <vector>
 
@@ -10,7 +11,7 @@ class Player
 public:
 	Player() = delete;
 
-	static Player& AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity = EntityData::BASE_PLAYER_STATS, const int aRoomIndex = 0);
+	static void AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity = EntityData::BASE_PLAYER_STATS, const int aRoomIndex = 0);
 	static const int GetPlayerCount();
 	static Player& GetPlayer(int aIndex);
 	static void PlayRound(int aRound);
@@ -30,12 +31,12 @@ public:
 	void TryChangeRoom();
 
 	Entity myEntityClass;
+	int myKills = { 0 };
 private:
 	Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity);
 	static std::vector<Player> myPlayers;
 	Room* myCurrentRoom;
 	const Dungeon* myCurrentDungeon;
-	int myKills = { 0 };
 
 	bool myInvincibilityCheatOn;
 	bool myInstakillCheatOn;

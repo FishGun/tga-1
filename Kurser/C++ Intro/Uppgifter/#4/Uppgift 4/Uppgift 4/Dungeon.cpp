@@ -36,21 +36,24 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 		case DungeonData::GenerationTypes::Untyped:
 		default:
 		{
+			ItemFactory& itemFactory = *new ItemFactory();
+			EnemyFactory& enemyFactory = *new EnemyFactory();
 			int roomTotal = RandomController::GenerateNumber(DungeonData::MIN_DUNGEON_ROOMS, DungeonData::MAX_DUNGEON_ROOMS);
 			std::vector<Room*> rooms;
 			rooms.reserve(roomTotal);
 			Room* attachRoom = NULL;
 			int roomAttachIndex = -1;
 			int highestRoomIndex = -1;
+
 			for (int i = 0; i < roomTotal; i++)
 			{
 				if (attachRoom == NULL)
 				{
-					rooms.push_back(new Room(RoomData::GenerationTypes::Random));
+					rooms.push_back(new Room(itemFactory, enemyFactory, RoomData::GenerationTypes::Random));
 				}
 				else
 				{
-					rooms.push_back(new Room(RoomData::GenerationTypes::Random, attachRoom));
+					rooms.push_back(new Room(itemFactory, enemyFactory, RoomData::GenerationTypes::Random, attachRoom));
 				}
 				highestRoomIndex++;
 				if (attachRoom == NULL)
@@ -66,22 +69,34 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 			return DungeonData::GenerationData
 			{
 				.name = GenerateRandomName(),
+				.itemFactory = itemFactory,
 				.rooms = rooms
 			};
 		}
 		case DungeonData::GenerationTypes::TheHold:
 		{
+			ItemFactory& itemFactory = *new ItemFactory();
+			EnemyFactory& enemyFactory = *new EnemyFactory();
 			std::vector<Room*> rooms;
 			rooms.reserve(3);
-			rooms.push_back(new Room(RoomData::GenerationTypes::RandomCombat));
+			RoomData::GenerationData room1Generation =
+			{
+				.roomType = RoomData::GenerationTypes::CountOrUntyped,
+				.name = "The Foyer",
+				.itemFactory = itemFactory,
+				.event = new Event(itemFactory, enemyFactory, EventData::GenerationTypes::EasyCombat)
+			};
 			RoomData::GenerationData room2Generation =
 			{
 				.roomType = RoomData::GenerationTypes::CountOrUntyped,
 				.name = "The Moat House",
+				.itemFactory = itemFactory,
 				.event = new Event(EventData::GenerationData
 					{
 						.eventType = EventData::GenerationTypes::CountOrUntyped,
-						.magnitude = 2
+						.itemFactory = itemFactory,
+						.enemyFactory = enemyFactory,
+						.magnitude = 3
 					}
 				)
 			};
@@ -89,18 +104,23 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 			{
 				.roomType = RoomData::GenerationTypes::CountOrUntyped,
 				.name = "The Pillory",
+				.itemFactory = itemFactory,
 				.event = new Event(EventData::GenerationData
 					{
 						.eventType = EventData::GenerationTypes::CountOrUntyped,
-						.magnitude = 6
+						.itemFactory = itemFactory,
+						.enemyFactory = enemyFactory,
+						.magnitude = 5
 					}
 				)
 			};
+			rooms.push_back(new Room(room1Generation));
 			rooms.push_back(new Room(room2Generation, rooms.at(0), DoorData::GenerationTypes::Pickable));
 			rooms.push_back(new Room(room3Generation, rooms.at(0), DoorData::GenerationTypes::Breakable));
 			return DungeonData::GenerationData
 			{
 				.name = "The Hold (Dungeon)",
+				.itemFactory = itemFactory,
 				.rooms = rooms
 			};
 		}

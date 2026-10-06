@@ -1,6 +1,6 @@
 #pragma once
 #include "EntityData.h"
-#include "ItemData.h"
+#include "Item.h"
 #include "SpellData.h"
 
 #include <vector>
@@ -36,7 +36,10 @@ public:
 	const int GetCarMod() const;
 	const int GetDefMod() const;
 
-	bool TryAddItem(const ItemData::ItemInstanceData* aItemDataPointer, const bool aShouldCallout = true);
+	const std::vector<const Item*>& GetItemVector() const;
+	const std::vector<SpellData::ActivatedSpell>& GetSpellVector() const;
+
+	bool TryAddItem(const Item* aItemDataPointer, const bool aShouldCallout = true);
 	void ActivateSpell(const SpellData::SpellInstanceData* aSpellDataPointer, int aRound);
 	void CleanSpells(int aRound);
 
@@ -45,9 +48,10 @@ public:
 	const int ChangeStat(EntityData::BaseStatsEnum aBaseStat, int aValue);
 
 	Entity& operator += (int rValue);
-	std::vector<const ItemData::ItemInstanceData*> myItemData;
-	std::vector<SpellData::ActivatedSpell> myActiveSpells;
 private:
+	std::vector<const Item*> myItemData;
+	std::vector<SpellData::ActivatedSpell> myActiveSpells;
+
 	EntityData::BaseData myBaseData;
 	int myHitPoints;
 };

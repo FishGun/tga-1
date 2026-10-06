@@ -49,7 +49,7 @@ namespace DisplayManager
 
 		std::cout << "What would you like to do in the room?\n";
 		std::vector<std::string> generatedStringVector = MenuData::GENERIC_ROOM_OPTIONS;
-		//generatedStringVector.reserve();
+		generatedStringVector.reserve(MenuData::GENERIC_ROOM_OPTIONS_SIZE + MenuData::CONTEXTUAL_ROOM_OPTIONS_SIZE);
 		if (room.myDroppedItems.size() > 0)
 		{
 			generatedStringVector.push_back(MenuData::CONTEXTUAL_ROOM_OPTIONS.at(0));
@@ -64,14 +64,14 @@ namespace DisplayManager
 		}
 		BasicStringArrayDisplay(generatedStringVector);
 	}
-	void CombatOptions(const Player& aPlayer, const Event& aEvent)
+	void CombatOptions(const Player& aPlayer, Event& aEvent)
 	{
 		std::vector <std::string> generatedStringVector;
 		const int enemyAmount = aEvent.GetCurrentEnemies();
 		generatedStringVector.reserve(enemyAmount);
 		for (int i = 0; i < enemyAmount; i++)
 		{
-			const Entity& entity = aEvent.GetEnemy(i).myEntityClass;
+			const Entity& entity = aEvent.GetEnemy(i).GetEntity();
 			std::string generatedString = entity.GetName();
 			generatedString.append(" #");
 			generatedString += std::to_string(i + 1);
@@ -90,7 +90,7 @@ namespace DisplayManager
 	{
 		std::cout << "The door is locked. How would you like to try opening it?\n";
 		std::vector<std::string> generatedStringVector;
-		//generatedStringVector.reserve();
+		generatedStringVector.reserve(2);
 		generatedStringVector.push_back(MenuData::LOCKED_DOOR_OPTIONS.at(0) + " (DC " + std::to_string(aDoor.myGenerationData.pickDC) + ")");
 		generatedStringVector.push_back(MenuData::LOCKED_DOOR_OPTIONS.at(1) + " (DC " + std::to_string(aDoor.myGenerationData.breakDC) + ")");
 		BasicStringArrayDisplay(generatedStringVector);
@@ -120,7 +120,9 @@ namespace DisplayManager
 
 	void PlayerContext(const Player& aPlayer)
 	{
-		std::cout << "You find yourself in " << aPlayer.GetRoom()->GetName() << "\n";
+		std::cout <<
+			aPlayer.myKills << "/" << DungeonData::KILLS_TO_WIN << " kills (to win)\n"
+			"You find yourself in " << aPlayer.GetRoom()->GetName() << "\n";
 		EntityHP(aPlayer.myEntityClass);
 	}
 	void EntityStats(const Entity& aEntity)
@@ -176,15 +178,15 @@ namespace DisplayManager
 			"Attack:" << entity.GetAttack() << "\n"
 			"Defense:" << entity.GetDefense() << " (damage reduction:" << entity.GetDefense() / EntityData::DEFENSE_DIVIDER << ")\n"
 			"Carrying Capacity:" << entity.GetCarryingCapacity() << "\n";
-		const int itemCount = static_cast<int>(entity.myItemData.size());
+		const int itemCount = static_cast<int>(entity.GetItemVector().size());
 		for (int i = 0; i < itemCount; i++)
 		{
-			std::cout << "Item #" << i + 1 << ": " << entity.myItemData.at(i)->baseModifiers.name << "\n";
+			std::cout << "Item #" << i + 1 << ": " << entity.GetItemVector().at(i)->GetBaseData().name << "\n";
 		}
-		const int spellCount = static_cast<int>(entity.myActiveSpells.size());
+		const int spellCount = static_cast<int>(entity.GetSpellVector().size());
 		for (int i = 0; i < spellCount; i++)
 		{
-			std::cout << "Spell #" << i + 1 << ": " << entity.myActiveSpells.at(i).data->baseModifiers.name << " (" << entity.myActiveSpells.at(i).roundAquisition + entity.myActiveSpells.at(i).data->roundDuration - aRound << " rounds left)\n";
+			std::cout << "Spell #" << i + 1 << ": " << entity.GetSpellVector().at(i).data->baseModifiers.name << " (" << entity.GetSpellVector().at(i).roundAquisition + entity.GetSpellVector().at(i).data->roundDuration - aRound << " rounds left)\n";
 		}
 		std::cout << "\n";
 	}
@@ -194,10 +196,10 @@ namespace DisplayManager
 		std::cout <<
 			"As the body falls to the ground, something shiny falls and clangs on the floor...\n";
 	}
-	void ItemPickupCallout(const Entity& aEntity, const ItemData::ItemInstanceData& aItem)
+	void ItemPickupCallout(const Entity& aEntity, const Item& aItem)
 	{
 		std::cout <<
-			aEntity.GetName() << " picked up a " << aItem.baseModifiers.name << "!\n";
+			aEntity.GetName() << " picked up a " << aItem.GetBaseData().name << "!\n";
 	}
 	void ItemPickupFailedCallout(const Entity& aEntity)
 	{
@@ -243,7 +245,7 @@ namespace DisplayManager
 		const Room& room = *aPlayer.GetRoom();
 		const int doorTotal = room.GetDoorTotal();
 		std::vector<std::string> generatedStringVector;
-		//generatedStringVector.reserve();
+		generatedStringVector.reserve(doorTotal);
 		const bool hasReturnDoor = room.GetReturnDoor() != NULL;
 		for (int i = 0; i < doorTotal; i++)
 		{
@@ -263,10 +265,10 @@ namespace DisplayManager
 		}
 		BasicStringArrayDisplay(generatedStringVector);
 	}
-	void MoveThroughDoor(Door& door, const bool aIsMovingToPreviousRoom)
+	void MoveThroughDoor(Door& aDoor, const bool aIsMovingToPreviousRoom)
 	{
-		const char* previousName = door.GetPreviousRoom()->GetName();
-		const char* nextName = door.GetNextRoom()->GetName();
+		const char* previousName = aDoor.GetPreviousRoom()->GetName();
+		const char* nextName = aDoor.GetNextRoom()->GetName();
 		std::cout << "You leave " << (aIsMovingToPreviousRoom ? nextName : previousName) << ", and go through the door to " << (aIsMovingToPreviousRoom ? previousName : nextName) << "\n";
 	}
 

@@ -5,7 +5,7 @@
 
 namespace ItemData
 {
-	const float ENEMY_KILLED_DROP_CHANCE = 0.5f;
+	const float ENEMY_KILLED_DROP_CHANCE = 0.25f;
 	const float ROOM_DROP_SPAWN_CHANCE = 0.5f;
 	const int ROOM_DROP_SPAWN_TRIES = 2;
 	const float ROOM_CHEST_SPAWN_CHANCE = 0.34f;

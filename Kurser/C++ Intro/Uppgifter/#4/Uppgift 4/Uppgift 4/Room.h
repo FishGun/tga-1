@@ -1,7 +1,7 @@
 #pragma once
 #include "RoomData.h"
 #include "Door.h"
-#include "ItemData.h"
+#include "Item.h"
 #include "ChestData.h"
 #include "SpellData.h"
 
@@ -9,8 +9,8 @@ class Room
 {
 public:
 	Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
-	Room(const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors = { NULL }, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
-	Room(const RoomData::GenerationTypes aRoomType = RoomData::GenerationTypes::Random, Door* aPreviousDoor = NULL, std::vector<Door*> aInitialForwardDoors = { NULL });
+	Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors = { NULL }, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
+	Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType = RoomData::GenerationTypes::Random, Door* aPreviousDoor = NULL, std::vector<Door*> aInitialForwardDoors = { NULL });
 	Room(const RoomData::GenerationData aGenerationData);
 
 	Door* GetReturnDoor() const;
@@ -26,7 +26,7 @@ public:
 	const bool HasChest() const;
 	const bool HasSpell() const;
 
-	std::vector<const ItemData::ItemInstanceData*> myDroppedItems;
+	std::vector<const Item*> myDroppedItems;
 	std::vector<ChestData::ChestInstance*> myChests;
 	std::vector<const SpellData::SpellInstanceData*> mySpells;
 private:
@@ -39,7 +39,4 @@ private:
 	Door* const CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
 	Door* const CreateDoorway(DoorData::GenerationData aDoorData);
 
-	const RoomData::GenerationData GenerateData(RoomData::GenerationTypes aRoomType, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);
-
-	const std::string GenerateRandomName();
 };

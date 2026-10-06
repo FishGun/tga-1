@@ -5,7 +5,7 @@ GameLoop::GameLoop()
 {
 	myRoundTracker = 1;
 	int mainMenuChoice = 0;
-	bool InvincibilityCheat = false;
+	bool invincibilityCheat = false;
 	bool instakillCheat = false;
 	do
 	{
@@ -13,22 +13,26 @@ GameLoop::GameLoop()
 
 		if (mainMenuChoice == 1)
 		{
-			Play(InvincibilityCheat, instakillCheat);
+			Play(invincibilityCheat, instakillCheat);
+			// Breaks out of mainMenu after one play. Should be removed once restarting without closing is verified to work.
+			mainMenuChoice = 3;
+			system("pause");
+			system("cls");
 		}
 		else if (mainMenuChoice == 2)
 		{
-			DisplayManager::CheatStatus(InvincibilityCheat, instakillCheat);
+			DisplayManager::CheatStatus(invincibilityCheat, instakillCheat);
 			DisplayManager::CheatMenu();
 			const int cheatInput = InputController::IntegerRange(MenuData::CHEAT_OPTIONS_SIZE);
 			if (cheatInput == 1)
 			{
-				InvincibilityCheat = !InvincibilityCheat;
+				invincibilityCheat = !invincibilityCheat;
 			}
 			else if (cheatInput == 2)
 			{
 				instakillCheat = !instakillCheat;
 			}
-			DisplayManager::CheatStatus(InvincibilityCheat, instakillCheat);
+			DisplayManager::CheatStatus(invincibilityCheat, instakillCheat);
 		}
 		if (mainMenuChoice != 3)
 		{

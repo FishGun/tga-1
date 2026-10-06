@@ -19,6 +19,12 @@
     <Filter Include="Header Files\Database">
       <UniqueIdentifier>{7efb66e9-f28c-479c-97dd-21c494b189f1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Factories">
+      <UniqueIdentifier>{b4ee8f0e-2569-4f2e-afbc-f2f3e4733fa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Factories">
+      <UniqueIdentifier>{edfbe217-1b7f-40fd-840a-dc5c8a18ce7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Uppgift 4.cpp">
@@ -57,13 +63,22 @@
     <ClCompile Include="DisplayManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ItemData.cpp">
-      <Filter>Source Files\Database</Filter>
-    </ClCompile>
     <ClCompile Include="SpellData.cpp">
       <Filter>Source Files\Database</Filter>
     </ClCompile>
     <ClCompile Include="ChestData.cpp">
+      <Filter>Source Files\Database</Filter>
+    </ClCompile>
+    <ClCompile Include="EnemyFactory.cpp">
+      <Filter>Source Files\Factories</Filter>
+    </ClCompile>
+    <ClCompile Include="ItemFactory.cpp">
+      <Filter>Source Files\Factories</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomData.cpp">
       <Filter>Source Files\Database</Filter>
     </ClCompile>
   </ItemGroup>
@@ -119,14 +134,20 @@
     <ClInclude Include="MenuData.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="ItemData.h">
+    <ClInclude Include="SpellData.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
     <ClInclude Include="ChestData.h">
       <Filter>Header Files\Database</Filter>
     </ClInclude>
-    <ClInclude Include="SpellData.h">
-      <Filter>Header Files\Database</Filter>
+    <ClInclude Include="EnemyFactory.h">
+      <Filter>Header Files\Factories</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemFactory.h">
+      <Filter>Header Files\Factories</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

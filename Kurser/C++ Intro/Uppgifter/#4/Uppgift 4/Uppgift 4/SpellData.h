@@ -37,5 +37,5 @@ namespace SpellData
 	SpellInstanceData& CreateNewSpellData(SpellTypes aType);
 
 	const ActivatedSpell& CreateNewSpellInstance(SpellInstanceData* aSpellData);
-	std::vector<const SpellData::SpellInstanceData*> GenerateWeightedSpellVector(float aSpellLikelyhood, int aChestMax);
+	std::vector<const SpellData::SpellInstanceData*> GenerateWeightedSpellVector(float aSpellLikelyhood, int aSpellMax);
 }

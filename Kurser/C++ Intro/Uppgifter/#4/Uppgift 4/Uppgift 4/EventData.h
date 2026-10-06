@@ -1,5 +1,6 @@
 #pragma once
-#include "Enemy.h"
+#include "ItemFactory.h"
+#include "EnemyFactory.h"
 
 namespace EventData
 {
@@ -19,6 +20,8 @@ namespace EventData
 	struct GenerationData
 	{
 		const GenerationTypes eventType;
+		ItemFactory& itemFactory;
+		EnemyFactory& enemyFactory;
 		const int magnitude;
 	};
 }

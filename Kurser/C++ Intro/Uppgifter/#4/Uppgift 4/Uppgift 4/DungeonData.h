@@ -1,12 +1,13 @@
 #pragma once
 #include "Room.h"
+#include "ItemFactory.h"
 
 #include <vector>
 #include <string>
 
 namespace DungeonData
 {
-	const int KILLS_TO_WIN = 7;
+	const int KILLS_TO_WIN = 8;
 
 	const int MAX_DUNGEON_ROOMS = 5;
 	const int MIN_DUNGEON_ROOMS = 3;
@@ -55,6 +56,7 @@ namespace DungeonData
 	struct GenerationData
 	{
 		const std::string name;
+		ItemFactory& itemFactory;
 		std::vector<Room*> rooms;
 	};
 }

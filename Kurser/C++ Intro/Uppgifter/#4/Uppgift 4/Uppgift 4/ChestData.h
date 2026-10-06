@@ -1,5 +1,5 @@
 #pragma once
-#include "ItemData.h"
+#include "ItemFactory.h"
 
 #include <vector>
 
@@ -9,9 +9,6 @@ namespace ChestData
 	{
 		OneItemUnlocked,
 		TwoItemUnlocked,
-		//OneItemEasyLock,
-		//ThreeItemEasyLock,
-		//TwoItemHardLock,
 		CountOrRandom
 	};
 	const int CHEST_TYPES_SIZE = static_cast<int>(ChestTypes::CountOrRandom);
@@ -24,7 +21,7 @@ namespace ChestData
 	struct ChestInstance
 	{
 		const ChestCreationData& data;
-		std::vector<const ItemData::ItemInstanceData*> items = ItemData::GenerateWeightedItemVector(1, data.itemCount);
+		std::vector<const Item*> items;
 	};
 
 	extern ChestCreationData globalChestDataCollection[];
@@ -33,6 +30,6 @@ namespace ChestData
 	const ChestCreationData& GetChestData(ChestTypes aType);
 	ChestCreationData& CreateNewChestData(ChestTypes aType);
 
-	ChestInstance& CreateNewChest(ChestCreationData& aChestData);
-	std::vector<ChestInstance*> GenerateWeightedChestVector(float aChestLikelyhood, int aChestMax);
+	ChestInstance& CreateNewChest(ItemFactory& aItemFactory, ChestCreationData& aChestData);
+	std::vector<ChestInstance*> GenerateWeightedChestVector(ItemFactory& aItemFactory, float aChestLikelyhood = Item::ROOM_CHEST_SPAWN_CHANCE, int aChestMax = 1);
 }

@@ -3,7 +3,7 @@
 #include "Player.h"
 #include "DisplayManager.h"
 
-Event::Event(EventData::GenerationTypes aEventType) : Event(GenerateData(aEventType)) {}
+Event::Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationTypes aEventType) : Event(GenerateData(aEventType, aItemFactory, aEnemyFactory)) {}
 Event::Event(EventData::GenerationData aEventData) : myGenerationData(aEventData)
 {
 	GenerateEvent();
@@ -34,25 +34,25 @@ const int Event::GetCurrentEnemies() const
 {
 	return static_cast<int>(myEnemies.size());
 }
-const Enemy& Event::GetEnemy(int aValue) const
+Enemy& Event::GetEnemy(int aValue)
 {
 	return myEnemies.at(aValue);
 }
 
-const bool Event::InjureEnemy(std::vector<const ItemData::ItemInstanceData*>& aLootVector, int aDamage, int aIndex)
+const bool Event::InjureEnemy(std::vector<const Item*>& aLootVector, int aDamage, int aIndex)
 {
 	if (aIndex > GetCurrentEnemies())
 	{
 		return true;
 	}
-	Entity& enemyEntity = myEnemies.at(aIndex).myEntityClass;
+	Entity& enemyEntity = myEnemies.at(aIndex).GetEntity();
 	enemyEntity.TakeDamage(aDamage);
 	const bool enemyDied = enemyEntity.IsDead();
 	if (enemyDied)
 	{
 		DisplayManager::EntityDeathCry(enemyEntity);
 		RemoveEnemy(aIndex);
-		std::vector<const ItemData::ItemInstanceData*> droppedItems = ItemData::GenerateWeightedItemVector(ItemData::ENEMY_KILLED_DROP_CHANCE, 1);
+		std::vector<const Item*> droppedItems = myGenerationData.itemFactory.CreateWeightedVector(Item::ENEMY_KILLED_DROP_CHANCE, 1);
 		if (static_cast<int>(droppedItems.size()) > 0)
 		{
 			aLootVector.insert(aLootVector.end(), droppedItems.begin(), droppedItems.end());
@@ -68,7 +68,7 @@ const bool Event::EnemyIsDead(int aIndex)
 	{
 		return true;
 	}
-	return myEnemies.at(aIndex).myEntityClass.IsDead();
+	return myEnemies.at(aIndex).GetEntity().IsDead();
 }
 
 void Event::RemoveEnemy(int aIndex)
@@ -80,7 +80,7 @@ void Event::TakeTurn(Entity& aTargetEntity, int aRound)
 {
 	for (int i = 0; i < GetCurrentEnemies(); i++)
 	{
-		Entity& enemyEntity = myEnemies.at(i).myEntityClass;
+		Entity& enemyEntity = myEnemies.at(i).GetEntity();
 		if (!enemyEntity.IsDead())
 		{
 			aTargetEntity.TakeDamage(enemyEntity.GetAttack());
@@ -90,54 +90,54 @@ void Event::TakeTurn(Entity& aTargetEntity, int aRound)
 	}
 }
 
-const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes aEventType)
+const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes aEventType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory)
 {
 	while (aEventType == EventData::GenerationTypes::Random)
 	{
 		aEventType = static_cast<EventData::GenerationTypes>(RandomController::GenerateNumber(0, EventData::TYPES_SIZE - 1));
 	}
+	int magnitude = 0;
 	switch (aEventType)
 	{
 		default:
 		case EventData::GenerationTypes::EasyCombat:
 		{
-			return EventData::GenerationData
-			{
-				.eventType = aEventType,
-				.magnitude = EventData::EASY_MAGNITUDE
-			};
+			magnitude = EventData::EASY_MAGNITUDE;
+			break;
 		}
 		case EventData::GenerationTypes::MediumCombat:
 		{
-			return EventData::GenerationData
-			{
-				.eventType = aEventType,
-				.magnitude = EventData::MEDIUM_MAGNITUDE
-			};
+			magnitude = EventData::MEDIUM_MAGNITUDE;
+			break;
 		}
 		case EventData::GenerationTypes::HardCombat:
 		{
-			return EventData::GenerationData
-			{
-				.eventType = aEventType,
-				.magnitude = EventData::HARD_MAGNITUDE
-			};
+			magnitude = EventData::HARD_MAGNITUDE;
+			break;
 		}
 	}
+	return EventData::GenerationData
+	{
+		.eventType = aEventType,
+		.itemFactory = aItemFactory,
+		.enemyFactory = aEnemyFactory,
+		.magnitude = magnitude
+	};
 }
 void Event::GenerateEvent()
 {
 	myEnemies.clear();
 
+	EnemyFactory::Types enemyType = static_cast<EnemyFactory::Types>(myGenerationData.magnitude % (EnemyFactory::TYPES_SIZE));
 	for (int i = 0; i < myGenerationData.magnitude; i++)
 	{
-		EntityData::BaseData enemyStats =
+		if (i % 3 == 0)
 		{
-			.name = "Mob",
-			.strength = 4,
-			.dexterity = myGenerationData.magnitude/4 + 7,
-			.physique = (i + 1) * 5
-		};
-		myEnemies.push_back(Enemy(enemyStats));
+			myEnemies.push_back(myGenerationData.enemyFactory.Create(EnemyFactory::Types::CountOrRandom));
+		}
+		else
+		{
+			myEnemies.push_back(myGenerationData.enemyFactory.Create(enemyType));
+		}
 	}
 }

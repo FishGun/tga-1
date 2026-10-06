@@ -4,11 +4,10 @@
 
 Player::Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity) : myCurrentRoom(aRoom), myEntityClass(aEntity), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn) {}
 
-Player& Player::AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity, const int aRoomIndex)
+void Player::AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity, const int aRoomIndex)
 {
 	myPlayers.push_back(Player(aDungeon->GetRoom(aRoomIndex), aInvincibilityOn, aInstakillOn, aEntity));
 	myPlayers.back().myCurrentDungeon = aDungeon;
-	return myPlayers.back();
 }
 const int Player::GetPlayerCount()
 {
@@ -98,7 +97,7 @@ void Player::TakeTurn(int aRound)
 			{
 				if (roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
 				{
-					const ItemData::ItemInstanceData* item = myCurrentRoom->myDroppedItems.back();
+					const Item* item = myCurrentRoom->myDroppedItems.back();
 					if (myEntityClass.TryAddItem(item))
 					{
 						myCurrentRoom->myDroppedItems.pop_back();
@@ -114,7 +113,7 @@ void Player::TakeTurn(int aRound)
 					ChestData::ChestInstance* chest = myCurrentRoom->myChests.back();
 					while (static_cast<int>(chest->items.size()) > 0)
 					{
-						const ItemData::ItemInstanceData* item = chest->items.back();
+						const Item* item = chest->items.back();
 						if (myEntityClass.TryAddItem(item, false))
 						{
 							DisplayManager::ChestGrabCallout();
@@ -163,7 +162,7 @@ void Player::TakeTurn(int aRound)
 		}
 		else
 		{
-			DisplayManager::EntityAttackShout(myEntityClass, event->GetEnemy(attackTarget).myEntityClass);
+			DisplayManager::EntityAttackShout(myEntityClass, event->GetEnemy(attackTarget).GetEntity());
 			event->InjureEnemy(myCurrentRoom->myDroppedItems, myEntityClass.GetAttack(), attackTarget);
 		}
 		myKills += enemiesCount - event->GetCurrentEnemies();

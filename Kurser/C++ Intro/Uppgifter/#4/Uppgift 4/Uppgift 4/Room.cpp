@@ -7,8 +7,8 @@ Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, 
 {
 	PopulateLoot();
 }
-Room::Room(const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors, DoorData::GenerationTypes aDoorType) : Room(GenerateData(aRoomType, aInitialForwardDoors, CreateDoorway(aPreviousRoom, aDoorType))) {}
-Room::Room(const RoomData::GenerationTypes aRoomType, Door* aPreviousDoor, std::vector<Door*> aInitialForwardDoors) : Room(GenerateData(aRoomType, aInitialForwardDoors, aPreviousDoor)) {}
+Room::Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors, DoorData::GenerationTypes aDoorType) : Room(GenerateData(aRoomType, aItemFactory, aEnemyFactory, aInitialForwardDoors, CreateDoorway(aPreviousRoom, aDoorType))) {}
+Room::Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType,  Door* aPreviousDoor, std::vector<Door*> aInitialForwardDoors) : Room(GenerateData(aRoomType, aItemFactory, aEnemyFactory, aInitialForwardDoors, aPreviousDoor)) {}
 Room::Room(const RoomData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myPreviousDoor(myGenerationData.initialPreviousDoor), myForwardDoors(myGenerationData.initialForwardDoors)
 {
 	PopulateLoot();
@@ -82,8 +82,8 @@ void Room::PopulateLoot()
 {
 	myDroppedItems = myGenerationData.droppedItems;
 	// Ideally should be copying these values from myGenerationData, but not a priority right now.
-	myChests = ChestData::GenerateWeightedChestVector(ItemData::ROOM_CHEST_SPAWN_CHANCE, 1);
-	mySpells = SpellData::GenerateWeightedSpellVector(ItemData::ROOM_SPELL_SPAWN_CHANCE, 1);
+	myChests = ChestData::GenerateWeightedChestVector(myGenerationData.itemFactory);
+	mySpells = SpellData::GenerateWeightedSpellVector(Item::ROOM_SPELL_SPAWN_CHANCE, 1);
 }
 
 Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType)
@@ -99,52 +99,4 @@ Door* const Room::CreateDoorway(DoorData::GenerationData aDoorData)
 
 	Door* const newDoor = new Door(aDoorData);
 	return previousRoom->AddForwardDoor(newDoor);
-}
-
-const RoomData::GenerationData Room::GenerateData(RoomData::GenerationTypes aRoomType, std::vector<Door*> aInitialForwardDoors, Door* const aPreviousDoor)
-{
-	while (aRoomType == RoomData::GenerationTypes::Random)
-	{
-		aRoomType = static_cast<RoomData::GenerationTypes>(RandomController::GenerateNumber(RoomData::RANDOM_TYPE_INDEX + 1, RoomData::TYPES_SIZE - 1));
-	}
-	switch (aRoomType)
-	{
-	default:
-	case RoomData::GenerationTypes::Empty:
-	{
-		return RoomData::GenerationData
-		{
-			.roomType = aRoomType,
-			.name = GenerateRandomName(),
-			.initialForwardDoors = aInitialForwardDoors,
-			.initialPreviousDoor = aPreviousDoor,
-			.event = NULL
-		};
-	}
-	case RoomData::GenerationTypes::RandomCombat:
-	{
-		return RoomData::GenerationData
-		{
-			.roomType = aRoomType,
-			.name = GenerateRandomName(),
-			.initialForwardDoors = aInitialForwardDoors,
-			.initialPreviousDoor = aPreviousDoor,
-			.event = new Event(EventData::GenerationTypes::Random)
-		};
-	}
-	}
-}
-
-const std::string Room::GenerateRandomName()
-{
-	const std::string pickedPrefix = RoomData::PREFIXES[RandomController::GenerateNumber(0, RoomData::PREFIXES_AMOUNT - 1)].c_str();
-
-	const std::string pickedSuffix = RoomData::SUFFIXES[RandomController::GenerateNumber(0, RoomData::SUFFIXES_AMOUNT - 1)].c_str();
-
-	std::string toReturn = "";
-	toReturn.append(pickedPrefix);
-	toReturn.append(" ");
-	toReturn.append(pickedSuffix);
-	toReturn.append(" (Room)");
-	return toReturn.c_str();
 }
