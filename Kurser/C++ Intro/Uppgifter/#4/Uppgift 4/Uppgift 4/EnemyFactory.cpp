@@ -29,7 +29,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 			assert(false && "Fatal Error: A new item was attempted to be made without specifying its type");
 		case EnemyFactory::Types::Skeleton: return new Enemy
 		{
-			Entity
+			EnemyType
 			{
 				EntityData::BaseData
 				{
@@ -42,7 +42,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 		};
 		case EnemyFactory::Types::Spider: return new Enemy
 		{
-			Entity
+			EnemyType
 			{
 				EntityData::BaseData
 				{
@@ -55,7 +55,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 		};
 		case EnemyFactory::Types::Negation: return new Enemy
 		{
-			Entity
+			EnemyType
 			{
 				EntityData::BaseData
 				{
@@ -68,7 +68,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 		};
 		case EnemyFactory::Types::TearGolem: return new Enemy
 		{
-			Entity
+			EnemyType
 			{
 				EntityData::BaseData
 				{

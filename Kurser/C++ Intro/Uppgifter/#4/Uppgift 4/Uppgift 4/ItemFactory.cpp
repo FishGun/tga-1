@@ -4,30 +4,46 @@
 
 #include <assert.h>
 
-const Item& ItemFactory::Create(ItemFactory::Types aType)
+const Item ItemFactory::Create(Types aType)
 {
-	if (aType == ItemFactory::Types::CountOrRandom)
+	if (aType == Types::CountOrRandom)
 	{
-		aType = static_cast<ItemFactory::Types>(RandomController::GenerateNumber(0, static_cast<int>(ItemFactory::Types::CountOrRandom) - 1));
+		aType = static_cast<Types>(RandomController::GenerateNumber(0, static_cast<int>(Types::CountOrRandom) - 1));
 	}
 	const int index = static_cast<int>(aType);
 
-	assert(index <ItemFactory::TYPES_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
+	assert(index <TYPES_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
 
 	if (!myItemDataCollectedAtIndex[index])
 	{
-		myItemDataCollection[index] = CreateToArray(aType);
+		myItemDataCollection[index] = DefineItemTypeData(aType);
 		myItemDataCollectedAtIndex[index] = true;
 	}
-	return *myItemDataCollection[index];
+	return Item::Item(myItemDataCollection[index]);
 }
-Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
+
+std::vector<Item> ItemFactory::CreateWeightedVector(float aItemLikelyhood, int aItemMax)
+{
+	std::vector<Item> toReturn;
+	toReturn.reserve(aItemMax);
+	const int itemLikelyhoodWeight = static_cast<int>(1.0f / aItemLikelyhood);
+	for (int i = 0; i < aItemMax; i++)
+	{
+		if (RandomController::GenerateNumber(1, itemLikelyhoodWeight) <= 1)
+		{
+			toReturn.push_back(Create(Types::CountOrRandom));
+		}
+	}
+	return toReturn;
+}
+
+ItemType* ItemFactory::DefineItemTypeData(Types aType)
 {
 	switch (aType)
 	{
 		default:
 			assert(false && "Fatal Error: A new item was attempted to be made without specifying its type");
-		case ItemFactory::Types::Knife: return new Item
+		case ItemFactory::Types::Knife: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -39,7 +55,7 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 				.defense = 1
 			}
 		};
-		case ItemFactory::Types::Longsword: return new Item
+		case ItemFactory::Types::Longsword: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -52,7 +68,7 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 				.defense = 5,
 			}
 		};
-		case ItemFactory::Types::Greatsword: return new Item
+		case ItemFactory::Types::Greatsword: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -64,7 +80,7 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 				.attack = 20
 			}
 		};
-		case ItemFactory::Types::LeatherChestplate: return new Item
+		case ItemFactory::Types::LeatherChestplate: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -76,7 +92,7 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 				.hitPointMax = 10
 			}
 		};
-		case ItemFactory::Types::MetalChestplate: return new Item
+		case ItemFactory::Types::MetalChestplate: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -90,7 +106,7 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 				.hitPointMax = 50
 			}
 		};
-		case ItemFactory::Types::CobbledBoots: return new Item
+		case ItemFactory::Types::CobbledBoots: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -103,7 +119,7 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 				.carryingCapacity = 1
 			}
 		};
-		case ItemFactory::Types::NobleBoots: return new Item
+		case ItemFactory::Types::NobleBoots: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -118,19 +134,4 @@ Item* ItemFactory::CreateToArray(ItemFactory::Types aType)
 			}
 		};
 	}
-}
-
-std::vector<const Item*> ItemFactory::CreateWeightedVector(float aItemLikelyhood, int aItemMax)
-{
-	std::vector<const Item*> toReturn;
-	toReturn.reserve(aItemMax);
-	const int itemLikelyhoodWeight = static_cast<int>(1.0f / aItemLikelyhood);
-	for (int i = 0; i < aItemMax; i++)
-	{
-		if (RandomController::GenerateNumber(1, itemLikelyhoodWeight) <= 1)
-		{
-			toReturn.push_back(&Create(ItemFactory::Types::CountOrRandom));
-		}
-	}
-	return toReturn;
 }

@@ -30,7 +30,7 @@
     <ClCompile Include="Uppgift 4.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Entity.cpp">
+    <ClCompile Include="EnemyType.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
@@ -81,9 +81,12 @@
     <ClCompile Include="RoomData.cpp">
       <Filter>Source Files\Database</Filter>
     </ClCompile>
+    <ClCompile Include="ItemType.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Entity.h">
+    <ClInclude Include="EnemyType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">
@@ -147,6 +150,9 @@
       <Filter>Header Files\Factories</Filter>
     </ClInclude>
     <ClInclude Include="Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemType.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

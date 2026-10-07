@@ -1,15 +1,8 @@
 #include "Item.h"
 
-Item::Item(const EntityData::BaseData aBaseModifiers, const EntityData::DerivedData aDerivedModifiers) :
-	myBaseModifiers(aBaseModifiers),
-	myDerivedModifiers(aDerivedModifiers) {}
+Item::Item(ItemType* aTypeData) : myItemType(aTypeData) {}
 
-const EntityData::BaseData& Item::GetBaseData() const
+const ItemType& Item::GetItemType() const
 {
-	return myBaseModifiers;
-}
-
-const EntityData::DerivedData& Item::GetDerivedData() const
-{
-	return myDerivedModifiers;
+	return *myItemType;
 }

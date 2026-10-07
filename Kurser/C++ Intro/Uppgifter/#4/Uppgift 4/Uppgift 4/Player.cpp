@@ -2,11 +2,14 @@
 #include "DisplayManager.h"
 #include "InputController.h"
 
-Player::Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity) : myCurrentRoom(aRoom), myEntityClass(aEntity), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn) {}
-
-void Player::AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, Entity aEntity, const int aRoomIndex)
+Player::Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, EnemyType aEntityType) : myCurrentRoom(aRoom), myTypeData(aEntityType), myCurrentHP(GetMaxHP()), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn)
 {
-	myPlayers.push_back(Player(aDungeon->GetRoom(aRoomIndex), aInvincibilityOn, aInstakillOn, aEntity));
+	myActiveSpells.clear();
+}
+
+void Player::AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, EnemyType aEntityType, const int aRoomIndex)
+{
+	myPlayers.push_back(Player(aDungeon->GetRoom(aRoomIndex), aInvincibilityOn, aInstakillOn, aEntityType));
 	myPlayers.back().myCurrentDungeon = aDungeon;
 }
 const int Player::GetPlayerCount()
@@ -33,7 +36,7 @@ void Player::CheckForDeaths()
 	for (int i = 0; i < GetPlayerCount(); i++)
 	{
 		Player& player = myPlayers.at(i);
-		if (player.myEntityClass.IsDead())
+		if (player.IsDead())
 		{
 			if (player.myInvincibilityCheatOn)
 			{
@@ -97,8 +100,8 @@ void Player::TakeTurn(int aRound)
 			{
 				if (roomActionMathed == MenuData::GENERIC_ROOM_OPTIONS_SIZE + 1)
 				{
-					const Item* item = myCurrentRoom->myDroppedItems.back();
-					if (myEntityClass.TryAddItem(item))
+					Item& item = myCurrentRoom->myDroppedItems.back();
+					if (TryAddItem(item))
 					{
 						myCurrentRoom->myDroppedItems.pop_back();
 					}
@@ -113,11 +116,11 @@ void Player::TakeTurn(int aRound)
 					ChestData::ChestInstance* chest = myCurrentRoom->myChests.back();
 					while (static_cast<int>(chest->items.size()) > 0)
 					{
-						const Item* item = chest->items.back();
-						if (myEntityClass.TryAddItem(item, false))
+						Item& item = chest->items.back();
+						if (TryAddItem(item, false))
 						{
 							DisplayManager::ChestGrabCallout();
-							DisplayManager::ItemPickupCallout(myEntityClass, *item);
+							DisplayManager::ItemPickupCallout(*this, item);
 						}
 						else
 						{
@@ -137,7 +140,7 @@ void Player::TakeTurn(int aRound)
 				{
 					DisplayManager::SpellActivateCallout(*myCurrentRoom->mySpells.back());
 
-					myEntityClass.ActivateSpell(myCurrentRoom->mySpells.back(), aRound);
+					ActivateSpell(myCurrentRoom->mySpells.back(), aRound);
 					myCurrentRoom->mySpells.pop_back();
 					alreadyChosen = true;
 				}
@@ -162,13 +165,13 @@ void Player::TakeTurn(int aRound)
 		}
 		else
 		{
-			DisplayManager::EntityAttackShout(myEntityClass, event->GetEnemy(attackTarget).GetEntity());
-			event->InjureEnemy(myCurrentRoom->myDroppedItems, myEntityClass.GetAttack(), attackTarget);
+			DisplayManager::EntityAttackShout(myTypeData, event->GetEnemy(attackTarget).GetTypeData());
+			event->InjureEnemy(myCurrentRoom->myDroppedItems, GetAttack(), attackTarget);
 		}
 		myKills += enemiesCount - event->GetCurrentEnemies();
 		enemiesCount = event->GetCurrentEnemies();
 	}
-	myEntityClass.CleanSpells(aRound);
+	CleanSpells(aRound);
 }
 
 const int Player::RoomMenu() const
@@ -205,11 +208,11 @@ bool Player::TryToUnlockDoor(Door& door)
 	const int unlockInput = InputController::IntegerRange(2) - 1;
 	if (unlockInput == 0)
 	{
-		door.TryPick(myEntityClass.GetDexterity());
+		door.TryPick(GetDexterity());
 	}
 	else if (unlockInput == 1)
 	{
-		door.TryBreak(myEntityClass.GetStrength());
+		door.TryBreak(GetStrength());
 	}
 	return door.IsOpen();
 }
@@ -253,6 +256,214 @@ void Player::TryChangeRoom()
 		{
 			SetRoom(door->GetNextRoom());
 
+		}
+	}
+}
+
+
+void Player::TakeDamage(int aValue)
+{
+	myCurrentHP -= aValue;
+}
+const int Player::GetCurrentHP() const
+{
+	return myCurrentHP;
+}
+const bool Player::IsDead() const
+{
+	return myCurrentHP <= 0;
+}
+const EnemyType& Player::GetTypeData() const
+{
+	return myTypeData;
+}
+const int Player::GetKills() const
+{
+	return myKills;
+}
+
+const int Player::GetStrength() const
+{
+	return myTypeData.GetBaseStats().strength + GetStrMod();
+}
+const int Player::GetDexterity() const
+{
+	return myTypeData.GetBaseStats().dexterity + GetDexMod();
+}
+const int Player::GetPhysique() const
+{
+	return myTypeData.GetBaseStats().physique + GetPhyMod();
+}
+const int Player::GetAttack() const
+{
+	return GetStrength() * GetDexterity() + GetAttMod();
+}
+const int Player::GetMaxHP() const
+{
+	return GetPhysique() * 4 + GetStrength() * 6 + GetDexterity() * 3 + GetMaxHPMod();
+}
+const int Player::GetCarryingCapacity() const
+{
+	return GetStrength() + GetDexterity() / 3 + GetCarMod();
+}
+const int Player::GetDefense() const
+{
+	return GetPhysique() * GetDexterity() + GetDefMod();
+}
+
+const int Player::GetStrMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetBaseData().strength;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->baseModifiers.strength;
+	}
+	return total;
+}
+const int Player::GetDexMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetBaseData().dexterity;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->baseModifiers.dexterity;
+	}
+	return total;
+}
+const int Player::GetPhyMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetBaseData().physique;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->baseModifiers.physique;
+	}
+	return total;
+}
+const int Player::GetAttMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetDerivedData().attack;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->derivedModifiers.attack;
+	}
+	return total;
+}
+const int Player::GetMaxHPMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetDerivedData().hitPointMax;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->derivedModifiers.hitPointMax;
+	}
+	return total;
+}
+const int Player::GetCarMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetDerivedData().carryingCapacity;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->derivedModifiers.carryingCapacity;
+	}
+	return total;
+}
+const int Player::GetDefMod() const
+{
+	int total = 0;
+	const int itemTotal = static_cast<int>(myItems.size());
+	for (int i = 0; i < itemTotal; i++)
+	{
+		total += myItems.at(i).GetItemType().GetDerivedData().defense;
+	}
+	const int spellTotal = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellTotal; i++)
+	{
+		total += myActiveSpells.at(i).data->derivedModifiers.defense;
+	}
+	return total;
+}
+
+const std::vector<Item>& Player::GetTemporaryItemVector() const
+{
+	return myItems;
+}
+const std::vector<SpellData::ActivatedSpell>& Player::GetTemporarySpellVector() const
+{
+	return myActiveSpells;
+}
+
+bool Player::TryAddItem(Item& aItem, const bool aShouldCallout)
+{
+	if (GetCarryingCapacity() > static_cast<int>(myItems.size()))
+	{
+		myItems.push_back(aItem);
+		myCurrentHP += aItem.GetItemType().GetDerivedData().hitPointMax;
+		if (aShouldCallout)
+		{
+			DisplayManager::ItemPickupCallout(*this, aItem);
+		}
+		return true;
+	}
+	else
+	{
+		if (aShouldCallout)
+		{
+			DisplayManager::ItemPickupFailedCallout(*this);
+		}
+		return false;
+	}
+}
+void Player::ActivateSpell(const SpellData::SpellInstanceData* aSpellDataPointer, int aRound)
+{
+	myActiveSpells.push_back(SpellData::ActivatedSpell(aSpellDataPointer, aRound));
+}
+void Player::CleanSpells(int aRound)
+{
+	int spellCount = static_cast<int>(myActiveSpells.size());
+	for (int i = 0; i < spellCount; i++)
+	{
+		const SpellData::ActivatedSpell& spell = myActiveSpells.at(i);
+		const int endRound = spell.roundAquisition + spell.data->roundDuration;
+		if (endRound <= aRound)
+		{
+			myActiveSpells.erase(myActiveSpells.begin() + i);
+			DisplayManager::SpellEndCallout(*spell.data);
+			i--;
+			spellCount--;
 		}
 	}
 }

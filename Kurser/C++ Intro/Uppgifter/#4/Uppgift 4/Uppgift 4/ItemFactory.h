@@ -17,11 +17,11 @@ public:
 	};
 	static constexpr int TYPES_SIZE = static_cast<int>(Types::CountOrRandom);
 
-	const Item& Create(Types aType);
-	std::vector<const Item*> CreateWeightedVector(float aItemLikelyhood = Item::ROOM_DROP_SPAWN_CHANCE, int aItemMax = Item::ROOM_DROP_SPAWN_TRIES);
+	const Item Create(Types aType);
+	std::vector<Item> CreateWeightedVector(float aItemLikelyhood = ItemType::ROOM_DROP_SPAWN_CHANCE, int aItemMax = ItemType::ROOM_DROP_SPAWN_TRIES);
 
 private:
-	Item* myItemDataCollection[TYPES_SIZE]{};
+	ItemType* myItemDataCollection[TYPES_SIZE]{};
 	bool myItemDataCollectedAtIndex[TYPES_SIZE]{ false };
-	Item* CreateToArray(Types aType);
+	ItemType* DefineItemTypeData(Types aType);
 };

@@ -26,7 +26,7 @@ public:
 	const bool HasChest() const;
 	const bool HasSpell() const;
 
-	std::vector<const Item*> myDroppedItems;
+	std::vector<Item> myDroppedItems;
 	std::vector<ChestData::ChestInstance*> myChests;
 	std::vector<const SpellData::SpellInstanceData*> mySpells;
 private:

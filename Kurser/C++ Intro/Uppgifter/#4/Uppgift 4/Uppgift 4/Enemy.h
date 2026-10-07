@@ -1,13 +1,26 @@
 #pragma once
-#include "Entity.h"
+#include "EnemyType.h"
 
 class Enemy
 {
 public:
-	Enemy(Entity aEntity);
+	Enemy(EnemyType aEntity);
 
-	Entity& GetEntity();
+	const int GetStrength() const;
+	const int GetDexterity() const;
+	const int GetPhysique() const;
+
+	const int GetAttack() const;
+	const int GetMaxHP() const;
+	const int GetCarryingCapacity() const;
+	const int GetDefense() const;
+
+	void TakeDamage(int aValue);
+	const int GetCurrentHP() const;
+	const bool IsDead() const;
+	const EnemyType& GetTypeData() const;
 
 private:
-	Entity myEntityClass;
+	EnemyType myTypeData;
+	int myCurrentHP;
 };

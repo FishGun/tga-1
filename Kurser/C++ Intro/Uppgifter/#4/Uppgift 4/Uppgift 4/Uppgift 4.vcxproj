@@ -146,11 +146,12 @@
     <ClCompile Include="Dungeon.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="EnemyFactory.cpp" />
-    <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="EnemyType.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="GameLoop.cpp" />
     <ClCompile Include="InputController.cpp" />
     <ClCompile Include="Item.cpp" />
+    <ClCompile Include="ItemType.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="RandomController.cpp" />
     <ClCompile Include="Room.cpp" />
@@ -168,7 +169,7 @@
     <ClInclude Include="DungeonData.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="EnemyFactory.h" />
-    <ClInclude Include="Entity.h" />
+    <ClInclude Include="EnemyType.h" />
     <ClInclude Include="EntityData.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventData.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="InputController.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemFactory.h" />
+    <ClInclude Include="ItemType.h" />
     <ClInclude Include="MenuData.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="RandomController.h" />

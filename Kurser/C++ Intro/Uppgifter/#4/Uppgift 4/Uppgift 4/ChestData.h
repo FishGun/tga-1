@@ -21,7 +21,7 @@ namespace ChestData
 	struct ChestInstance
 	{
 		const ChestCreationData& data;
-		std::vector<const Item*> items;
+		std::vector<Item> items;
 	};
 
 	extern ChestCreationData globalChestDataCollection[];
@@ -31,5 +31,5 @@ namespace ChestData
 	ChestCreationData& CreateNewChestData(ChestTypes aType);
 
 	ChestInstance& CreateNewChest(ItemFactory& aItemFactory, ChestCreationData& aChestData);
-	std::vector<ChestInstance*> GenerateWeightedChestVector(ItemFactory& aItemFactory, float aChestLikelyhood = Item::ROOM_CHEST_SPAWN_CHANCE, int aChestMax = 1);
+	std::vector<ChestInstance*> GenerateWeightedChestVector(ItemFactory& aItemFactory, float aChestLikelyhood = ItemType::ROOM_CHEST_SPAWN_CHANCE, int aChestMax = 1);
 }

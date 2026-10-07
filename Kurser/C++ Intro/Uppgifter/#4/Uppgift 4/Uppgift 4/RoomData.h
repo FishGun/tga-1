@@ -53,7 +53,7 @@ namespace RoomData
 		std::vector<Door*> initialForwardDoors;
 		Door* const initialPreviousDoor = NULL;
 		Event* event = NULL;
-		std::vector<const Item*> droppedItems;
+		std::vector<Item> droppedItems;
 	};
 
 	const GenerationData GenerateData(GenerationTypes aRoomType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);

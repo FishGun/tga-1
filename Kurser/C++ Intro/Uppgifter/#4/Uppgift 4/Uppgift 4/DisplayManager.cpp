@@ -71,14 +71,14 @@ namespace DisplayManager
 		generatedStringVector.reserve(enemyAmount);
 		for (int i = 0; i < enemyAmount; i++)
 		{
-			const Entity& entity = aEvent.GetEnemy(i).GetEntity();
+			const EnemyType& entity = aEvent.GetEnemy(i).GetTypeData();
 			std::string generatedString = entity.GetName();
 			generatedString.append(" #");
 			generatedString += std::to_string(i + 1);
 			generatedString.append(", ");
-			generatedString += std::to_string(entity.GetHP());
+			generatedString += std::to_string(aPlayer.GetCurrentHP());
 			generatedString.append("/");
-			generatedString += std::to_string(entity.GetMaxHP());
+			generatedString += std::to_string(aPlayer.GetMaxHP());
 			generatedStringVector.push_back(generatedString);
 		}
 
@@ -121,40 +121,37 @@ namespace DisplayManager
 	void PlayerContext(const Player& aPlayer)
 	{
 		std::cout <<
-			aPlayer.myKills << "/" << DungeonData::KILLS_TO_WIN << " kills (to win)\n"
+			aPlayer.GetKills() << "/" << DungeonData::KILLS_TO_WIN << " kills (to win)\n"
 			"You find yourself in " << aPlayer.GetRoom()->GetName() << "\n";
-		EntityHP(aPlayer.myEntityClass);
+		EnemyHP(aPlayer.GetTypeData());
 	}
-	void EntityStats(const Entity& aEntity)
+	void PlayerStats(const Player& aPlayer)
 	{
-		EntityHP(aEntity);
+		PlayerHP(aPlayer);
 		std::cout <<
-			"Strength: " << aEntity.GetStrength() << "\n"
-			"Dexterity: " << aEntity.GetDexterity() << "\n"
-			"Physique: " << aEntity.GetPhysique() << "\n"
+			"Strength: " << aPlayer.GetStrength() << "\n"
+			"Dexterity: " << aPlayer.GetDexterity() << "\n"
+			"Physique: " << aPlayer.GetPhysique() << "\n"
 			"\n"
-			"Attack: " << aEntity.GetAttack() << "\n"
-			"Defense: " << aEntity.GetDefense() << "\n"
-			"Carrying capacity: " << aEntity.GetCarryingCapacity() << "\n"
+			"Attack: " << aPlayer.GetAttack() << "\n"
+			"Defense: " << aPlayer.GetDefense() << "\n"
+			"Carrying capacity: " << aPlayer.GetCarryingCapacity() << "\n"
 			"\n";
 	}
-	void EntityHP(const Entity& aEntity, bool aEnityIsFirstPerson)
+	void EnemyHP(const Enemy& aEnemy)
 	{
-		if (aEnityIsFirstPerson)
-		{
-			std::cout << "You have " << aEntity.GetHP() << " / " << aEntity.GetMaxHP() << "HP\n";
-		}
-		else
-		{
-			std::cout << aEntity.GetName() << " has " << aEntity.GetHP() << "/" << aEntity.GetMaxHP() << "HP\n";
-		}
-		std::cout << "\n";
+		std::cout << aEnemy.GetTypeData().GetName() << " has " << aEnemy.GetCurrentHP() << "/" << aEnemy.GetMaxHP() << "HP\n\n";
 	}
-	void EntityAttackShout(const Entity& aAttacker, const Entity& aTarget)
+	void PlayerHP(const Player& aPlayer)
 	{
-		std::cout << aAttacker.GetName() << " attacks " << aTarget.GetName() << " for " << Entity::DamageCalculator(aAttacker.GetAttack(), aTarget.GetDefense()) << " damage! (" << aAttacker.GetAttack() << "-" << (aTarget.GetDefense() / EntityData::DEFENSE_DIVIDER) << ")\n";
+		std::cout << "You have " << aPlayer.GetCurrentHP() << " / " << aPlayer.GetMaxHP() << "HP\n\n";
+
 	}
-	void EntityDeathCry(const Entity& aEntity)
+	void EntityAttackShout(const EnemyType& aAttacker, const EnemyType& aTarget, const int aDamageValue, const int aAttackValue, const int aDamageReductionValue)
+	{
+		std::cout << aAttacker.GetName() << " attacks " << aTarget.GetName() << " for " << aDamageValue << " damage! (" << aAttackValue << "-" << aDamageReductionValue << ")\n";
+	}
+	void EntityDeathCry(const EnemyType& aEntity)
 	{
 		std::cout << aEntity.GetName() << " falls to the floor in agony and dies!\n";
 	}
@@ -162,31 +159,31 @@ namespace DisplayManager
 	{
 		std::cout <<
 			"\n"
-			<< aPlayer.myEntityClass.GetName() << " tries to go on, but is unable.\n"
+			<< aPlayer.GetTypeData().GetName() << " tries to go on, but is unable.\n"
 			"Slowly, they loose their poise, and fall to the ground defeated.\n"
 			<< aPlayer.GetDungeon()->GetName() << " is their tomb, and " << aPlayer.GetRoom()->GetName() << " is their shrine.\n";
 	}
 	void ShowStats(const Player& aPlayer, const int aRound)
 	{
-		Entity entity = aPlayer.myEntityClass;
+		EnemyType typeData = aPlayer.GetTypeData();
 		std::cout <<
-			entity.GetName() << "\n"
-			"HP:" << entity.GetHP() << "/" << entity.GetMaxHP() << "\n"
-			"Strength:" << entity.GetStrength() << "\n"
-			"Dexterity:" << entity.GetDexterity() << "\n"
-			"Physique:" << entity.GetPhysique() << "\n"
-			"Attack:" << entity.GetAttack() << "\n"
-			"Defense:" << entity.GetDefense() << " (damage reduction:" << entity.GetDefense() / EntityData::DEFENSE_DIVIDER << ")\n"
-			"Carrying Capacity:" << entity.GetCarryingCapacity() << "\n";
-		const int itemCount = static_cast<int>(entity.GetItemVector().size());
+			typeData.GetName() << "\n"
+			"HP:" << aPlayer.GetCurrentHP() << "/" << aPlayer.GetMaxHP() << "\n"
+			"Strength:" << aPlayer.GetStrength() << "\n"
+			"Dexterity:" << aPlayer.GetDexterity() << "\n"
+			"Physique:" << aPlayer.GetPhysique() << "\n"
+			"Attack:" << aPlayer.GetAttack() << "\n"
+			"Defense:" << aPlayer.GetDefense() << " (damage reduction:" << aPlayer.GetDefense() / EntityData::DEFENSE_DIVIDER << ")\n"
+			"Carrying Capacity:" << aPlayer.GetCarryingCapacity() << "\n";
+		const int itemCount = static_cast<int>(aPlayer.GetTemporaryItemVector().size());
 		for (int i = 0; i < itemCount; i++)
 		{
-			std::cout << "Item #" << i + 1 << ": " << entity.GetItemVector().at(i)->GetBaseData().name << "\n";
+			std::cout << "Item #" << i + 1 << ": " << aPlayer.GetTemporaryItemVector().at(i).GetItemType().GetBaseData().name << "\n";
 		}
-		const int spellCount = static_cast<int>(entity.GetSpellVector().size());
+		const int spellCount = static_cast<int>(aPlayer.GetTemporarySpellVector().size());
 		for (int i = 0; i < spellCount; i++)
 		{
-			std::cout << "Spell #" << i + 1 << ": " << entity.GetSpellVector().at(i).data->baseModifiers.name << " (" << entity.GetSpellVector().at(i).roundAquisition + entity.GetSpellVector().at(i).data->roundDuration - aRound << " rounds left)\n";
+			std::cout << "Spell #" << i + 1 << ": " << aPlayer.GetTemporarySpellVector().at(i).data->baseModifiers.name << " (" << aPlayer.GetTemporarySpellVector().at(i).roundAquisition + aPlayer.GetTemporarySpellVector().at(i).data->roundDuration - aRound << " rounds left)\n";
 		}
 		std::cout << "\n";
 	}
@@ -196,15 +193,15 @@ namespace DisplayManager
 		std::cout <<
 			"As the body falls to the ground, something shiny falls and clangs on the floor...\n";
 	}
-	void ItemPickupCallout(const Entity& aEntity, const Item& aItem)
+	void ItemPickupCallout(const Player& aPlayer, const Item& aItem)
 	{
 		std::cout <<
-			aEntity.GetName() << " picked up a " << aItem.GetBaseData().name << "!\n";
+			aPlayer.GetTypeData().GetName() << " picked up a " << aItem.GetItemType().GetBaseData().name << "!\n";
 	}
-	void ItemPickupFailedCallout(const Entity& aEntity)
+	void ItemPickupFailedCallout(const Player& aPlayer)
 	{
 		std::cout <<
-			aEntity.GetName() << "'s inventory is already full! (" << aEntity.GetCarryingCapacity() << ")\n";
+			aPlayer.GetTypeData().GetName() << "'s inventory is already full! (" << aPlayer.GetCarryingCapacity() << ")\n";
 	}
 
 	void ChestSpillCallout()
@@ -232,11 +229,11 @@ namespace DisplayManager
 
 	void InvincibilityCallout(const Player& aPlayer)
 	{
-		std::cout << aPlayer.myEntityClass.GetName() << " would have died, if they didn't have their suit on.\n";
+		std::cout << aPlayer.GetTypeData().GetName() << " would have died, if they didn't have their suit on.\n";
 	}
 	void InstakillCallout(const Player& aPlayer)
 	{
-		std::cout << aPlayer.myEntityClass.GetName() << " destroyed their foe with a stare!\n";
+		std::cout << aPlayer.GetTypeData().GetName() << " destroyed their foe with a stare!\n";
 	}
 
 	void AskForDoorChoice(const Player& aPlayer)

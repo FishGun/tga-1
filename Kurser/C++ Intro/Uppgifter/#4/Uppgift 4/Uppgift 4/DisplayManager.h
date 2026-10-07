@@ -20,16 +20,17 @@ namespace DisplayManager
 	void Round(int aRoundIndex);
 
 	void PlayerContext(const Player& aPlayer);
-	void EntityStats(const Entity& aEntity);
-	void EntityHP(const Entity& aEntity, bool aEnityIsFirstPerson = false);
-	void EntityAttackShout(const Entity& aAttacker, const Entity& aTarget);
-	void EntityDeathCry(const Entity& aEntity);
+	void PlayerStats(const Player& aPlayer);
+	void EnemyHP(const Enemy& aEnemy);
+	void PlayerHP(const Player& aPlayer);
+	void EntityAttackShout(const EnemyType& aAttacker, const EnemyType& aTarget, const int aDamageValue, const int aAttackValue, const int aDamageReductionValue);
+	void EntityDeathCry(const EnemyType& aEntity);
 	void PlayerDeathCry(const Player& aPlayer);
 	void ShowStats(const Player& aPlayer, const int aRound);
 
 	void ItemDropCallout();
-	void ItemPickupCallout(const Entity& aEntity, const Item& aItem);
-	void ItemPickupFailedCallout(const Entity& aEntity);
+	void ItemPickupCallout(const Player& aPlayer, const Item& aItem);
+	void ItemPickupFailedCallout(const Player& aPlayer);
 
 	void ChestSpillCallout();
 	void ChestGrabCallout();

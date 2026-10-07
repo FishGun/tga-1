@@ -83,7 +83,7 @@ void Room::PopulateLoot()
 	myDroppedItems = myGenerationData.droppedItems;
 	// Ideally should be copying these values from myGenerationData, but not a priority right now.
 	myChests = ChestData::GenerateWeightedChestVector(myGenerationData.itemFactory);
-	mySpells = SpellData::GenerateWeightedSpellVector(Item::ROOM_SPELL_SPAWN_CHANCE, 1);
+	mySpells = SpellData::GenerateWeightedSpellVector(ItemType::ROOM_SPELL_SPAWN_CHANCE, 1);
 }
 
 Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType)

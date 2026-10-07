@@ -6,7 +6,7 @@
 Event::Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationTypes aEventType) : Event(GenerateData(aEventType, aItemFactory, aEnemyFactory)) {}
 Event::Event(EventData::GenerationData aEventData) : myGenerationData(aEventData)
 {
-	GenerateEvent();
+	PopulateEvent();
 }
 
 void Event::PlayRound(int aRound)
@@ -39,20 +39,20 @@ Enemy& Event::GetEnemy(int aValue)
 	return myEnemies.at(aValue);
 }
 
-const bool Event::InjureEnemy(std::vector<const Item*>& aLootVector, int aDamage, int aIndex)
+const bool Event::InjureEnemy(std::vector<Item>& aLootVector, int aDamage, int aIndex)
 {
 	if (aIndex > GetCurrentEnemies())
 	{
 		return true;
 	}
-	Entity& enemyEntity = myEnemies.at(aIndex).GetEntity();
-	enemyEntity.TakeDamage(aDamage);
-	const bool enemyDied = enemyEntity.IsDead();
+	Enemy& enemy = myEnemies.at(aIndex);
+	enemy.TakeDamage(aDamage);
+	const bool enemyDied = enemy.IsDead();
 	if (enemyDied)
 	{
-		DisplayManager::EntityDeathCry(enemyEntity);
+		DisplayManager::EntityDeathCry(enemy.GetTypeData());
 		RemoveEnemy(aIndex);
-		std::vector<const Item*> droppedItems = myGenerationData.itemFactory.CreateWeightedVector(Item::ENEMY_KILLED_DROP_CHANCE, 1);
+		std::vector<Item> droppedItems = myGenerationData.itemFactory.CreateWeightedVector(ItemType::ENEMY_KILLED_DROP_CHANCE, 1);
 		if (static_cast<int>(droppedItems.size()) > 0)
 		{
 			aLootVector.insert(aLootVector.end(), droppedItems.begin(), droppedItems.end());
@@ -68,7 +68,7 @@ const bool Event::EnemyIsDead(int aIndex)
 	{
 		return true;
 	}
-	return myEnemies.at(aIndex).GetEntity().IsDead();
+	return myEnemies.at(aIndex).IsDead();
 }
 
 void Event::RemoveEnemy(int aIndex)
@@ -76,16 +76,16 @@ void Event::RemoveEnemy(int aIndex)
 	myEnemies.erase(std::next(myEnemies.begin(), aIndex));
 }
 
-void Event::TakeTurn(Entity& aTargetEntity, int aRound)
+void Event::TakeTurn(EnemyType& aTargetEntity, int aRound)
 {
 	for (int i = 0; i < GetCurrentEnemies(); i++)
 	{
-		Entity& enemyEntity = myEnemies.at(i).GetEntity();
-		if (!enemyEntity.IsDead())
+		Enemy& enemy = myEnemies.at(i);
+		if (!enemy.IsDead())
 		{
-			aTargetEntity.TakeDamage(enemyEntity.GetAttack());
-			DisplayManager::EntityAttackShout(enemyEntity, aTargetEntity);
-			enemyEntity.CleanSpells(aRound);
+			aTargetEntity.TakeDamage(enemy.GetAttack());
+			DisplayManager::EntityAttackShout(enemy, aTargetEntity);
+			enemy.CleanSpells(aRound);
 		}
 	}
 }
@@ -124,7 +124,7 @@ const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes a
 		.magnitude = magnitude
 	};
 }
-void Event::GenerateEvent()
+void Event::PopulateEvent()
 {
 	myEnemies.clear();
 
