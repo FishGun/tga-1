@@ -11,6 +11,12 @@ namespace MenuData
 		"Exit"
 	};
 	const int MAIN_OPTIONS_SIZE = static_cast<int>(MAIN_OPTIONS.size());
+	enum class MainOptionsEnum
+	{
+		Play,
+		Cheats,
+		Exit
+	};
 
 	const std::vector<std::string> CHEAT_OPTIONS =
 	{

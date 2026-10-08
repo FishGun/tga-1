@@ -1,6 +1,5 @@
 #include "Event.h"
 #include "RandomController.h"
-#include "Player.h"
 #include "DisplayManager.h"
 
 Event::Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationTypes aEventType) : Event(GenerateData(aEventType, aItemFactory, aEnemyFactory)) {}
@@ -9,7 +8,7 @@ Event::Event(EventData::GenerationData aEventData) : myGenerationData(aEventData
 	PopulateEvent();
 }
 
-void Event::PlayRound(int aRound)
+void Event::PlayRound()
 {
 	for (int i = 0; i < Player::GetPlayerCount(); i++)
 	{
@@ -17,7 +16,7 @@ void Event::PlayRound(int aRound)
 		Event* event = player.GetRoom()->GetEvent();
 		if (event != NULL)
 		{
-			event->TakeTurn(player.myEntityClass, aRound);
+			event->TakeTurn(player);
 		}
 	}
 }
@@ -76,16 +75,20 @@ void Event::RemoveEnemy(int aIndex)
 	myEnemies.erase(std::next(myEnemies.begin(), aIndex));
 }
 
-void Event::TakeTurn(EnemyType& aTargetEntity, int aRound)
+void Event::TakeTurn(Player& aTargetPlayer)
 {
 	for (int i = 0; i < GetCurrentEnemies(); i++)
 	{
 		Enemy& enemy = myEnemies.at(i);
 		if (!enemy.IsDead())
 		{
-			aTargetEntity.TakeDamage(enemy.GetAttack());
-			DisplayManager::EntityAttackShout(enemy, aTargetEntity);
-			enemy.CleanSpells(aRound);
+			const int attackValue = enemy.GetAttack();
+			const int defenseValue = aTargetPlayer.GetDefense();
+			const int damageValue = aTargetPlayer.GetTypeData().DamageCalculator(attackValue, defenseValue);
+			const int damageReductionValue = attackValue - damageValue;
+
+			aTargetPlayer.TakeDamage(attackValue);
+			DisplayManager::EntityAttackShout(enemy.GetTypeData(), aTargetPlayer.GetTypeData(), damageValue, attackValue, damageReductionValue);
 		}
 	}
 }

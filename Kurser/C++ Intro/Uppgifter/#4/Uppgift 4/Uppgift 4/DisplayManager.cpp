@@ -71,14 +71,14 @@ namespace DisplayManager
 		generatedStringVector.reserve(enemyAmount);
 		for (int i = 0; i < enemyAmount; i++)
 		{
-			const EnemyType& entity = aEvent.GetEnemy(i).GetTypeData();
-			std::string generatedString = entity.GetName();
+			const Enemy& enemy = aEvent.GetEnemy(i);
+			std::string generatedString = enemy.GetTypeData().GetName();
 			generatedString.append(" #");
 			generatedString += std::to_string(i + 1);
 			generatedString.append(", ");
-			generatedString += std::to_string(aPlayer.GetCurrentHP());
+			generatedString += std::to_string(enemy.GetCurrentHP());
 			generatedString.append("/");
-			generatedString += std::to_string(aPlayer.GetMaxHP());
+			generatedString += std::to_string(enemy.GetMaxHP());
 			generatedStringVector.push_back(generatedString);
 		}
 
@@ -123,7 +123,7 @@ namespace DisplayManager
 		std::cout <<
 			aPlayer.GetKills() << "/" << DungeonData::KILLS_TO_WIN << " kills (to win)\n"
 			"You find yourself in " << aPlayer.GetRoom()->GetName() << "\n";
-		EnemyHP(aPlayer.GetTypeData());
+		PlayerHP(aPlayer);
 	}
 	void PlayerStats(const Player& aPlayer)
 	{

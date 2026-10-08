@@ -1,6 +1,7 @@
 #pragma once
 #include "DoorData.h"
 #include "RoomData.h"
+//class Room;
 
 class Door
 {

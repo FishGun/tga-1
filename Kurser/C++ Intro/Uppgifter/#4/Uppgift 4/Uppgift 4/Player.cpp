@@ -2,9 +2,10 @@
 #include "DisplayManager.h"
 #include "InputController.h"
 
-Player::Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, EnemyType aEntityType) : myCurrentRoom(aRoom), myTypeData(aEntityType), myCurrentHP(GetMaxHP()), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn)
+Player::Player(Room* aRoom, bool aInvincibilityOn, bool aInstakillOn, EnemyType aEntityType) : myCurrentRoom(aRoom), myTypeData(aEntityType), myInvincibilityCheatOn(aInvincibilityOn), myInstakillCheatOn(aInstakillOn)
 {
 	myActiveSpells.clear();
+	myCurrentHP = GetMaxHP();
 }
 
 void Player::AddPlayer(Dungeon* aDungeon, bool aInvincibilityOn, bool aInstakillOn, EnemyType aEntityType, const int aRoomIndex)
@@ -165,7 +166,13 @@ void Player::TakeTurn(int aRound)
 		}
 		else
 		{
-			DisplayManager::EntityAttackShout(myTypeData, event->GetEnemy(attackTarget).GetTypeData());
+			Enemy& enemy = event->GetEnemy(attackTarget);
+			const int attackValue = GetAttack();
+			const int defenseValue = enemy.GetDefense();
+			const int damageValue = enemy.GetTypeData().DamageCalculator(attackValue, defenseValue);
+			const int damageReductionValue = attackValue - damageValue;
+
+			DisplayManager::EntityAttackShout(myTypeData, enemy.GetTypeData(), damageValue, attackValue, damageReductionValue);
 			event->InjureEnemy(myCurrentRoom->myDroppedItems, GetAttack(), attackTarget);
 		}
 		myKills += enemiesCount - event->GetCurrentEnemies();
@@ -263,7 +270,16 @@ void Player::TryChangeRoom()
 
 void Player::TakeDamage(int aValue)
 {
-	myCurrentHP -= aValue;
+	const int maxHP = GetMaxHP();
+	myCurrentHP -= myTypeData.DamageCalculator(aValue, GetDefense());
+	if (myCurrentHP > maxHP)
+	{
+		myCurrentHP = maxHP;
+	}
+	else if (myCurrentHP < 0)
+	{
+		myCurrentHP = 0;
+	}
 }
 const int Player::GetCurrentHP() const
 {
@@ -430,8 +446,9 @@ bool Player::TryAddItem(Item& aItem, const bool aShouldCallout)
 {
 	if (GetCarryingCapacity() > static_cast<int>(myItems.size()))
 	{
+		const int previousMaxHP = GetMaxHP();
 		myItems.push_back(aItem);
-		myCurrentHP += aItem.GetItemType().GetDerivedData().hitPointMax;
+		myCurrentHP += GetMaxHP() - previousMaxHP;
 		if (aShouldCallout)
 		{
 			DisplayManager::ItemPickupCallout(*this, aItem);
@@ -449,7 +466,9 @@ bool Player::TryAddItem(Item& aItem, const bool aShouldCallout)
 }
 void Player::ActivateSpell(const SpellData::SpellInstanceData* aSpellDataPointer, int aRound)
 {
+	const int previousMaxHP = GetMaxHP();
 	myActiveSpells.push_back(SpellData::ActivatedSpell(aSpellDataPointer, aRound));
+	myCurrentHP += GetMaxHP() - previousMaxHP;
 }
 void Player::CleanSpells(int aRound)
 {

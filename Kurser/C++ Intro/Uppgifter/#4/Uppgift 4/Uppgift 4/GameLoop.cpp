@@ -4,22 +4,22 @@
 GameLoop::GameLoop()
 {
 	myRoundTracker = 1;
-	int mainMenuChoice = 0;
+	MenuData::MainOptionsEnum mainMenuChoice;
 	bool invincibilityCheat = false;
 	bool instakillCheat = false;
 	do
 	{
 		mainMenuChoice = MainMenu();
 
-		if (mainMenuChoice == 1)
+		if (mainMenuChoice == MenuData::MainOptionsEnum::Play)
 		{
 			Play(invincibilityCheat, instakillCheat);
 			// Breaks out of mainMenu after one play. Should be removed once restarting without closing is verified to work.
-			mainMenuChoice = 3;
+			mainMenuChoice = MenuData::MainOptionsEnum::Exit;
 			system("pause");
 			system("cls");
 		}
-		else if (mainMenuChoice == 2)
+		else if (mainMenuChoice == MenuData::MainOptionsEnum::Cheats)
 		{
 			DisplayManager::CheatStatus(invincibilityCheat, instakillCheat);
 			DisplayManager::CheatMenu();
@@ -34,18 +34,18 @@ GameLoop::GameLoop()
 			}
 			DisplayManager::CheatStatus(invincibilityCheat, instakillCheat);
 		}
-		if (mainMenuChoice != 3)
+		if (mainMenuChoice != MenuData::MainOptionsEnum::Exit)
 		{
 			system("pause");
 			system("cls");
 		}
-	} while (mainMenuChoice != 3);
+	} while (mainMenuChoice != MenuData::MainOptionsEnum::Exit);
 }
 
-const int GameLoop::MainMenu() const
+const MenuData::MainOptionsEnum GameLoop::MainMenu() const
 {
 	DisplayManager::MainMenu();
-	return InputController::IntegerRange(MenuData::MAIN_OPTIONS_SIZE);
+	return static_cast<MenuData::MainOptionsEnum>(InputController::IntegerRange(MenuData::MAIN_OPTIONS_SIZE) - 1);
 }
 
 void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
@@ -67,7 +67,7 @@ void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 		DisplayManager::Round(myRoundTracker);
 
 		Player::PlayRound(myRoundTracker);
-		Event::PlayRound(myRoundTracker);
+		Event::PlayRound();
 		Player::CheckForDeaths();
 
 		myRoundTracker++;
