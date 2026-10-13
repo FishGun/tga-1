@@ -1,0 +1,12 @@
+{
+    "Version": "1.2",
+    "Data": {
+        "Source": "c:\\users\\sebastian.niva\\downloads\\cppi - u06 - template utilities (1)\\cppi - u06 - template utilities\\cppi - u06 - template utilities [cu] - unittest\\pch.cpp",
+        "ProvidedModule": "",
+        "Includes": [
+            "c:\\users\\sebastian.niva\\downloads\\cppi - u06 - template utilities (1)\\cppi - u06 - template utilities\\cppi - u06 - template utilities [cu] - unittest\\pch.h"
+        ],
+        "ImportedModules": [],
+        "ImportedHeaderUnits": []
+    }
+}

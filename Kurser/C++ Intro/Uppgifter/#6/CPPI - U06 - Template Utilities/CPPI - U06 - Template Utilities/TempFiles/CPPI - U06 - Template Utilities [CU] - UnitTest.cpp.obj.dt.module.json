@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\CPPI - U06 - Template Utilities\\CPPI - U06 - Template Utilities\\TempFiles\\CPPI - U06 - Template Utilities [CU] - UnitTest.obj",
+            "outputs": [
+                "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\CPPI - U06 - Template Utilities\\CPPI - U06 - Template Utilities\\TempFiles\\CPPI - U06 - Template Utilities [CU] - UnitTest.cpp.obj.dt.module.json",
+                "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\CPPI - U06 - Template Utilities\\CPPI - U06 - Template Utilities\\TempFiles\\CPPI - U06 - Template Utilities [CU] - UnitTest.cpp.obj.dt.d.json",
+                "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\CPPI - U06 - Template Utilities\\CPPI - U06 - Template Utilities\\\\TempFiles\\CPPI - U06 - Template Utilities [CU] - UnitTest_Debug.pch"
+            ],
+            "requires": []
+        }
+    ]
+}

@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Users\\sebastian.niva\\Downloads\\CPPI - U06 - Template Utilities (1)\\CPPI - U06 - Template Utilities\\TempFiles\\pch.obj",
+            "outputs": [
+                "C:\\Users\\sebastian.niva\\Downloads\\CPPI - U06 - Template Utilities (1)\\CPPI - U06 - Template Utilities\\TempFiles\\pch.cpp.obj.dt.module.json",
+                "C:\\Users\\sebastian.niva\\Downloads\\CPPI - U06 - Template Utilities (1)\\CPPI - U06 - Template Utilities\\TempFiles\\pch.cpp.obj.dt.d.json",
+                "C:\\Users\\sebastian.niva\\Downloads\\CPPI - U06 - Template Utilities (1)\\CPPI - U06 - Template Utilities\\\\TempFiles\\CPPI - U06 - Template Utilities [CU] - UnitTest_Debug.pch"
+            ],
+            "requires": []
+        }
+    ]
+}
