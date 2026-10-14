@@ -3,8 +3,8 @@
 
 #include <assert.h>
 
-Dungeon::Dungeon(DungeonData::GenerationTypes aDungeonType) : myGenerationData(GenerateData(aDungeonType)), myGenerationType(aDungeonType) {}
-Dungeon::Dungeon(DungeonData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myGenerationType(DungeonData::GenerationTypes::Untyped) {}
+Dungeon::Dungeon(DungeonData::GenerationType aDungeonType) : myGenerationData(GenerateData(aDungeonType)), myGenerationType(aDungeonType) {}
+Dungeon::Dungeon(DungeonData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myGenerationType(DungeonData::GenerationType::Untyped) {}
 
 const char* Dungeon::GetName() const
 {
@@ -27,13 +27,13 @@ void Dungeon::IncrementRound()
 	myRoundTracker++;
 }
 
-const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationTypes aDungeonType)
+const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationType aDungeonType)
 {
-	assert(aDungeonType != DungeonData::GenerationTypes::Untyped && "Fatal Error: Dungeon to generate was type Untyped. May only be applied to self-generated dungeons.");
+	assert(aDungeonType != DungeonData::GenerationType::Untyped && "Fatal Error: Dungeon to generate was type Untyped. May only be applied to self-generated dungeons.");
 	switch (aDungeonType)
 	{
-		case DungeonData::GenerationTypes::Random:
-		case DungeonData::GenerationTypes::Untyped:
+		case DungeonData::GenerationType::Random:
+		case DungeonData::GenerationType::Untyped:
 		default:
 		{
 			ItemFactory& itemFactory = *new ItemFactory();
@@ -49,11 +49,11 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 			{
 				if (attachRoom == NULL)
 				{
-					rooms.push_back(new Room(itemFactory, enemyFactory, RoomData::GenerationTypes::Random));
+					rooms.push_back(new Room(itemFactory, enemyFactory, RoomData::GenerationType::Random));
 				}
 				else
 				{
-					rooms.push_back(new Room(itemFactory, enemyFactory, RoomData::GenerationTypes::Random, attachRoom));
+					rooms.push_back(new Room(itemFactory, enemyFactory, RoomData::GenerationType::Random, attachRoom));
 				}
 				highestRoomIndex++;
 				if (attachRoom == NULL)
@@ -73,7 +73,7 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 				.rooms = rooms
 			};
 		}
-		case DungeonData::GenerationTypes::TheHold:
+		case DungeonData::GenerationType::TheHold:
 		{
 			ItemFactory& itemFactory = *new ItemFactory();
 			EnemyFactory& enemyFactory = *new EnemyFactory();
@@ -81,19 +81,19 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 			rooms.reserve(3);
 			RoomData::GenerationData room1Generation =
 			{
-				.roomType = RoomData::GenerationTypes::CountOrUntyped,
+				.roomType = RoomData::GenerationType::CountOrUntyped,
 				.name = "The Foyer",
 				.itemFactory = itemFactory,
-				.event = new Event(itemFactory, enemyFactory, EventData::GenerationTypes::EasyCombat)
+				.event = new Event(itemFactory, enemyFactory, EventData::GenerationType::EasyCombat)
 			};
 			RoomData::GenerationData room2Generation =
 			{
-				.roomType = RoomData::GenerationTypes::CountOrUntyped,
+				.roomType = RoomData::GenerationType::CountOrUntyped,
 				.name = "The Moat House",
 				.itemFactory = itemFactory,
 				.event = new Event(EventData::GenerationData
 					{
-						.eventType = EventData::GenerationTypes::CountOrUntyped,
+						.eventType = EventData::GenerationType::CountOrUntyped,
 						.itemFactory = itemFactory,
 						.enemyFactory = enemyFactory,
 						.magnitude = 3
@@ -102,12 +102,12 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 			};
 			RoomData::GenerationData room3Generation =
 			{
-				.roomType = RoomData::GenerationTypes::CountOrUntyped,
+				.roomType = RoomData::GenerationType::CountOrUntyped,
 				.name = "The Pillory",
 				.itemFactory = itemFactory,
 				.event = new Event(EventData::GenerationData
 					{
-						.eventType = EventData::GenerationTypes::CountOrUntyped,
+						.eventType = EventData::GenerationType::CountOrUntyped,
 						.itemFactory = itemFactory,
 						.enemyFactory = enemyFactory,
 						.magnitude = 5
@@ -115,8 +115,8 @@ const DungeonData::GenerationData Dungeon::GenerateData(DungeonData::GenerationT
 				)
 			};
 			rooms.push_back(new Room(room1Generation));
-			rooms.push_back(new Room(room2Generation, rooms.at(0), DoorData::GenerationTypes::Pickable));
-			rooms.push_back(new Room(room3Generation, rooms.at(0), DoorData::GenerationTypes::Breakable));
+			rooms.push_back(new Room(room2Generation, rooms.at(0), DoorData::GenerationType::Pickable));
+			rooms.push_back(new Room(room3Generation, rooms.at(0), DoorData::GenerationType::Breakable));
 			return DungeonData::GenerationData
 			{
 				.name = "The Hold (Dungeon)",

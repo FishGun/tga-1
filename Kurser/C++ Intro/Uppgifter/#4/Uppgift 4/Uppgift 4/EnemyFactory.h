@@ -4,7 +4,7 @@
 class EnemyFactory
 {
 public:
-	enum class Types
+	enum class Type
 	{
 		Skeleton,
 		Spider,
@@ -12,12 +12,12 @@ public:
 		TearGolem,
 		CountOrRandom
 	};
-	static constexpr int TYPES_SIZE = static_cast<int>(Types::CountOrRandom);
+	static constexpr int TYPE_SIZE = static_cast<int>(Type::CountOrRandom);
 
-	const Enemy& Create(Types aType);
+	const Enemy& Create(Type aType);
 
 private:
-	Enemy* myEnemyDataCollection[TYPES_SIZE]{};
-	bool myEnemyDataCollectedAtIndex[TYPES_SIZE]{ false };
-	Enemy* CreateToArray(Types aType);
+	Enemy* myEnemyDataCollection[TYPE_SIZE]{};
+	bool myEnemyDataCollectedAtIndex[TYPE_SIZE]{ false };
+	Enemy* CreateToArray(Type aType);
 };

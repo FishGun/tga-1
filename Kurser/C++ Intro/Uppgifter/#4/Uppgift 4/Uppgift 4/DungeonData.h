@@ -13,7 +13,7 @@ namespace DungeonData
 	const int MIN_DUNGEON_ROOMS = 3;
 	const int ONE_IN_VALUE_CHANCE_OF_BRANCH = 3;
 
-	enum class GenerationTypes
+	enum class GenerationType
 	{
 		Random,
 		TheHold,

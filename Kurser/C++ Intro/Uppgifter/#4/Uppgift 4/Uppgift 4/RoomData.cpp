@@ -10,16 +10,16 @@ namespace RoomData
 	}
 	*/
 
-	const GenerationData GenerateData(GenerationTypes aRoomType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor)
+	const GenerationData GenerateData(GenerationType aRoomType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor)
 	{
-		while (aRoomType == GenerationTypes::Random)
+		while (aRoomType == GenerationType::Random)
 		{
-			aRoomType = static_cast<GenerationTypes>(RandomController::GenerateNumber(RANDOM_TYPE_INDEX + 1, TYPES_SIZE - 1));
+			aRoomType = static_cast<GenerationType>(RandomController::GenerateNumber(RANDOM_TYPE_INDEX + 1, TYPE_SIZE - 1));
 		}
 		switch (aRoomType)
 		{
 			default:
-			case GenerationTypes::Empty:
+			case GenerationType::Empty:
 			{
 				return GenerationData
 				{
@@ -32,7 +32,7 @@ namespace RoomData
 					.droppedItems = aItemFactory.CreateWeightedVector()
 				};
 			}
-			case GenerationTypes::RandomCombat:
+			case GenerationType::RandomCombat:
 			{
 				return GenerationData
 				{
@@ -41,7 +41,7 @@ namespace RoomData
 					.itemFactory = aItemFactory,
 					.initialForwardDoors = aInitialForwardDoors,
 					.initialPreviousDoor = aPreviousDoor,
-					.event = new Event(aItemFactory, aEnemyFactory, EventData::GenerationTypes::Random),
+					.event = new Event(aItemFactory, aEnemyFactory, EventData::GenerationType::Random),
 					.droppedItems = aItemFactory.CreateWeightedVector()
 				};
 			}

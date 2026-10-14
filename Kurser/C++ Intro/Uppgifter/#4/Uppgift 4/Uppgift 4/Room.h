@@ -8,9 +8,9 @@
 class Room
 {
 public:
-	Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
-	Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors = { NULL }, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
-	Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType = RoomData::GenerationTypes::Random, Door* aPreviousDoor = NULL, std::vector<Door*> aInitialForwardDoors = { NULL });
+	Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationType aDoorType = DoorData::GenerationType::Open);
+	Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationType aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors = { NULL }, DoorData::GenerationType aDoorType = DoorData::GenerationType::Open);
+	Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationType aRoomType = RoomData::GenerationType::Random, Door* aPreviousDoor = NULL, std::vector<Door*> aInitialForwardDoors = { NULL });
 	Room(const RoomData::GenerationData aGenerationData);
 
 	Door* GetReturnDoor() const;
@@ -36,7 +36,7 @@ private:
 	Door* const myPreviousDoor;
 	std::vector<Door*> myForwardDoors;
 
-	Door* const CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType = DoorData::GenerationTypes::Open);
+	Door* const CreateDoorway(Room* aOtherRoom, DoorData::GenerationType aDoorType = DoorData::GenerationType::Open);
 	Door* const CreateDoorway(DoorData::GenerationData aDoorData);
 
 };

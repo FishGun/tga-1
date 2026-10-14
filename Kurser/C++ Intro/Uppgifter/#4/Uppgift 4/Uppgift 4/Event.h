@@ -10,7 +10,7 @@ class Event
 {
 public:
 	Event() = delete;
-	Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationTypes aEventType = EventData::GenerationTypes::Random);
+	Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationType aEventType = EventData::GenerationType::Random);
 	Event(EventData::GenerationData aEventData);
 
 	static void PlayRound();
@@ -28,6 +28,6 @@ private:
 	const EventData::GenerationData myGenerationData;
 	std::vector<Enemy> myEnemies;
 
-	const EventData::GenerationData GenerateData(EventData::GenerationTypes aEventType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory);
+	const EventData::GenerationData GenerateData(EventData::GenerationType aEventType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory);
 	void PopulateEvent();
 };

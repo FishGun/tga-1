@@ -4,15 +4,15 @@
 
 #include <assert.h>
 
-const Item ItemFactory::Create(Types aType)
+const Item ItemFactory::Create(Type aType)
 {
-	if (aType == Types::CountOrRandom)
+	if (aType == Type::CountOrRandom)
 	{
-		aType = static_cast<Types>(RandomController::GenerateNumber(0, static_cast<int>(Types::CountOrRandom) - 1));
+		aType = static_cast<Type>(RandomController::GenerateNumber(0, static_cast<int>(Type::CountOrRandom) - 1));
 	}
 	const int index = static_cast<int>(aType);
 
-	assert(index <TYPES_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
+	assert(index <TYPE_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
 
 	if (!myItemDataCollectedAtIndex[index])
 	{
@@ -31,19 +31,19 @@ std::vector<Item> ItemFactory::CreateWeightedVector(float aItemLikelyhood, int a
 	{
 		if (RandomController::GenerateNumber(1, itemLikelyhoodWeight) <= 1)
 		{
-			toReturn.push_back(Create(Types::CountOrRandom));
+			toReturn.push_back(Create(Type::CountOrRandom));
 		}
 	}
 	return toReturn;
 }
 
-ItemType* ItemFactory::DefineItemTypeData(Types aType)
+ItemType* ItemFactory::DefineItemTypeData(Type aType)
 {
 	switch (aType)
 	{
 		default:
 			assert(false && "Fatal Error: A new item was attempted to be made without specifying its type");
-		case ItemFactory::Types::Knife: return new ItemType
+		case ItemFactory::Type::Knife: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -55,7 +55,7 @@ ItemType* ItemFactory::DefineItemTypeData(Types aType)
 				.defense = 1
 			}
 		};
-		case ItemFactory::Types::Longsword: return new ItemType
+		case ItemFactory::Type::Longsword: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -68,7 +68,7 @@ ItemType* ItemFactory::DefineItemTypeData(Types aType)
 				.defense = 5,
 			}
 		};
-		case ItemFactory::Types::Greatsword: return new ItemType
+		case ItemFactory::Type::Greatsword: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -80,7 +80,7 @@ ItemType* ItemFactory::DefineItemTypeData(Types aType)
 				.attack = 20
 			}
 		};
-		case ItemFactory::Types::LeatherChestplate: return new ItemType
+		case ItemFactory::Type::LeatherChestplate: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -92,7 +92,7 @@ ItemType* ItemFactory::DefineItemTypeData(Types aType)
 				.hitPointMax = 10
 			}
 		};
-		case ItemFactory::Types::MetalChestplate: return new ItemType
+		case ItemFactory::Type::MetalChestplate: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -106,7 +106,7 @@ ItemType* ItemFactory::DefineItemTypeData(Types aType)
 				.hitPointMax = 50
 			}
 		};
-		case ItemFactory::Types::CobbledBoots: return new ItemType
+		case ItemFactory::Type::CobbledBoots: return new ItemType
 		{
 			EntityData::BaseData
 			{
@@ -119,7 +119,7 @@ ItemType* ItemFactory::DefineItemTypeData(Types aType)
 				.carryingCapacity = 1
 			}
 		};
-		case ItemFactory::Types::NobleBoots: return new ItemType
+		case ItemFactory::Type::NobleBoots: return new ItemType
 		{
 			EntityData::BaseData
 			{

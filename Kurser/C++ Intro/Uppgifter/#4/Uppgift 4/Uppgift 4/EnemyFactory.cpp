@@ -3,15 +3,15 @@
 
 #include <assert.h>
 
-const Enemy& EnemyFactory::Create(EnemyFactory::Types aType)
+const Enemy& EnemyFactory::Create(EnemyFactory::Type aType)
 {
-	if (aType == EnemyFactory::Types::CountOrRandom)
+	if (aType == EnemyFactory::Type::CountOrRandom)
 	{
-		aType = static_cast<EnemyFactory::Types>(RandomController::GenerateNumber(0, static_cast<int>(EnemyFactory::Types::CountOrRandom) - 1));
+		aType = static_cast<EnemyFactory::Type>(RandomController::GenerateNumber(0, static_cast<int>(EnemyFactory::Type::CountOrRandom) - 1));
 	}
 	const int index = static_cast<int>(aType);
 
-	assert(index < EnemyFactory::TYPES_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
+	assert(index < EnemyFactory::TYPE_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
 
 	if (!myEnemyDataCollectedAtIndex[index])
 	{
@@ -21,13 +21,13 @@ const Enemy& EnemyFactory::Create(EnemyFactory::Types aType)
 	return *myEnemyDataCollection[index];
 }
 
-Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
+Enemy* EnemyFactory::CreateToArray(EnemyFactory::Type aType)
 {
 	switch (aType)
 	{
 		default:
 			assert(false && "Fatal Error: A new item was attempted to be made without specifying its type");
-		case EnemyFactory::Types::Skeleton: return new Enemy
+		case EnemyFactory::Type::Skeleton: return new Enemy
 		{
 			EnemyType
 			{
@@ -40,7 +40,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 				}
 			}
 		};
-		case EnemyFactory::Types::Spider: return new Enemy
+		case EnemyFactory::Type::Spider: return new Enemy
 		{
 			EnemyType
 			{
@@ -53,7 +53,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 				}
 			}
 		};
-		case EnemyFactory::Types::Negation: return new Enemy
+		case EnemyFactory::Type::Negation: return new Enemy
 		{
 			EnemyType
 			{
@@ -66,7 +66,7 @@ Enemy* EnemyFactory::CreateToArray(EnemyFactory::Types aType)
 				}
 			}
 		};
-		case EnemyFactory::Types::TearGolem: return new Enemy
+		case EnemyFactory::Type::TearGolem: return new Enemy
 		{
 			EnemyType
 			{

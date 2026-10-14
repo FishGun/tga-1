@@ -5,15 +5,15 @@
 
 namespace ChestData
 {
-	const ChestCreationData& GetChestData(ChestTypes aType)
+	const ChestCreationData& GetChestData(ChestType aType)
 	{
-		if (aType == ChestTypes::CountOrRandom)
+		if (aType == ChestType::CountOrRandom)
 		{
-			aType = static_cast<ChestTypes>(RandomController::GenerateNumber(0, static_cast<int>(ChestTypes::CountOrRandom) - 1));
+			aType = static_cast<ChestType>(RandomController::GenerateNumber(0, static_cast<int>(ChestType::CountOrRandom) - 1));
 		}
 		const int index = static_cast<int>(aType);
 
-		assert(index < CHEST_TYPES_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
+		assert(index < CHEST_TYPE_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
 
 		if (!globalChestDataCollectedAtIndex[index])
 		{
@@ -22,17 +22,17 @@ namespace ChestData
 		}
 		return globalChestDataCollection[index];
 	}
-	ChestCreationData& CreateNewChestData(ChestTypes aType)
+	ChestCreationData& CreateNewChestData(ChestType aType)
 	{
 		switch (aType)
 		{
 			default:
 				assert(false && "Fatal Error: A new item was attempted to be made without specifying its type");
-			case ChestData::ChestTypes::OneItemUnlocked: return *new ChestCreationData
+			case ChestData::ChestType::OneItemUnlocked: return *new ChestCreationData
 			{
 				1
 			};
-			case ChestData::ChestTypes::TwoItemUnlocked: return *new ChestCreationData
+			case ChestData::ChestType::TwoItemUnlocked: return *new ChestCreationData
 			{
 				2
 			};
@@ -52,12 +52,12 @@ namespace ChestData
 		{
 			if (RandomController::GenerateNumber(1, chestLikelyhoodWeight) <= 1)
 			{
-				toReturn.push_back(&CreateNewChest(aItemFactory, GetChestData(ChestTypes::CountOrRandom)));
+				toReturn.push_back(&CreateNewChest(aItemFactory, GetChestData(ChestType::CountOrRandom)));
 			}
 		}
 		return toReturn;
 	}
 
-	ChestCreationData globalChestDataCollection[CHEST_TYPES_SIZE];
-	bool globalChestDataCollectedAtIndex[CHEST_TYPES_SIZE] = { false };
+	ChestCreationData globalChestDataCollection[CHEST_TYPE_SIZE];
+	bool globalChestDataCollectedAtIndex[CHEST_TYPE_SIZE] = { false };
 }

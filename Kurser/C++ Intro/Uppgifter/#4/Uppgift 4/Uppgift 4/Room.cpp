@@ -3,12 +3,12 @@
 
 #include <assert.h>
 
-Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationTypes aDoorType) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom, aDoorType))
+Room::Room(const RoomData::GenerationData aGenerationData, Room* aPreviousRoom, DoorData::GenerationType aDoorType) : myGenerationData(aGenerationData), myPreviousDoor(CreateDoorway(aPreviousRoom, aDoorType))
 {
 	PopulateLoot();
 }
-Room::Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors, DoorData::GenerationTypes aDoorType) : Room(GenerateData(aRoomType, aItemFactory, aEnemyFactory, aInitialForwardDoors, CreateDoorway(aPreviousRoom, aDoorType))) {}
-Room::Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationTypes aRoomType,  Door* aPreviousDoor, std::vector<Door*> aInitialForwardDoors) : Room(GenerateData(aRoomType, aItemFactory, aEnemyFactory, aInitialForwardDoors, aPreviousDoor)) {}
+Room::Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationType aRoomType, Room* aPreviousRoom, std::vector<Door*> aInitialForwardDoors, DoorData::GenerationType aDoorType) : Room(GenerateData(aRoomType, aItemFactory, aEnemyFactory, aInitialForwardDoors, CreateDoorway(aPreviousRoom, aDoorType))) {}
+Room::Room(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, const RoomData::GenerationType aRoomType,  Door* aPreviousDoor, std::vector<Door*> aInitialForwardDoors) : Room(GenerateData(aRoomType, aItemFactory, aEnemyFactory, aInitialForwardDoors, aPreviousDoor)) {}
 Room::Room(const RoomData::GenerationData aGenerationData) : myGenerationData(aGenerationData), myPreviousDoor(myGenerationData.initialPreviousDoor), myForwardDoors(myGenerationData.initialForwardDoors)
 {
 	PopulateLoot();
@@ -86,7 +86,7 @@ void Room::PopulateLoot()
 	mySpells = SpellData::GenerateWeightedSpellVector(ItemType::ROOM_SPELL_SPAWN_CHANCE, 1);
 }
 
-Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationTypes aDoorType)
+Door* const Room::CreateDoorway(Room* aOtherRoom, DoorData::GenerationType aDoorType)
 {
 	return CreateDoorway(Door::GenerateData(aOtherRoom, this, aDoorType));
 }

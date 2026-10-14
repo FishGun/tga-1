@@ -5,15 +5,15 @@
 
 namespace SpellData
 {
-	const SpellInstanceData& GetSpellData(SpellTypes aType)
+	const SpellInstanceData& GetSpellData(SpellType aType)
 	{
-		if (aType == SpellTypes::CountOrRandom)
+		if (aType == SpellType::CountOrRandom)
 		{
-			aType = static_cast<SpellTypes>(RandomController::GenerateNumber(0, static_cast<int>(SpellTypes::CountOrRandom) - 1));
+			aType = static_cast<SpellType>(RandomController::GenerateNumber(0, static_cast<int>(SpellType::CountOrRandom) - 1));
 		}
 		const int index = static_cast<int>(aType);
 
-		assert(index < SPELL_TYPES_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
+		assert(index < SPELL_TYPE_SIZE && "Fatal Error: Attempted to get an item reference outside valid index");
 
 		if (!globalSpellDataCollectedAtIndex[index])
 		{
@@ -22,13 +22,13 @@ namespace SpellData
 		}
 		return globalSpellDataCollection[index];
 	}
-	SpellInstanceData& CreateNewSpellData(SpellTypes aType)
+	SpellInstanceData& CreateNewSpellData(SpellType aType)
 	{
 		switch (aType)
 		{
 			default:
 				assert(false && "Fatal Error: A new item was attempted to be made without specifying its type");
-			case SpellTypes::Power1: return *new SpellInstanceData
+			case SpellType::Power1: return *new SpellInstanceData
 			{
 				EntityData::BaseData
 				{
@@ -42,7 +42,7 @@ namespace SpellData
 				},
 				6
 			};
-			case SpellTypes::Power2: return *new SpellInstanceData
+			case SpellType::Power2: return *new SpellInstanceData
 			{
 				EntityData::BaseData
 				{
@@ -57,7 +57,7 @@ namespace SpellData
 				},
 				3
 			};
-			case SpellTypes::Shield1: return *new SpellInstanceData
+			case SpellType::Shield1: return *new SpellInstanceData
 			{
 				EntityData::BaseData
 				{
@@ -71,7 +71,7 @@ namespace SpellData
 				},
 				6
 			};
-			case SpellTypes::Shield2: return *new SpellInstanceData
+			case SpellType::Shield2: return *new SpellInstanceData
 			{
 				EntityData::BaseData
 				{
@@ -86,7 +86,7 @@ namespace SpellData
 				},
 				3
 			};
-			case SpellTypes::Berserker: return *new SpellInstanceData
+			case SpellType::Berserker: return *new SpellInstanceData
 			{
 				EntityData::BaseData
 				{
@@ -102,7 +102,7 @@ namespace SpellData
 				},
 				5
 			};
-			case SpellTypes::Reduce: return *new SpellInstanceData
+			case SpellType::Reduce: return *new SpellInstanceData
 			{
 				EntityData::BaseData
 				{
@@ -136,12 +136,12 @@ namespace SpellData
 		{
 			if (RandomController::GenerateNumber(1, spellLikelyhoodWeight) <= 1)
 			{
-				toReturn.push_back(&GetSpellData(SpellTypes::CountOrRandom));
+				toReturn.push_back(&GetSpellData(SpellType::CountOrRandom));
 			}
 		}
 		return toReturn;
 	}
 
-	SpellInstanceData globalSpellDataCollection[SPELL_TYPES_SIZE];
-	bool globalSpellDataCollectedAtIndex[SPELL_TYPES_SIZE] = { false };
+	SpellInstanceData globalSpellDataCollection[SPELL_TYPE_SIZE];
+	bool globalSpellDataCollectedAtIndex[SPELL_TYPE_SIZE] = { false };
 }

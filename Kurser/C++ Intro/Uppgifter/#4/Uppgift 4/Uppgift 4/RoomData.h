@@ -11,15 +11,15 @@ namespace RoomData
 {
 	const int MAX_FORWARD_DOORS = 3;
 
-	enum class GenerationTypes
+	enum class GenerationType
 	{
 		Random,
 		Empty,
 		RandomCombat,
 		CountOrUntyped
 	};
-	const int RANDOM_TYPE_INDEX = static_cast<int>(GenerationTypes::Random);
-	const int TYPES_SIZE = static_cast<int>(GenerationTypes::CountOrUntyped);
+	const int RANDOM_TYPE_INDEX = static_cast<int>(GenerationType::Random);
+	const int TYPE_SIZE = static_cast<int>(GenerationType::CountOrUntyped);
 
 	const std::vector<std::string> PREFIXES =
 	{
@@ -48,7 +48,7 @@ namespace RoomData
 
 	struct GenerationData
 	{
-		const GenerationTypes roomType;
+		const GenerationType roomType;
 		const std::string name;
 		ItemFactory& itemFactory;
 		std::vector<Door*> initialForwardDoors;
@@ -57,7 +57,7 @@ namespace RoomData
 		std::vector<Item> droppedItems;
 	};
 
-	const GenerationData GenerateData(GenerationTypes aRoomType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);
+	const GenerationData GenerateData(GenerationType aRoomType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, std::vector<Door*> aInitialForwardDoors, Door* aPreviousDoor = NULL);
 	const std::string GenerateRandomName();
 
 }

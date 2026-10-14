@@ -4,7 +4,7 @@
 
 namespace EventData
 {
-	enum class GenerationTypes
+	enum class GenerationType
 	{
 		Random,
 		EasyCombat,
@@ -12,14 +12,14 @@ namespace EventData
 		HardCombat,
 		CountOrUntyped
 	};
-	const int TYPES_SIZE = static_cast<int>(GenerationTypes::CountOrUntyped);
+	const int TYPE_SIZE = static_cast<int>(GenerationType::CountOrUntyped);
 	const int EASY_MAGNITUDE = 1;
 	const int MEDIUM_MAGNITUDE = 3;
 	const int HARD_MAGNITUDE = 5;
 
 	struct GenerationData
 	{
-		const GenerationTypes eventType;
+		const GenerationType eventType;
 		ItemFactory& itemFactory;
 		EnemyFactory& enemyFactory;
 		const int magnitude;

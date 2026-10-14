@@ -50,7 +50,7 @@ const MenuData::MainOptionsEnum GameLoop::MainMenu() const
 
 void GameLoop::Play(bool aInvincibilityOn, bool aInstakillOn)
 {
-	Dungeon myDungeon(DungeonData::GenerationTypes::TheHold);
+	Dungeon myDungeon(DungeonData::GenerationType::TheHold);
 
 	EntityData::BaseData playerData = EntityData::BASE_PLAYER_STATS;
 	InputController::AskForName(playerData.name, EntityData::MIN_NAME_LENGTH, EntityData::MAX_NAME_LENGTH);

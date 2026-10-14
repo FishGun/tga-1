@@ -1,10 +1,10 @@
 #include "Door.h"
 #include "Room.h"
 
-Door::Door(Room* aPreviousRoom, const RoomData::GenerationData aNextRoomData, DoorData::GenerationTypes aDoorType) : Door(GenerateData(aPreviousRoom, new Room(aNextRoomData), aDoorType)){}
-Door::Door(Room* aPreviousRoom, Room* const aNextRoom, DoorData::GenerationTypes aDoorType) : Door(GenerateData(aPreviousRoom, aNextRoom, aDoorType)) {}
+Door::Door(Room* aPreviousRoom, const RoomData::GenerationData aNextRoomData, DoorData::GenerationType aDoorType) : Door(GenerateData(aPreviousRoom, new Room(aNextRoomData), aDoorType)){}
+Door::Door(Room* aPreviousRoom, Room* const aNextRoom, DoorData::GenerationType aDoorType) : Door(GenerateData(aPreviousRoom, aNextRoom, aDoorType)) {}
 Door::Door(DoorData::GenerationData aGenerationData) : myGenerationData(aGenerationData),
-myIsOpen(myGenerationData.doorType == DoorData::GenerationTypes::Open) { }
+myIsOpen(myGenerationData.doorType == DoorData::GenerationType::Open) { }
 
 Room* Door::GetPreviousRoom()
 {
@@ -35,37 +35,37 @@ bool Door::TryBreak(int aValue)
 	return myIsOpen;
 }
 
-const DoorData::GenerationData Door::GenerateData(Room* aPreviousRoom, Room* aNextRoom, DoorData::GenerationTypes aDoorType)
+const DoorData::GenerationData Door::GenerateData(Room* aPreviousRoom, Room* aNextRoom, DoorData::GenerationType aDoorType)
 {
 	int pickDC;
 	int breakDC;
 	switch (aDoorType)
 	{
-		case DoorData::GenerationTypes::Easy:
+		case DoorData::GenerationType::Easy:
 		{
 			pickDC = 7;
 			breakDC = 7;
 			break;
 		}
-		case DoorData::GenerationTypes::Hard:
+		case DoorData::GenerationType::Hard:
 		{
 			pickDC = 14;
 			breakDC = 14;
 			break;
 		}
-		case DoorData::GenerationTypes::Pickable:
+		case DoorData::GenerationType::Pickable:
 		{
 			pickDC = 7;
 			breakDC = 30;
 			break;
 		}
-		case DoorData::GenerationTypes::Breakable:
+		case DoorData::GenerationType::Breakable:
 		{
 			pickDC = 30;
 			breakDC = 7;
 			break;
 		}
-		case DoorData::GenerationTypes::Open:
+		case DoorData::GenerationType::Open:
 		default:
 		{
 			pickDC = 0;

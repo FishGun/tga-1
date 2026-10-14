@@ -4,7 +4,7 @@
 
 namespace SpellData
 {
-	enum class SpellTypes
+	enum class SpellType
 	{
 		Power1,
 		Power2,
@@ -14,7 +14,7 @@ namespace SpellData
 		Reduce,
 		CountOrRandom
 	};
-	const int SPELL_TYPES_SIZE = static_cast<int>(SpellTypes::CountOrRandom);
+	const int SPELL_TYPE_SIZE = static_cast<int>(SpellType::CountOrRandom);
 
 
 	struct SpellInstanceData
@@ -33,8 +33,8 @@ namespace SpellData
 	extern SpellInstanceData globalSpellDataCollection[];
 	extern bool globalSpellDataCollectedAtIndex[];
 
-	const SpellInstanceData& GetSpellData(SpellTypes aType);
-	SpellInstanceData& CreateNewSpellData(SpellTypes aType);
+	const SpellInstanceData& GetSpellData(SpellType aType);
+	SpellInstanceData& CreateNewSpellData(SpellType aType);
 
 	const ActivatedSpell& CreateNewSpellInstance(SpellInstanceData* aSpellData);
 	std::vector<const SpellData::SpellInstanceData*> GenerateWeightedSpellVector(float aSpellLikelyhood, int aSpellMax);

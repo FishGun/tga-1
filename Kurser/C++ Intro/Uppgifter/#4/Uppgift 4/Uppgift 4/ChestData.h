@@ -5,13 +5,13 @@
 
 namespace ChestData
 {
-	enum class ChestTypes
+	enum class ChestType
 	{
 		OneItemUnlocked,
 		TwoItemUnlocked,
 		CountOrRandom
 	};
-	const int CHEST_TYPES_SIZE = static_cast<int>(ChestTypes::CountOrRandom);
+	const int CHEST_TYPE_SIZE = static_cast<int>(ChestType::CountOrRandom);
 
 	struct ChestCreationData
 	{
@@ -27,8 +27,8 @@ namespace ChestData
 	extern ChestCreationData globalChestDataCollection[];
 	extern bool globalChestDataCollectedAtIndex[];
 
-	const ChestCreationData& GetChestData(ChestTypes aType);
-	ChestCreationData& CreateNewChestData(ChestTypes aType);
+	const ChestCreationData& GetChestData(ChestType aType);
+	ChestCreationData& CreateNewChestData(ChestType aType);
 
 	ChestInstance& CreateNewChest(ItemFactory& aItemFactory, ChestCreationData& aChestData);
 	std::vector<ChestInstance*> GenerateWeightedChestVector(ItemFactory& aItemFactory, float aChestLikelyhood = ItemType::ROOM_CHEST_SPAWN_CHANCE, int aChestMax = 1);

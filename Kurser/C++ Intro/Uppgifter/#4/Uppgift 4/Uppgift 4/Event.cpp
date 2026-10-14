@@ -2,7 +2,7 @@
 #include "RandomController.h"
 #include "DisplayManager.h"
 
-Event::Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationTypes aEventType) : Event(GenerateData(aEventType, aItemFactory, aEnemyFactory)) {}
+Event::Event(ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory, EventData::GenerationType aEventType) : Event(GenerateData(aEventType, aItemFactory, aEnemyFactory)) {}
 Event::Event(EventData::GenerationData aEventData) : myGenerationData(aEventData)
 {
 	PopulateEvent();
@@ -93,27 +93,27 @@ void Event::TakeTurn(Player& aTargetPlayer)
 	}
 }
 
-const EventData::GenerationData Event::GenerateData(EventData::GenerationTypes aEventType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory)
+const EventData::GenerationData Event::GenerateData(EventData::GenerationType aEventType, ItemFactory& aItemFactory, EnemyFactory& aEnemyFactory)
 {
-	while (aEventType == EventData::GenerationTypes::Random)
+	while (aEventType == EventData::GenerationType::Random)
 	{
-		aEventType = static_cast<EventData::GenerationTypes>(RandomController::GenerateNumber(0, EventData::TYPES_SIZE - 1));
+		aEventType = static_cast<EventData::GenerationType>(RandomController::GenerateNumber(0, EventData::TYPE_SIZE - 1));
 	}
 	int magnitude = 0;
 	switch (aEventType)
 	{
 		default:
-		case EventData::GenerationTypes::EasyCombat:
+		case EventData::GenerationType::EasyCombat:
 		{
 			magnitude = EventData::EASY_MAGNITUDE;
 			break;
 		}
-		case EventData::GenerationTypes::MediumCombat:
+		case EventData::GenerationType::MediumCombat:
 		{
 			magnitude = EventData::MEDIUM_MAGNITUDE;
 			break;
 		}
-		case EventData::GenerationTypes::HardCombat:
+		case EventData::GenerationType::HardCombat:
 		{
 			magnitude = EventData::HARD_MAGNITUDE;
 			break;
@@ -131,12 +131,12 @@ void Event::PopulateEvent()
 {
 	myEnemies.clear();
 
-	EnemyFactory::Types enemyType = static_cast<EnemyFactory::Types>(myGenerationData.magnitude % (EnemyFactory::TYPES_SIZE));
+	EnemyFactory::Type enemyType = static_cast<EnemyFactory::Type>(myGenerationData.magnitude % (EnemyFactory::TYPE_SIZE));
 	for (int i = 0; i < myGenerationData.magnitude; i++)
 	{
 		if (i % 3 == 0)
 		{
-			myEnemies.push_back(myGenerationData.enemyFactory.Create(EnemyFactory::Types::CountOrRandom));
+			myEnemies.push_back(myGenerationData.enemyFactory.Create(EnemyFactory::Type::CountOrRandom));
 		}
 		else
 		{

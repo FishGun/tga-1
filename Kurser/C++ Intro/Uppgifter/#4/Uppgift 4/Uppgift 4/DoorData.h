@@ -4,7 +4,7 @@ class Room;
 
 namespace DoorData
 {
-	enum class GenerationTypes
+	enum class GenerationType
 	{
 		Open,
 		Easy,
@@ -16,7 +16,7 @@ namespace DoorData
 
 	struct GenerationData
 	{
-		const GenerationTypes doorType;
+		const GenerationType doorType;
 		Room* const previousRoom;
 		Room* const nextRoom;
 		const int pickDC;
