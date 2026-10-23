@@ -1,0 +1,15 @@
+{
+    "version": 1,
+    "revision": 0,
+    "rules": [
+        {
+            "primary-output": "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\#8\\Solutions\\Timer\\TempBuildFiles\\Timer.obj",
+            "outputs": [
+                "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\#8\\Solutions\\Timer\\TempBuildFiles\\Timer.h.obj.dt.module.json",
+                "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\#8\\Solutions\\Timer\\TempBuildFiles\\Timer.h.obj.dt.d.json",
+                "C:\\Users\\sebastian.niva\\Desktop\\tga-1\\Kurser\\C++ Intro\\Uppgifter\\#8\\Solutions\\Timer\\\\TempBuildFiles\\Timer_debug.pch"
+            ],
+            "requires": []
+        }
+    ]
+}

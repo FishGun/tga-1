@@ -16,80 +16,109 @@ namespace CommonUtilities
 		}
 		FixedVector(const FixedVector& aFixedVector)
 		{
-			this = aFixedVector;
+			*this = aFixedVector;
 		}
 		~FixedVector()
 		{
-
+			clear();
 		}
 		FixedVector& operator=(const FixedVector& aFixedVector)
 		{
+			this->~FixedVector();
 			for (SizeType i = 0; i < CAPACITY; i++)
 			{
 				myStorage[i] = aFixedVector[i];
+				mySize++;
 			}
-			return this;
+			return *this;
 		}
 
 		Type& front()
 		{
+			assert(!empty());
 			return myStorage[0];
 		}
 		const Type& front() const
 		{
-			return front();
+			assert(!empty());
+			return myStorage[0];
 		}
 		Type& back()
 		{
+			assert(!empty());
 			return myStorage[size() - 1];
 		}
 		const Type& back() const
 		{
-			return back();
+			assert(!empty());
+			return myStorage[size() - 1];
 		}
 
 		Type& at(SizeType aIndex)
 		{
+			assert(!empty() && aIndex >= 0 && aIndex < mySize);
 			return myStorage[aIndex];
 		}
 		const Type& at(SizeType aIndex) const
 		{
-			return at(aIndex);
+			assert(!empty() && aIndex >= 0 && aIndex < mySize);
+			return myStorage[aIndex];
 		}
 
 		const Type& operator[](SizeType aIndex) const
 		{
-			return GetElement(aIndex);
+			return at(aIndex);
 		}
 		Type& operator[](SizeType aIndex)
 		{
-			return GetElement(aIndex);
+			return at(aIndex);
 		}
 
 		void push_back(const Type& aObject)
 		{
-			AddObject(aObject);
+			AddObjectAtEnd(aObject); //double check uppgift
 		}
 		void insert(iterator aIterator, const Type& aObject)
 		{
-			(*aIterator) = aObject;
+			assert(mySize < CAPACITY && aIterator >= begin() && aIterator <= end());
+			if (empty())
+			{
+				push_back(aObject);
+				return;
+			}
+
+			iterator reverseIterator = end();
+			while (reverseIterator != aIterator)
+			{
+				*reverseIterator = *(reverseIterator - 1);
+				reverseIterator--;
+			}
+			*aIterator = aObject;
+			mySize++;
 		}
 		void erase(iterator aIterator)
 		{
-			(*aIterator) = NULL;
+			assert(mySize > 0 && aIterator >= begin() && aIterator < end());
+			const iterator lastPtr = end() - 1;
+			while (aIterator != lastPtr)
+			{
+				*aIterator = *(aIterator + 1);
+				aIterator++;
+			}
+			pop_back();
 		}
 		void pop_back()
 		{
-			erase(*back());
+			myStorage[--mySize].~Type();
 		}
 
 		iterator begin()
 		{
-			return *myStorage[0];
+			return &myStorage[0];
 		}
 		const_iterator begin() const
 		{
-			return begin();
+			return &myStorage[0];
 		}
 		const_iterator cbegin() const
 		{
@@ -98,11 +127,11 @@ namespace CommonUtilities
 
 		iterator end()
 		{
-			return (*back()) + 1;
+			return &myStorage[size()];
 		}
 		const_iterator end() const
 		{
-			return end();
+			return &myStorage[size()];
 		}
 		const_iterator cend() const
 		{
@@ -116,8 +145,21 @@ namespace CommonUtilities
 				pop_back();
 			}
 		}
-		void resize(SizeType newSize);
-		void resize(SizeType newSize, const Type& value);
+		void resize(SizeType newSize)
+		{
+			assert(newSize < CAPACITY);
+			mySize = newSize;
+		}
+		void resize(SizeType newSize, const Type& value)
+		{
+			SizeType filledSize = mySize;
+			resize(newSize);
+			while (filledSize < newSize)
+			{
+				myStorage[filledSize] = value;
+				filledSize++;
+			}
+		}
 
 		bool empty() const
 		{
@@ -137,15 +179,11 @@ namespace CommonUtilities
 		Type myStorage[CAPACITY]; //<- for G
 		//alignas(Type) char myStorage[sizeof(Type) * CAPACITY]; // <- needed for VG 
 
-
-
-
-
 	private:
-		void AddObject(Type& aObject)
+		void AddObjectAtEnd(const Type& aObject)
 		{
 			assert(size() < capacity());
-			myStorage[size()] = aObject;
+			myStorage[size()] = Type(aObject);
 			mySize++;
 		}
 		Type& GetElement(int aIndex)
