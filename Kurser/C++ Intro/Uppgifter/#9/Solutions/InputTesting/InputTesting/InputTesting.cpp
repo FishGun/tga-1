@@ -140,7 +140,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 //
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-    globalInputHandler.UpdateEvents(message, wParam, lParam);
+    if (globalInputHandler.UpdateEvents(message, wParam, lParam))
+    {
+        return 0;
+    }
 
     switch (message)
     {
