@@ -15,15 +15,19 @@ namespace CommonUtilities
 
 	bool InputHandler::UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam)
 	{
-		if (message == WM_KEYDOWN)
+		switch (message)
+		{
+		default:
+		{
+			return false;
+		}
+		case WM_KEYDOWN:
 		{
 			std::cout << "key down message recived, ";
-			if (wParam >= 65 && wParam <= 90)
+			if (wParam >= 0 && wParam < 256)
 			{
 				std::cout << "keycode '" << static_cast<char>(wParam) << "' (lParam: " << lParam << ").\n";
-				myPreviousState[wParam] = myCurrentState[wParam];
-				myCurrentState[wParam] = true;
-				myInputState[wParam] = myPreviousState[wParam] != myCurrentState[wParam];
+				myInputState[wParam] = true;
 			}
 			else
 			{
@@ -31,15 +35,13 @@ namespace CommonUtilities
 			}
 			return true;
 		}
-		else if (message == WM_KEYUP)
+		case WM_KEYUP:
 		{
 			std::cout << "key release message recived, ";
-			if (wParam >= 65 && wParam <= 90)
+			if (wParam >= 0 && wParam < 256)
 			{
 				std::cout << "keycode '" << static_cast<char>(wParam) << "' (lParam: " << lParam << ").\n";
-				myPreviousState[wParam] = myCurrentState[wParam];
-				myCurrentState[wParam] = false;
-				myInputState[wParam] = myPreviousState[wParam] != myCurrentState[wParam];
+				myInputState[wParam] = false;
 			}
 			else
 			{
@@ -47,24 +49,134 @@ namespace CommonUtilities
 			}
 			return true;
 		}
-		else if (message == WM_LBUTTONDOWN)
-		{
-			std::cout << "LMB message recived!\n";
-			return true;
-		}
-		else if (message == WM_MOUSEWHEEL)
+		case WM_MOUSEWHEEL:
 		{
 			auto wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 			std::cout << "Scrolled " << wheelDelta << " (" << wParam << ")\n";
-			
-
-			std::cout << "Is Holding Down A? " << IsKeyDown(65) << "\n";
-			std::cout << "Is A Pressed? " << IsKeyPressed(65) << "\n";
-			std::cout << "Is A Released? " << IsKeyReleased(65) << "\n";
+			myMouseValues.wheelDelta = wheelDelta;
+			return true;
+		}
+		case WM_MOUSEMOVE:
+		{
+			std::cout << "Mouse Moved!\n";
+			myMouseValues.currentPosition.x = GET_X_LPARAM(lParam);
+			myMouseValues.currentPosition.y = GET_Y_LPARAM(lParam);
+			return true;
+		}
+		case WM_LBUTTONDOWN:
+		{
+			std::cout << "LMB down message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::LMB)] = true;
+			return true;
+		}
+		case WM_LBUTTONUP:
+		{
+			std::cout << "LMB up message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::LMB)] = false;
+			return true;
+		}
+		case WM_RBUTTONDOWN:
+		{
+			std::cout << "RMB down message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::RMB)] = true;
+			return true;
+		}
+		case WM_RBUTTONUP:
+		{
+			std::cout << "RMB up message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::RMB)] = false;
+			return true;
+		}
+		case WM_MBUTTONDOWN:
+		{
+			std::cout << "MMB down message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
+			return true;
+		}
+		case WM_MBUTTONUP:
+		{
+			std::cout << "MMB up message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
+			return true;
+		}
+		case WM_XBUTTONDOWN:
+		{
+			if (lParam == XBUTTON1)
+			{
+				std::cout << "X1B down message recived!\n";
+				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X1B)] = true;
+				return true;
+			}
+			else if (lParam == XBUTTON2)
+			{
+				std::cout << "X2B down message recived!\n";
+				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X2B)] = true;
+				return true;
+			}
+			else
+			{
+				std::cout << "Unknown X button pressed!\n";
+				return false;
+			}
+		}
+		case WM_XBUTTONUP:
+		{
+			if (lParam == XBUTTON1)
+			{
+				std::cout << "X1B down message recived!\n";
+				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X1B)] = false;
+				return true;
+			}
+			else if (lParam == XBUTTON2)
+			{
+				std::cout << "X2B down message recived!\n";
+				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X2B)] = false;
+				return true;
+			}
+			else
+			{
+				std::cout << "Unknown X button pressed!\n";
+				return false;
+			}
+		}
+		case WM_MBUTTONDOWN:
+		{
+			std::cout << "MMB down message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
+			return true;
+		}
+		case WM_MBUTTONUP:
+		{
+			std::cout << "MMB up message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
+			return true;
+		}
+		case WM_MBUTTONDOWN:
+		{
+			std::cout << "MMB down message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
+			return true;
+		}
+		case WM_MBUTTONUP:
+		{
+			std::cout << "MMB up message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
+			return true;
+		}
+		case WM_MBUTTONDOWN:
+		{
+			std::cout << "MMB down message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
+			return true;
+		}
+		case WM_MBUTTONUP:
+		{
+			std::cout << "MMB up message recived!\n";
+			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
 			return true;
 		}
 
-		return false;
+		}
 	}
 
 	bool InputHandler::IsKeyDown(const int aKeyCode) const
@@ -84,11 +196,22 @@ namespace CommonUtilities
 
 	bool InputHandler::UpdateMouseInput(UINT aMessage)
 	{
+		MouseValues& mv = myMouseValues;
+		for (size_t i = 0; i < mv.previousState.size(); i++)
+		{
+			mv.previousState[i] = mv.currentState[i];
+			mv.currentState[i] = mv.inputState[i];
+		}
+		mv.previousPosition = mv.currentPosition;
 		return true;
 	}
 
 	void InputHandler::UpdateInput()
 	{
-
+		for (size_t i = 0; i < myPreviousState.size(); i++)
+		{
+			myPreviousState[i] = myCurrentState[i];
+			myCurrentState[i] = myInputState[i];
+		}
 	}
 }
