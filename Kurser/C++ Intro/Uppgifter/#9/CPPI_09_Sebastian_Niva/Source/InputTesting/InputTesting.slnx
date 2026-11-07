@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="InputTesting/InputTesting.vcxproj" Id="05fb65ae-3b84-470c-88c5-f33f8eed3f1f" />
+</Solution>

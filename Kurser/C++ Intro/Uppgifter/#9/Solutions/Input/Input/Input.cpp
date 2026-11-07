@@ -23,36 +23,27 @@ namespace CommonUtilities
 		}
 		case WM_KEYDOWN:
 		{
-			std::cout << "key down message recived, ";
 			if (wParam >= 0 && wParam < 256)
 			{
-				std::cout << "keycode '" << static_cast<char>(wParam) << "' (lParam: " << lParam << ").\n";
+				//std::cout << "keycode '" << static_cast<char>(wParam) << "' (lParam: " << lParam << ").\n";
 				myInputState[wParam] = true;
+				return true;
 			}
-			else
-			{
-				std::cout << "ERROR: keycode not recognized!\n";
-			}
-			return true;
+			return false;
 		}
 		case WM_KEYUP:
 		{
-			std::cout << "key release message recived, ";
 			if (wParam >= 0 && wParam < 256)
 			{
-				std::cout << "keycode '" << static_cast<char>(wParam) << "' (lParam: " << lParam << ").\n";
+				//std::cout << "keycode '" << static_cast<char>(wParam) << "' (lParam: " << lParam << ").\n";
 				myInputState[wParam] = false;
+				return true;
 			}
-			else
-			{
-				std::cout << "ERROR: keycode not recognized!\n";
-			}
-			return true;
+			return false;
 		}
 		case WM_MOUSEWHEEL:
 		{
 			auto wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
-			std::cout << "Scrolled " << wheelDelta << " (" << wParam << ")\n";
 			myMouseValues.currentWheel += wheelDelta;
 			return true;
 		}
@@ -64,37 +55,31 @@ namespace CommonUtilities
 		}
 		case WM_LBUTTONDOWN:
 		{
-			std::cout << "LMB down message recived!\n";
 			myInputState[KEY_LMB] = true;
 			return true;
 		}
 		case WM_LBUTTONUP:
 		{
-			std::cout << "LMB up message recived!\n";
 			myInputState[KEY_LMB] = false;
 			return true;
 		}
 		case WM_RBUTTONDOWN:
 		{
-			std::cout << "RMB down message recived!\n";
 			myInputState[KEY_RMB] = true;
 			return true;
 		}
 		case WM_RBUTTONUP:
 		{
-			std::cout << "RMB up message recived!\n";
 			myInputState[KEY_RMB] = false;
 			return true;
 		}
 		case WM_MBUTTONDOWN:
 		{
-			std::cout << "MMB down message recived!\n";
 			myInputState[KEY_MMB] = true;
 			return true;
 		}
 		case WM_MBUTTONUP:
 		{
-			std::cout << "MMB up message recived!\n";
 			myInputState[KEY_MMB] = false;
 			return true;
 		}

@@ -58,21 +58,36 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 			DispatchMessage(&msg);
 		}
 		// TODO: Place test code here.
+		//std::cout << "Message ID #" << msg.message << "; " << msg.wParam << "; " << msg.lParam << "\n";
+
 		globalInputHandler.UpdateInput();
 		if (globalInputHandler.IsKeyDown(CommonUtilities::KEY_LMB))
 		{
-			std::cout << "Left mouse!\n";
-
-			std::cout << "Message ID #" << msg.message << "; " << msg.wParam << "; " << msg.lParam << "\n";
-			CommonUtilities::Vector2float mP = globalInputHandler.GetMousePosition();
-			std::cout << "Mouse Moved (x: " << mP.x << "; y: " << mP.y << ")\n";
-			CommonUtilities::Vector2float v = globalInputHandler.GetMousePositionDelta();
-			std::cout << v.x << ", " << v.y << std::endl;
-			std::cout << globalInputHandler.GetMouseWheelDelta() << std::endl;
+			std::cout << "Left mouse spam!\n";
 		}
-		if (globalInputHandler.IsKeyDown(VK_LBUTTON))
+		if (globalInputHandler.IsKeyReleased(VK_SPACE))
+		{
+			std::cout << "Space given space!\n";
+		}
+		if (globalInputHandler.IsKeyPressed(CommonUtilities::KEY_RMB))
+		{
+			std::cout << "Right mouse pressed, initiating mouse-logging mode! Release Right mouse to disable.\n";
+		}
+		if (globalInputHandler.IsKeyDown(CommonUtilities::KEY_RMB))
+		{
+			CommonUtilities::Vector2float mP = globalInputHandler.GetMousePosition();
+			std::cout << "Mouse Position: [ x: " << mP.x << " I y: " << mP.y << " ]\n";
+			CommonUtilities::Vector2float v = globalInputHandler.GetMousePositionDelta();
+			std::cout << "Mouse Wheel Change: " << globalInputHandler.GetMouseWheelDelta() << std::endl;
+		}
+		if (globalInputHandler.IsKeyReleased(CommonUtilities::KEY_RMB))
+		{
+			std::cout << "Right mouse released, disabling mouse-logging mode.\n";
+		}
+		if (globalInputHandler.IsKeyDown('W') || globalInputHandler.IsKeyDown('A') || globalInputHandler.IsKeyDown('S') || globalInputHandler.IsKeyDown('D'))
 		{
 
+			std::cout << "I'm WASD:ing here!\n";
 		}
 	}
 
@@ -126,6 +141,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	freopen("conout$", "w", stdout);
 	freopen("conout$", "w", stderr);
 	printf("Debugging Window:\n");
+	printf("Try pressing buttons: Space, Left mouse, Right mouse, & WASD to test functionality!\n");
 
 	hInst = hInstance; // Store instance handle in our global variable
 
