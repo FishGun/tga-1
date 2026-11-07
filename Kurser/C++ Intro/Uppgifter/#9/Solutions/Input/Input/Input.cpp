@@ -53,12 +53,11 @@ namespace CommonUtilities
 		{
 			auto wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam);
 			std::cout << "Scrolled " << wheelDelta << " (" << wParam << ")\n";
-			myMouseValues.wheelDelta = wheelDelta;
+			myMouseValues.currentWheel += wheelDelta;
 			return true;
 		}
 		case WM_MOUSEMOVE:
 		{
-			std::cout << "Mouse Moved!\n";
 			myMouseValues.currentPosition.x = GET_X_LPARAM(lParam);
 			myMouseValues.currentPosition.y = GET_Y_LPARAM(lParam);
 			return true;
@@ -66,116 +65,39 @@ namespace CommonUtilities
 		case WM_LBUTTONDOWN:
 		{
 			std::cout << "LMB down message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::LMB)] = true;
+			myInputState[KEY_LMB] = true;
 			return true;
 		}
 		case WM_LBUTTONUP:
 		{
 			std::cout << "LMB up message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::LMB)] = false;
+			myInputState[KEY_LMB] = false;
 			return true;
 		}
 		case WM_RBUTTONDOWN:
 		{
 			std::cout << "RMB down message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::RMB)] = true;
+			myInputState[KEY_RMB] = true;
 			return true;
 		}
 		case WM_RBUTTONUP:
 		{
 			std::cout << "RMB up message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::RMB)] = false;
+			myInputState[KEY_RMB] = false;
 			return true;
 		}
 		case WM_MBUTTONDOWN:
 		{
 			std::cout << "MMB down message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
+			myInputState[KEY_MMB] = true;
 			return true;
 		}
 		case WM_MBUTTONUP:
 		{
 			std::cout << "MMB up message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
+			myInputState[KEY_MMB] = false;
 			return true;
 		}
-		case WM_XBUTTONDOWN:
-		{
-			if (lParam == XBUTTON1)
-			{
-				std::cout << "X1B down message recived!\n";
-				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X1B)] = true;
-				return true;
-			}
-			else if (lParam == XBUTTON2)
-			{
-				std::cout << "X2B down message recived!\n";
-				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X2B)] = true;
-				return true;
-			}
-			else
-			{
-				std::cout << "Unknown X button pressed!\n";
-				return false;
-			}
-		}
-		case WM_XBUTTONUP:
-		{
-			if (lParam == XBUTTON1)
-			{
-				std::cout << "X1B down message recived!\n";
-				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X1B)] = false;
-				return true;
-			}
-			else if (lParam == XBUTTON2)
-			{
-				std::cout << "X2B down message recived!\n";
-				myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::X2B)] = false;
-				return true;
-			}
-			else
-			{
-				std::cout << "Unknown X button pressed!\n";
-				return false;
-			}
-		}
-		case WM_MBUTTONDOWN:
-		{
-			std::cout << "MMB down message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
-			return true;
-		}
-		case WM_MBUTTONUP:
-		{
-			std::cout << "MMB up message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
-			return true;
-		}
-		case WM_MBUTTONDOWN:
-		{
-			std::cout << "MMB down message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
-			return true;
-		}
-		case WM_MBUTTONUP:
-		{
-			std::cout << "MMB up message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
-			return true;
-		}
-		case WM_MBUTTONDOWN:
-		{
-			std::cout << "MMB down message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = true;
-			return true;
-		}
-		case WM_MBUTTONUP:
-		{
-			std::cout << "MMB up message recived!\n";
-			myMouseValues.inputState[static_cast<int>(MouseValues::MouseCode::MMB)] = false;
-			return true;
-		}
-
 		}
 	}
 
@@ -194,17 +116,27 @@ namespace CommonUtilities
 		return !myCurrentState[aKeyCode] && myPreviousState[aKeyCode];
 	}
 
+	Vector2float InputHandler::GetMousePosition() const
+	{
+		return myMouseValues.currentPosition;
+	}
+
+	Vector2float InputHandler::GetMousePositionDelta() const
+	{
+		return myMouseValues.deltaPosition;
+	}
+
+	float InputHandler::GetMouseWheelDelta() const
+	{
+		return myMouseValues.GetWheelStandardizedDelta();
+	}
+
+	/*
 	bool InputHandler::UpdateMouseInput(UINT aMessage)
 	{
-		MouseValues& mv = myMouseValues;
-		for (size_t i = 0; i < mv.previousState.size(); i++)
-		{
-			mv.previousState[i] = mv.currentState[i];
-			mv.currentState[i] = mv.inputState[i];
-		}
-		mv.previousPosition = mv.currentPosition;
 		return true;
 	}
+	*/
 
 	void InputHandler::UpdateInput()
 	{
@@ -213,5 +145,13 @@ namespace CommonUtilities
 			myPreviousState[i] = myCurrentState[i];
 			myCurrentState[i] = myInputState[i];
 		}
+		MouseValues& mv = myMouseValues;
+		mv.deltaPosition = mv.currentPosition;
+		mv.deltaPosition.x -= mv.previousPosition.x;
+		mv.deltaPosition.y -= mv.previousPosition.y;
+		mv.previousPosition = mv.currentPosition;
+
+		mv.deltaWheel = mv.currentWheel - mv.previousWheel;
+		mv.previousWheel = mv.currentWheel;
 	}
 }

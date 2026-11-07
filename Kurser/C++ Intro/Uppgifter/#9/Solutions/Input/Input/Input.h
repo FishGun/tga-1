@@ -6,48 +6,37 @@
 
 namespace CommonUtilities
 {
-	struct Vector2f
+	struct Vector2float
 	{
 		float x = { 0 };
 		float y = { 0 };
 	};
 
-	struct MouseValues
+	enum Key
 	{
-		Vector2f currentPosition;
-		Vector2f previousPosition;
-		Vector2f GetPositionDelta()
-		{
-			Vector2f posDelta = currentPosition;
-			posDelta.x -= previousPosition.x;
-			posDelta.y -= previousPosition.y;
-			return posDelta;
-		}
-
-		float wheelDelta;
-		float GetWheelPercentDelta()
-		{
-			return wheelDelta / 2880.0f;
-		}
-
-		enum class MouseCode
-		{
-			LMB,
-			RMB,
-			MMB,
-			X1B,
-			X2B,
-			CTRL,
-			SHIFT
-		};
-		std::array<bool, 7> currentState;
-		std::array<bool, 7> previousState;
-		std::array<bool, 7> inputState;
+		KEY_LMB = VK_LBUTTON,
+		KEY_RMB = VK_RBUTTON,
+		KEY_MMB = VK_MBUTTON,
 	};
 
 	class InputHandler
 	{
 	public:
+		struct MouseValues
+		{
+			Vector2float currentPosition;
+			Vector2float previousPosition;
+			Vector2float deltaPosition;
+
+			float currentWheel;
+			float previousWheel;
+			float deltaWheel;
+			float GetWheelStandardizedDelta() const
+			{
+				return deltaWheel / 120.0f;
+			}
+		};
+
 		InputHandler();
 
 		bool UpdateEvents(UINT message, WPARAM wParam, LPARAM lParam);
@@ -58,7 +47,13 @@ namespace CommonUtilities
 
 		bool IsKeyReleased(const int aKeyCode) const;
 
-		bool UpdateMouseInput(UINT aMessage);
+		Vector2float GetMousePosition() const;
+
+		Vector2float GetMousePositionDelta() const;
+
+		float GetMouseWheelDelta() const;
+
+		//bool UpdateMouseInput(UINT aMessage);
 
 		void UpdateInput();
 
