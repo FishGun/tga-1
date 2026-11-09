@@ -65,10 +65,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			std::cout << "Left mouse spam!\n";
 		}
-		if (globalInputHandler.IsKeyReleased(VK_SPACE))
-		{
-			std::cout << "Space given space!\n";
-		}
 		if (globalInputHandler.IsKeyPressed(CommonUtilities::KEY_RMB))
 		{
 			std::cout << "Right mouse pressed, initiating mouse-logging mode! Release Right mouse to disable.\n";
@@ -76,7 +72,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		if (globalInputHandler.IsKeyDown(CommonUtilities::KEY_RMB))
 		{
 			CommonUtilities::Vector2float mP = globalInputHandler.GetMousePosition();
+			CommonUtilities::Vector2float md = globalInputHandler.GetMousePositionDelta();
 			std::cout << "Mouse Position: [ x: " << mP.x << " I y: " << mP.y << " ]\n";
+			std::cout << "Mouse Delta: [ x: " << md.x << " I y: " << md.y << " ]\n";
+
 			CommonUtilities::Vector2float v = globalInputHandler.GetMousePositionDelta();
 			std::cout << "Mouse Wheel Change: " << globalInputHandler.GetMouseWheelDelta() << std::endl;
 		}
@@ -84,10 +83,32 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 		{
 			std::cout << "Right mouse released, disabling mouse-logging mode.\n";
 		}
+		if (globalInputHandler.IsKeyPressed(CommonUtilities::KEY_MMB))
+		{
+			std::cout << "Middle mouse pressing its own cheese!\n";
+		}
 		if (globalInputHandler.IsKeyDown('W') || globalInputHandler.IsKeyDown('A') || globalInputHandler.IsKeyDown('S') || globalInputHandler.IsKeyDown('D'))
 		{
-
 			std::cout << "I'm WASD:ing here!\n";
+		}
+		if (globalInputHandler.IsKeyPressed('F'))
+		{
+			std::cout << "Starting respect: (F)\n";
+
+		}
+		if (globalInputHandler.IsKeyDown('F'))
+		{
+			std::cout << "Respecting... (F)\n";
+
+		}
+		if (globalInputHandler.IsKeyReleased('F'))
+		{
+			std::cout << "Ending respect. (F)\n";
+
+		}
+		if (globalInputHandler.IsKeyReleased(VK_SPACE))
+		{
+			std::cout << "Space given space!\n";
 		}
 	}
 
@@ -141,7 +162,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	freopen("conout$", "w", stdout);
 	freopen("conout$", "w", stderr);
 	printf("Debugging Window:\n");
-	printf("Try pressing buttons: Space, Left mouse, Right mouse, & WASD to test functionality!\n");
+	printf("Try pressing buttons: Space, Left mouse, Right mouse, Middle mouse, F, & WASD to test functionality!\n");
 
 	hInst = hInstance; // Store instance handle in our global variable
 
@@ -178,37 +199,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message)
 	{
-	case WM_COMMAND:
-	{
-		int wmId = LOWORD(wParam);
-		// Parse the menu selections:
-		switch (wmId)
+		case WM_COMMAND:
 		{
-		case IDM_ABOUT:
-			DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-			break;
-		case IDM_EXIT:
-			DestroyWindow(hWnd);
+			int wmId = LOWORD(wParam);
+			// Parse the menu selections:
+			switch (wmId)
+			{
+				case IDM_ABOUT:
+					DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+					break;
+				case IDM_EXIT:
+					DestroyWindow(hWnd);
+					break;
+				default:
+					return DefWindowProc(hWnd, message, wParam, lParam);
+			}
+		}
+		break;
+		case WM_PAINT:
+		{
+			PAINTSTRUCT ps;
+			BeginPaint(hWnd, &ps);
+			// TODO: Add any drawing code here...
+			EndPaint(hWnd, &ps);
+		}
+		break;
+		case WM_DESTROY:
+			FreeConsole();
+			PostQuitMessage(0);
 			break;
 		default:
 			return DefWindowProc(hWnd, message, wParam, lParam);
-		}
-	}
-	break;
-	case WM_PAINT:
-	{
-		PAINTSTRUCT ps;
-		BeginPaint(hWnd, &ps);
-		// TODO: Add any drawing code here...
-		EndPaint(hWnd, &ps);
-	}
-	break;
-	case WM_DESTROY:
-		FreeConsole();
-		PostQuitMessage(0);
-		break;
-	default:
-		return DefWindowProc(hWnd, message, wParam, lParam);
 	}
 	return 0;
 }
@@ -219,16 +240,16 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	UNREFERENCED_PARAMETER(lParam);
 	switch (message)
 	{
-	case WM_INITDIALOG:
-		return (INT_PTR)TRUE;
-
-	case WM_COMMAND:
-		if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-		{
-			EndDialog(hDlg, LOWORD(wParam));
+		case WM_INITDIALOG:
 			return (INT_PTR)TRUE;
-		}
-		break;
+
+		case WM_COMMAND:
+			if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
+			{
+				EndDialog(hDlg, LOWORD(wParam));
+				return (INT_PTR)TRUE;
+			}
+			break;
 	}
 	return (INT_PTR)FALSE;
 }
